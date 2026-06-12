@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "For published work, cite the archived version DOI minted from a tagged release."
+title: "Certified affine extraction from CNF in Lean 4"
+type: software
+authors:
+  - family-names: "Fredriksen"
+    given-names: "Daniel"
+abstract: "Lean 4 artifact for certified affine-structure extraction, GF(2) semantic preservation, and proof-logging route control for Tseitin-style CNF families."
+keywords:
+  - Lean 4
+  - SAT
+  - proof logging
+  - affine extraction
+  - Tseitin formulas
+license: Apache-2.0
+repository-code: "https://github.com/Quantyra/certified-affine-extraction"
+version: "0.1.0"
+date-released: "2026-06-12"
