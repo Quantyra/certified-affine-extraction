@@ -23,7 +23,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
       - name: Build audited Lean target
-        run: lake build PvNP.TseitinCNFData
+        run: lake build
 
       - name: Check axiom audit surface
-        run: lake env lean lean/PvNP/Audit.lean
+        run: lake env lean lean/CertifiedAffine/Audit.lean

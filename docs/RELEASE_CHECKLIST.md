@@ -26,7 +26,7 @@ logs, scratch artifacts, and internal claim-control material.
   release date.
 - Optional `.zenodo.json` after verifying author/ORCID metadata.  Do not add
   guessed ORCID or affiliation data.
-- `lean/PvNP/Audit.lean` with guarded `#print axioms` checks for exported
+- `lean/CertifiedAffine/Audit.lean` with guarded `#print axioms` checks for exported
   theorem claims.
 - `.github/workflows/lean-audit.yml` building the audited Lean target and
   running the audit module.

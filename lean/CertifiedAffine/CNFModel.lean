@@ -1,6 +1,6 @@
 import Std
 
-namespace PvNP
+namespace CertifiedAffine
 namespace CNFModel
 
 /-!
@@ -32,7 +32,7 @@ def cnfSat {n : Nat} (a : Assignment n) (f : CNF n) : Prop :=
   forall c, c ∈ f -> clauseSat a c
 
 /-!
-Stage1761 structural-simplification smoke-test vocabulary.
+the local audit structural-simplification smoke-test vocabulary.
 
 These computable predicates capture the first cheap, branch-free SAT
 simplifications: empty-clause detection, unit propagation, and pure-literal
@@ -80,27 +80,27 @@ def hasPureLiteral {n : Nat} (f : CNF n) : Bool :=
     (pos && !neg) || (neg && !pos))
 
 /--
-The first Stage1761 obstruction signal: no empty clause, no unit clause, and no
+The first the local audit obstruction signal: no empty clause, no unit clause, and no
 pure literal.  This is a candidate-killer smoke test, not a hardness claim.
 -/
 def noCheapSimplificationSignal {n : Nat} (f : CNF n) : Bool :=
   !hasEmptyClause f && !hasUnitClause f && !hasPureLiteral f
 
-/-- Proposition wrapper for the computable Stage1761 smoke-test signal. -/
+/-- Proposition wrapper for the computable the local audit smoke-test signal. -/
 def NoCheapSimplificationSignal {n : Nat} (f : CNF n) : Prop :=
   noCheapSimplificationSignal f = true
 
 /-!
-Stage1763 first structural simplifier surface.
+the local audit first structural simplifier surface.
 
 This branch-free cleanup pass captures two standard polynomial-time CNF
 normalizations: duplicate-literal deletion inside each clause and deletion of
 tautological clauses containing a variable with both polarities.  The pass is
 size non-increasing by construction and gives the general SAT-collapse lane a concrete first
-operation surface to test against the Stage1761 smoke pair.
+operation surface to test against the the local audit smoke pair.
 -/
 
-/-- First Stage1763 branch-free simplifier operations. -/
+/-- First the local audit branch-free simplifier operations. -/
 inductive BranchFreeCleanupOp where
   | deleteDuplicateLiterals
   | deleteTautologicalClauses
@@ -139,11 +139,11 @@ def branchFreeCleanupFixedPointSignal {n : Nat} (f : CNF n) : Bool :=
   decide (branchFreeCleanupStep f = f)
 
 /--
-Proposition wrapper for formulas where the first Stage1763 cleanup pass makes no
+Proposition wrapper for formulas where the first the local audit cleanup pass makes no
 progress.  This is a candidate-killer fixed-point test, not a hardness claim.
 -/
 def BranchFreeCleanupFixedPoint {n : Nat} (f : CNF n) : Prop :=
   branchFreeCleanupFixedPointSignal f = true
 
 end CNFModel
-end PvNP
+end CertifiedAffine

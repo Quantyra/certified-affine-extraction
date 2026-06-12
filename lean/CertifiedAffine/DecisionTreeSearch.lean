@@ -1,10 +1,10 @@
 import Std
-import PvNP.BasicDefs
-import PvNP.DecisionTreeModel
-import PvNP.CNFData
-import PvNP.CNFDataSearchBridge
+import CertifiedAffine.BasicDefs
+import CertifiedAffine.DecisionTreeModel
+import CertifiedAffine.CNFData
+import CertifiedAffine.CNFDataSearchBridge
 
-namespace PvNP
+namespace CertifiedAffine
 namespace DecisionTreeSearch
 
 open Basic
@@ -178,4 +178,4 @@ def SearchCorrectPreferred (F : CNF) (a : Assignment F.vcount) (out : SearchOutp
     { witness := out.witness }
 
 end DecisionTreeSearch
-end PvNP
+end CertifiedAffine

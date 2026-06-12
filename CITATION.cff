@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: "Fredriksen"
     given-names: "Daniel"
-abstract: "Lean 4 artifact for certified affine-structure extraction, GF(2) semantic preservation, and proof-logging route control for Tseitin-style CNF families."
+abstract: "Lean 4 artifact for certified affine-structure extraction, GF(2) semantic preservation, and certified preprocessing for Tseitin-style CNF families."
 keywords:
   - Lean 4
   - SAT

@@ -1,8 +1,8 @@
 import Std
-import PvNP.BasicDefs
-import PvNP.CNFModel
+import CertifiedAffine.BasicDefs
+import CertifiedAffine.CNFModel
 
-namespace PvNP
+namespace CertifiedAffine
 namespace CNFData
 
 /-!
@@ -20,4 +20,4 @@ def cnfSat (F : CNFData) (a : Assignment F) : Prop :=
   CNFModel.cnfSat a F.clauses
 
 end CNFData
-end PvNP
+end CertifiedAffine

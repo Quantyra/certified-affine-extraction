@@ -1,6 +1,6 @@
 import Std
 
-namespace PvNP
+namespace CertifiedAffine
 namespace DecisionTreeModel
 
 /-!
@@ -23,4 +23,4 @@ def leaves {n : Nat} : DT n -> Nat
   | DT.node _ t f => leaves t + leaves f
 
 end DecisionTreeModel
-end PvNP
+end CertifiedAffine

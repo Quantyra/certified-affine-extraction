@@ -1,9 +1,9 @@
 import Std
-import PvNP.CNFModel
-import PvNP.CNFModelParityBridge
-import PvNP.ResoplusPDT
+import CertifiedAffine.CNFModel
+import CertifiedAffine.CNFModelParityBridge
+import CertifiedAffine.ResoplusPDT
 
-namespace PvNP
+namespace CertifiedAffine
 namespace CNFModelLiftBridge
 
 open ResoplusPDT
@@ -32,4 +32,4 @@ def cnfModelLiftSearchRel {n b : Nat} (hb : 0 < b) (phi : CNFModel.CNF n) :
   CNFModelParityBridge.cnfModelSearchRel (liftCNF hb phi)
 
 end CNFModelLiftBridge
-end PvNP
+end CertifiedAffine

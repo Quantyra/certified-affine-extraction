@@ -1,8 +1,8 @@
 import Std
 import Mathlib.Data.List.Perm.Basic
-import PvNP.BasicDefs
+import CertifiedAffine.BasicDefs
 
-namespace PvNP
+namespace CertifiedAffine
 namespace ResoplusPDT
 
 open Basic
@@ -3187,5 +3187,5 @@ noncomputable def
       normalization := htot.normalization }
 
 end ResoplusPDT
-end PvNP
+end CertifiedAffine
 

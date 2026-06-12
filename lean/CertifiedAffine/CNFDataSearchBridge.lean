@@ -1,7 +1,7 @@
 import Std
-import PvNP.CNFData
+import CertifiedAffine.CNFData
 
-namespace PvNP
+namespace CertifiedAffine
 namespace CNFDataSearchBridge
 
 /-- A search output carries a witness (placeholder index). -/
@@ -19,4 +19,4 @@ def SearchCorrect_of_CNFData (F : CNFData.CNFData)
   SearchCorrect F a out
 
 end CNFDataSearchBridge
-end PvNP
+end CertifiedAffine

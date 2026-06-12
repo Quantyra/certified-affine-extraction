@@ -4,7 +4,7 @@ This repository is a Lean 4 artifact for certified affine-structure extraction
 from CNF and GF(2) semantic preservation for scoped Tseitin-style families.
 
 This is the curated public artifact.  It intentionally excludes the broader
-private planning history and speculative research-lane notes.
+private planning history and speculative research notes.
 
 ## Headline Theorem Surface
 
@@ -18,7 +18,7 @@ private planning history and speculative research-lane notes.
 - `TseitinCycleGF2NormalizationSurface_resourceCounts`: resource accounting
   with `expandedClauseCount = n * 8` and `equationCount = n`.
 
-The audit surface is `lean/PvNP/Audit.lean`.
+The audit surface is `lean/CertifiedAffine/Audit.lean`.
 
 Supporting documentation:
 
@@ -29,14 +29,14 @@ Supporting documentation:
 ## Build
 
 ```bash
-lake build PvNP.TseitinCNFData
-lake env lean lean/PvNP/Audit.lean
+lake build
+lake env lean lean/CertifiedAffine/Audit.lean
 ```
 
 The pinned Lean/mathlib dependencies are carried by `lean-toolchain` and
 `lake-manifest.json`.
 
-CI runs the same build and audit commands from a clean checkout.
+CI runs the full build and audit commands from a clean checkout.
 
 ## Non-Claims
 

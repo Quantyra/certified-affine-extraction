@@ -1,7 +1,7 @@
 import Std
-import PvNP.BasicDefs
+import CertifiedAffine.BasicDefs
 
-namespace PvNP
+namespace CertifiedAffine
 namespace TseitinModel
 
 open Basic
@@ -1748,6 +1748,6 @@ theorem mapping_dtdepth_eq (m : Mapping) (F : Basic.CNF) :
   simpa using (m.dtdepth_matches F).symm
 
 end TseitinModel
-end PvNP
+end CertifiedAffine
 
 

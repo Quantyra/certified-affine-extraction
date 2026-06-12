@@ -1,8 +1,8 @@
 import Std
-import PvNP.CNFModel
-import PvNP.ResoplusPDT
+import CertifiedAffine.CNFModel
+import CertifiedAffine.ResoplusPDT
 
-namespace PvNP
+namespace CertifiedAffine
 namespace CNFModelParityBridge
 
 open ResoplusPDT
@@ -38,4 +38,4 @@ theorem cnfModelSearchRel_eq_cnfSearchRel {n : Nat} (phi : CNFModel.CNF n) :
   rfl
 
 end CNFModelParityBridge
-end PvNP
+end CertifiedAffine

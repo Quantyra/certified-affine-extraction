@@ -1,6 +1,6 @@
-import PvNP.CNFModel
+import CertifiedAffine.CNFModel
 
-namespace PvNP
+namespace CertifiedAffine
 namespace CNFResolution
 
 open CNFModel
@@ -576,4 +576,4 @@ theorem resolutionSizeFamilyLowerBoundPremise_of_sourceBoundary
   cert.lower_bound
 
 end CNFResolution
-end PvNP
+end CertifiedAffine

@@ -1,6 +1,6 @@
 import Std
 
-namespace PvNP
+namespace CertifiedAffine
 namespace Basic
 
 /-!
@@ -144,4 +144,4 @@ Explicit Resoplus size semantics stub (proof size).
 def ResoplusSizeSemantics (_F : CNF) : Type := Nat
 
 end Basic
-end PvNP
+end CertifiedAffine

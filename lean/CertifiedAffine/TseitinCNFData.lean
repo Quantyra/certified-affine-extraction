@@ -2,17 +2,17 @@ import Std
 import Mathlib.Data.List.Join
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Dedup
-import PvNP.BasicDefs
-import PvNP.CNFData
-import PvNP.CNFModel
-import PvNP.CNFResolution
-import PvNP.DecisionTreeSearch
-import PvNP.TseitinModel
-import PvNP.CNFModelParityBridge
-import PvNP.CNFModelLiftBridge
-import PvNP.ResoplusPDT
+import CertifiedAffine.BasicDefs
+import CertifiedAffine.CNFData
+import CertifiedAffine.CNFModel
+import CertifiedAffine.CNFResolution
+import CertifiedAffine.DecisionTreeSearch
+import CertifiedAffine.TseitinModel
+import CertifiedAffine.CNFModelParityBridge
+import CertifiedAffine.CNFModelLiftBridge
+import CertifiedAffine.ResoplusPDT
 
-namespace PvNP
+namespace CertifiedAffine
 namespace TseitinCNFData
 
 open Basic
@@ -1575,7 +1575,7 @@ def standardTseitinBSWThresholdFamilyMatch {Index : Type}
     (StandardTseitinResolutionFamilyTarget graph charge threshold))
 
 /--
-Descriptive source packet selected by Stage1679.  This is not a lower-bound import;
+Descriptive source packet selected by the local audit.  This is not a lower-bound import;
 it records the theorem shape that a later certificate must match.
 -/
 def standardTseitinBSWUrquhartSourcePacket :
@@ -2161,12 +2161,12 @@ def StandardTseitinBSWWidthSizeExplicitArithmeticExtraction.toWidthSizeConstantS
 
 /-- Locator for the inversion/base-conversion arithmetic following the BSW Theorem 3.5 proof. -/
 def standardTseitinBSWWidthSizeInversionBaseConversionLocator : String :=
-  "Invert the Stage1728 target W <= k + 2*d + 1 with " ++
+  "Invert the the local audit target W <= k + 2*d + 1 with " ++
   "d = ceil(sqrt(2*n*ln S(F))); track the W-k gap, ceiling/sqrt slack, " ++
   "natural-log to base-2 conversion, Nat floors, and eventual n0."
 
 /--
-Source-side inversion/base-conversion shell for the Stage1728 width-size target.
+Source-side inversion/base-conversion shell for the the local audit width-size target.
 
 This record does not prove real arithmetic locally.  It makes the contrapositive
 constant path auditable: from a minimum required width `W_min`, subtract the
@@ -2259,7 +2259,7 @@ constant.
 
 If the source bridge turns small-side expansion `c` into BSW middle-cut
 expansion at least `c * n / 3`, and the initial 3-regular Tseitin width plus
-Stage1729 slack cost six units total, then `c / 6` is the safe eventual linear gap
+the local audit slack cost six units total, then `c / 6` is the safe eventual linear gap
 coefficient after a large-enough cutoff.
 -/
 def StandardTseitinEdgeExpansionConstant.widthGapCoefficient
@@ -2277,14 +2277,14 @@ def StandardTseitinEdgeExpansionConstant.widthGapEventualThreshold
     (c : StandardTseitinEdgeExpansionConstant) : Nat :=
   36 * c.denominator
 
-/-- Locator for the Stage1730 width-gap coefficient extraction target. -/
+/-- Locator for the the local audit width-gap coefficient extraction target. -/
 def standardTseitinBSWWidthGapExpansionCoefficientLocator : String :=
   "Combine BSW Definition 4.3 and Theorem 4.4 with the selected small-side " ++
-  "edge-expansion constant, 3-regular initial width k <= 3, Stage1729 additive " ++
+  "edge-expansion constant, 3-regular initial width k <= 3, the local audit additive " ++
   "slack, and eventual cutoff; conservative coefficient target is c/6."
 
 /--
-Source-side width-gap coefficient shell for the Stage1729 inversion target.
+Source-side width-gap coefficient shell for the the local audit inversion target.
 
 The record exposes the intended coefficient arithmetic without claiming the
 source graph-expansion or BSW width theorem locally.  Given a small-side
@@ -2350,7 +2350,7 @@ def StandardTseitinBSWWidthGapExpansionCoefficient.toWidthGapAccountingTarget
     packet.toLinearWidthGapTarget
 
 /--
-Conservative rational small-side edge-expansion constant selected by the Stage1731
+Conservative rational small-side edge-expansion constant selected by the the local audit
 normalization audit.
 
 The source chain gives the real lower bound `(3 - 2 * sqrt 2) / 2` for
@@ -2375,7 +2375,7 @@ def standardTseitinMorgensternQ2WidthGapCoefficient :
 def standardTseitinMorgensternQ2WidthGapEventualThreshold : Nat :=
   standardTseitinMorgensternQ2EdgeExpansionConstant.widthGapEventualThreshold
 
-/-- Locator for the Stage1731 q = 2 expansion-constant normalization audit. -/
+/-- Locator for the the local audit q = 2 expansion-constant normalization audit. -/
 def standardTseitinMorgensternQ2ExpansionConstantNormalizationLocator : String :=
   "Morgenstern q = 2 gives 3-regular Ramanujan graphs with lambda_2 <= 2*sqrt(2); " ++
   "Alon-Milman gives cut-edge expansion at least (3 - 2*sqrt(2))/2 on small " ++
@@ -2387,7 +2387,7 @@ constant.
 
 This packet records the exact theorem chain needed to use
 `standardTseitinMorgensternQ2EdgeExpansionConstant` as the small-side
-edge-expansion constant feeding Stage1730.  The source facts remain explicit
+edge-expansion constant feeding the local audit.  The source facts remain explicit
 propositions; the packet only fixes the rational normalization and its local
 downstream coefficient.
 -/
@@ -2633,14 +2633,14 @@ theorem standardTseitinMorgensternQ2WidthGapEventualThreshold_eq :
     standardTseitinMorgensternQ2WidthGapEventualThreshold = 432 := rfl
 
 /--
-Consumption packet connecting the Stage1731 normalized q = 2 expansion constant to
-the Stage1730 width-gap coefficient surface.
+Consumption packet connecting the the local audit normalized q = 2 expansion constant to
+the the local audit width-gap coefficient surface.
 
 This is the first point where the selected `1 / 12` constant is routed into the
 BSW width-gap packet.  The remaining theorem truth stays source-side: the packet
 requires a bridge from the normalized edge-expansion source fact to the BSW
 middle-cut expansion source fact, plus the BSW width lower-bound, initial-width,
-and additive-slack sources already required by Stage1730.
+and additive-slack sources already required by the local audit.
 -/
 structure StandardTseitinMorgensternQ2NormalizedWidthGapConsumption where
   normalization :
@@ -2700,11 +2700,11 @@ def StandardTseitinMorgensternQ2NormalizedWidthGapConsumption.toWidthGapExpansio
     "The standard q=2/Morgenstern family is 3-regular, so initial Tseitin " ++
     "clauses have width at most 3."
   additive_slack_absorption_statement :=
-    "Absorb Stage1729 additive slack with the Stage1730 cutoff 36 * c.denominator."
+    "Absorb the local audit additive slack with the the local audit cutoff 36 * c.denominator."
   linear_width_gap_target_statement :=
     "With c = 1/12, the source-side eventual width-gap coefficient is 1/72."
   coefficient_decision_statement :=
-    "Stage1732 consumes the Stage1731 normalized constant through the Stage1730 width-gap packet."
+    "the local audit consumes the the local audit normalized constant through the the local audit width-gap packet."
   side_conditions_statement :=
     "Morgenstern, Alon-Milman, BSW, and eventual-threshold side conditions " ++
     "remain source-side."
@@ -2749,7 +2749,7 @@ structure StandardTseitinNaturalLogSizeCoefficient where
 Conservative natural-log size coefficient induced by the selected q = 2
 width-gap coefficient.
 
-Stage1732 gives `gamma = 1 / 72`.  Substituting into the Stage1729 inversion shape
+the local audit gives `gamma = 1 / 72`.  Substituting into the the local audit inversion shape
 `ln S >= (gap - 3)^2 / (8*n)` gives the source-side coefficient
 `gamma^2 / 8 = 1 / (72^2 * 8) = 1 / 41472`.
 -/
@@ -2768,20 +2768,20 @@ theorem standardTseitinMorgensternQ2NaturalLogSizeCoefficient_numerator :
 theorem standardTseitinMorgensternQ2NaturalLogSizeCoefficient_denominator :
     standardTseitinMorgensternQ2NaturalLogSizeCoefficient.denominator = 41472 := rfl
 
-/-- Arithmetic denominator check for the Stage1733 log-size coefficient. -/
+/-- Arithmetic denominator check for the the local audit log-size coefficient. -/
 theorem standardTseitinMorgensternQ2NaturalLogSizeCoefficient_denominator_arithmetic :
     72 * 72 * 8 = 41472 := by
   decide
 
-/-- Locator for the Stage1733 natural-log coefficient extraction. -/
+/-- Locator for the the local audit natural-log coefficient extraction. -/
 def standardTseitinMorgensternQ2NaturalLogSizeCoefficientLocator : String :=
-  "Substitute gamma = 1/72 into the Stage1729 inversion shell " ++
+  "Substitute gamma = 1/72 into the the local audit inversion shell " ++
   "ln S >= (gap - 3)^2/(8*n); the conservative natural-log " ++
   "coefficient is 1/(72^2*8) = 1/41472."
 
 /--
-Consumption packet connecting the Stage1732 width-gap accounting target to the
-Stage1733 natural-log coefficient.
+Consumption packet connecting the the local audit width-gap accounting target to the
+the local audit natural-log coefficient.
 
 The packet records the coefficient extraction and the source-side arithmetic
 obligations only.  It does not prove the BSW real-analysis step locally and it
@@ -2840,7 +2840,7 @@ structure StandardTseitinBaseTwoNatExponentCoefficient where
   positive : 0 < numerator /\ 0 < denominator
 
 /--
-Conservative base-2 Nat exponent coefficient induced by the Stage1733 natural-log
+Conservative base-2 Nat exponent coefficient induced by the the local audit natural-log
 coefficient.
 
 The selected denominator is unchanged from the natural-log coefficient:
@@ -2862,7 +2862,7 @@ theorem standardTseitinMorgensternQ2BaseTwoNatExponentCoefficient_numerator :
 theorem standardTseitinMorgensternQ2BaseTwoNatExponentCoefficient_denominator :
     standardTseitinMorgensternQ2BaseTwoNatExponentCoefficient.denominator = 41472 := rfl
 
-/-- The base-2 coefficient keeps the Stage1733 natural-log denominator. -/
+/-- The base-2 coefficient keeps the the local audit natural-log denominator. -/
 theorem standardTseitinMorgensternQ2BaseTwoNatExponentCoefficient_denominator_eq_log :
     standardTseitinMorgensternQ2BaseTwoNatExponentCoefficient.denominator =
       standardTseitinMorgensternQ2NaturalLogSizeCoefficient.denominator := rfl
@@ -2897,19 +2897,19 @@ theorem standardTseitinMorgensternQ2BaseTwoNatFormulaThreshold_cDen
     (standardTseitinMorgensternQ2BaseTwoNatFormulaThreshold
       n0 threshold sourceOmegaStatement).cDen = 41472 := rfl
 
-/-- Locator for the Stage1734 base-2/Nat threshold conversion target. -/
+/-- Locator for the the local audit base-2/Nat threshold conversion target. -/
 def standardTseitinMorgensternQ2BaseTwoNatThresholdConversionLocator : String :=
-  "Convert the Stage1733 natural-log target ln S >= n/41472 to the local " ++
+  "Convert the the local audit natural-log target ln S >= n/41472 to the local " ++
   "base-2 Nat exponent shape 2^((1*n)/41472), using ln 2 <= 1, Nat " ++
   "floor/division monotonicity, and eventual-threshold slack."
 
 /--
-Source-side conversion packet from the Stage1733 natural-log coefficient to the
+Source-side conversion packet from the the local audit natural-log coefficient to the
 local base-2 Nat threshold shape.
 
 This packet selects the conservative `cNum = 1`, `cDen = 41472` exponent
 coefficient and feeds the existing `base_two_nat_conversion_target` exposed by
-Stage1733/Stage1729.  The analytic logarithm conversion, Nat floor/division accounting,
+the paired audit checkpoints.  The analytic logarithm conversion, Nat floor/division accounting,
 and eventual-threshold slack remain explicit source propositions.  The
 graph/formula-size rescaling is intentionally left as a separate downstream
 target so it is not hidden inside base conversion.
@@ -3207,7 +3207,7 @@ theorem StandardTseitinMorgensternQ2ThresholdConservativity.toInterpretedSourceL
 Graph-vertex threshold obtained by evaluating a formula-size BSW threshold at
 the local 3-regular Tseitin clause-count scale.
 
-This is the Stage1704 constants-extraction boundary: it avoids treating
+This is the the local audit constants-extraction boundary: it avoids treating
 `threshold n` as interchangeable with `threshold (4 * n)` for an arbitrary
 threshold function.  The source formula-size theorem remains external; locally
 we only make the rescaling explicit.
@@ -3234,7 +3234,7 @@ theorem standardTseitinMorgensternQ2GraphRescaledThreshold_kind
   rfl
 
 /--
-Boundary packet for the Stage1704 graph-rescaled threshold route.  The original
+Boundary packet for the the local audit graph-rescaled threshold route.  The original
 source threshold is still the BSW formula-size threshold; only the derived local
 target is indexed by graph vertex count.
 -/
@@ -3327,21 +3327,21 @@ def standardTseitinMorgensternQ2GraphRescaledThresholdInterpretation
     exact hthreshold i
   parameters_eventual := heventual
 
-/-- Locator for the Stage1735 graph/formula threshold rescaling target. -/
+/-- Locator for the the local audit graph/formula threshold rescaling target. -/
 def standardTseitinMorgensternQ2GraphFormulaThresholdRescalingLocator : String :=
   "Use the existing graph-rescaled threshold boundary: the source formula-size " ++
   "threshold is evaluated at 4 * graph.n, while the local graph-vertex " ++
   "exponent keeps the selected cNum/cDen under monotonicity of n <= 4*n."
 
 /--
-Consumption packet connecting the Stage1734 base-2/Nat conversion to the existing
+Consumption packet connecting the the local audit base-2/Nat conversion to the existing
 graph-rescaled threshold boundary.
 
 The existing graph-rescaled theorem proves that a formula-size concrete lower
 bound transfers to the threshold `n ↦ formulaThreshold.threshold (n * 4)`
 without weakening `cNum/cDen`: the exponent at graph-vertex scale is smaller
 than the source exponent at formula-size scale because `n <= n * 4`.  This
-packet makes that consumption point explicit and discharges the Stage1734 deferred
+packet makes that consumption point explicit and discharges the the local audit deferred
 `graph_formula_rescaling_target` from the graph-rescaled concrete lower bound.
 -/
 structure StandardTseitinMorgensternQ2GraphFormulaThresholdRescaling
@@ -3607,7 +3607,7 @@ structure StandardTseitinBSWLineCountSourcePacket where
 Source-side concrete threshold packet for the original BSW formula-size
 threshold.
 
-This packet is deliberately parameterized by `formulaThreshold`: Stage1705 proved
+This packet is deliberately parameterized by `formulaThreshold`: the local audit proved
 the local graph-rescaling arithmetic, but the truth of the original formula-size
 concrete lower bound remains a source theorem obligation.
 -/
@@ -3689,18 +3689,18 @@ theorem standardTseitinMorgensternQ2GraphRescaledConcreteLowerBound_of_sourcePac
     standardTseitinMorgensternQ2GraphRescaledThreshold_concreteLowerBound
       formulaThreshold packet.source_threshold_concrete_lower_bound
 
-/-- Locator for the Stage1736 concrete-threshold reassembly audit. -/
+/-- Locator for the the local audit concrete-threshold reassembly audit. -/
 def standardTseitinMorgensternQ2ConcreteThresholdReassemblyLocator : String :=
-  "Reassemble the Stage1728-Stage1735 q=2 arithmetic packets against the Stage1726 " ++
+  "Reassemble the the linked audit range q=2 arithmetic packets against the the local audit " ++
   "BSW concrete-threshold decomposition; wrap the existing source packet " ++
   "boundary rather than claiming the external BSW theorem locally."
 
 /--
-Stage1736 reassembly record for the explicit q = 2 concrete-threshold lane.
+the local audit reassembly record for the explicit q = 2 concrete-threshold lane.
 
 The record keeps the old `StandardTseitinBSWConcreteThresholdDecomposition`
-visible as an audit object while routing the checked Stage1728-Stage1735 packet chain
-through Stage1735's graph/formula threshold rescaling packet.  This intentionally
+visible as an audit object while routing the checked the linked audit range packet chain
+through the local audit's graph/formula threshold rescaling packet.  This intentionally
 wraps the monolithic source packet; it does not remove the remaining
 source-side BSW, expansion, real-analysis, base-conversion, or eventual
 threshold obligations stored in the nested packets.
@@ -3898,9 +3898,9 @@ This record does not prove Morgenstern, Ramanujan expansion, or the BSW theorem
 locally. It names the source facts and requires one source-side assembly
 implication from the source citation packet, structured line-count/trace-count
 alignment packet, graph-vertex parameter match, and threshold-conservativity
-packet to the formula-size source-line bound. The checked Stage1703 route then
+packet to the formula-size source-line bound. The checked the local audit route then
 downgrades that formula-size threshold to the interpreted graph-vertex
-threshold expected by the Stage1695 conversion route.
+threshold expected by the the local audit conversion route.
 -/
 structure StandardTseitinMorgensternQ2SourceTracePremiseDecomposition
     {Index : Type}
@@ -3956,7 +3956,7 @@ def StandardTseitinMorgensternQ2SourceTracePremiseDecomposition.toTraceLineLower
 /--
 Reduced source-trace packet for the graph-rescaled q = 2 route.
 
-Once Stage1736 reassembly fixes the graph-rescaled threshold, the preferred route
+Once the local audit reassembly fixes the graph-rescaled threshold, the preferred route
 does not need the fully general source-trace decomposition fields for an
 arbitrary threshold interpretation.  The selected source packet and
 line-count/trace-count alignment are local metadata, and the graph/formula
@@ -4045,7 +4045,7 @@ def StandardTseitinMorgensternQ2GraphRescaledSourceTracePremise.toTraceLineLower
         graph_hardening odd_charge)
 
 /--
-Stage1742 source-boundary packet for the selected Morgenstern q = 2 BSW
+the local audit source-boundary packet for the selected Morgenstern q = 2 BSW
 formula-threshold source-line lower bound.
 
 The graph-family, odd-charge, selected line-count alignment, local encoding,
@@ -4130,7 +4130,7 @@ def StandardTseitinMorgensternQ2FormulaThresholdSourceLineBoundSource.toGraphRes
       graph charge threshold reassembly where
   source_citation_packet := packet.source_citation_packet
   field_reduction_statement :=
-    "Stage1742: graph, charge, selected alignment, local formula encoding, " ++
+    "the local audit: graph, charge, selected alignment, local formula encoding, " ++
     "proof-system match, and threshold reassembly are supplied by existing " ++
     "packets; only the BSW formula-threshold source theorem application " ++
     "remains external."
@@ -4149,7 +4149,7 @@ def StandardTseitinMorgensternQ2FormulaThresholdSourceLineBoundSource.toGraphRes
         packet.bsw_formula_threshold_source_line_bound_source_holds
 
 /--
-Stage1743 decomposition of the final BSW theorem-application source proposition.
+the local audit decomposition of the final BSW theorem-application source proposition.
 
 This packet does not prove any BSW subtheorem locally.  It records the smallest
 useful source split found by the obstruction audit: the Tseitin width lower
@@ -4212,7 +4212,7 @@ def StandardTseitinMorgensternQ2BSWSourceTheoremApplicationDecomposition.toFormu
       graph charge threshold reassembly where
   source_citation_packet := packet.source_citation_packet
   bsw_source_statement :=
-    "Stage1743 decomposed BSW source application: Tseitin width lower bound, " ++
+    "the local audit decomposed BSW source application: Tseitin width lower bound, " ++
     "size-width conversion, and formula-threshold instantiation."
   source_locator_statement :=
     packet.width_lower_bound_locator ++ "; " ++
@@ -4228,8 +4228,8 @@ def StandardTseitinMorgensternQ2BSWSourceTheoremApplicationDecomposition.toFormu
   threshold_statement :=
     "Formula threshold is supplied by q=2 concrete threshold reassembly."
   prerequisite_classification_statement :=
-    "Stage1743 splits only the external source proposition; local prerequisites " ++
-    "remain supplied by Stage1739-Stage1742 packets."
+    "the local audit splits only the external source proposition; local prerequisites " ++
+    "remain supplied by the linked audit range packets."
   remaining_source_obligation_statement :=
     packet.decomposition_obstruction_statement
   bsw_formula_threshold_source_line_bound_source :=
@@ -4254,7 +4254,7 @@ def StandardTseitinMorgensternQ2BSWSourceTheoremApplicationDecomposition.toFormu
         hsource.2.2
 
 /--
-Stage1744 decomposition of the BSW Tseitin width lower-bound source fact.
+the local audit decomposition of the BSW Tseitin width lower-bound source fact.
 
 This keeps BSW Theorem 4.4 external, but splits the width source proposition
 into the BSW Tseitin-formula definition match, the BSW expansion-definition
@@ -4377,7 +4377,7 @@ def StandardTseitinMorgensternQ2BSWWidthLowerBoundSourceDecomposition.toBSWSourc
         hthreshold
 
 /--
-Stage1748 decomposition of the BSW Theorem 4.4 width source fact.
+the local audit decomposition of the BSW Theorem 4.4 width source fact.
 
 The theorem-application layer is locally saturated, so the next useful source
 split moves inside the remaining BSW Theorem 4.4 truth.  This packet records
@@ -4487,10 +4487,10 @@ def StandardTseitinMorgensternQ2BSWTheorem44WidthKernelSourceDecomposition.toBSW
           hthreshold }
 
 /--
-Stage1750 decomposition of the BSW Section 6.1 proper-subset satisfiability and
+the local audit decomposition of the BSW Section 6.1 proper-subset satisfiability and
 odd-charge contradiction source facts.
 
-The first reducible branch below the Stage1748 Theorem 4.4 width kernel is the
+The first reducible branch below the the local audit Theorem 4.4 width kernel is the
 Tseitin-specific parity-subfamily lane.  This packet keeps the BSW Section 5
 and other Section 6.1 obligations unchanged while splitting the contradiction
 and proper-subset satisfiability facts into the source components used by the
@@ -4594,13 +4594,13 @@ def StandardTseitinMorgensternQ2BSWProperSubsetSatisfiabilitySourceDecomposition
           hboundary }
 
 /--
-Stage1751 decomposition of the BSW odd-charge inconsistency source fact.
+the local audit decomposition of the BSW odd-charge inconsistency source fact.
 
 The local Lean side proves that an odd total charge makes the standard Tseitin
 CNF unsatisfiable by folding all vertex equations and using double-counted
 edge incidence.  This packet narrows the remaining source boundary to the
 model-match step from that local standard-CNF unsatisfiability statement to
-the BSW Section 6.1 odd-charge inconsistency fact consumed by Stage1750.
+the BSW Section 6.1 odd-charge inconsistency fact consumed by the local audit.
 -/
 structure StandardTseitinMorgensternQ2BSWOddChargeInconsistencySourceDecomposition
     {Index : Type} (graph : Index -> StandardTseitinGraph)
@@ -4668,7 +4668,7 @@ def StandardTseitinMorgensternQ2BSWOddChargeInconsistencySourceDecomposition.toB
             hodd) }
 
 /--
-Stage1752 decomposition of the BSW charge-flip source fact.
+the local audit decomposition of the BSW charge-flip source fact.
 
 The local Lean side now records the charge-update arithmetic used by the
 selected singleton-zero q = 2 charge packet: flipping vertex zero turns the
@@ -4747,7 +4747,7 @@ def StandardTseitinMorgensternQ2BSWChargeFlipSourceDecomposition.toBSWOddChargeI
               hrestrict } }
 
 /--
-Stage1753 decomposition of the BSW flipped-instance satisfiability source fact.
+the local audit decomposition of the BSW flipped-instance satisfiability source fact.
 
 For the selected singleton-zero q = 2 charge packet, the zero-flipped local
 instance is the all-false charge instance, and the all-false edge assignment
@@ -4824,7 +4824,7 @@ def StandardTseitinMorgensternQ2BSWFlippedInstanceSatisfiabilitySourceDecomposit
                   hrestrict } } }
 
 /--
-Stage1754 decomposition of the BSW proper-subfamily restriction source fact.
+the local audit decomposition of the BSW proper-subfamily restriction source fact.
 
 The local Lean side can show ordinary CNF-satisfaction monotonicity: any
 assignment satisfying a full clause list also satisfies a clause subfamily.  The
@@ -4929,7 +4929,7 @@ def StandardTseitinMorgensternQ2BSWProperSubfamilyRestrictionSourceDecomposition
                         hrestrict) } } } }
 
 /--
-Stage1755 decomposition of the BSW parity-sensitivity source fact.
+the local audit decomposition of the BSW parity-sensitivity source fact.
 
 The local Lean side proves target sensitivity for the standard Tseitin vertex
 CNF: any assignment satisfying a vertex parity target cannot satisfy the same
@@ -5018,7 +5018,7 @@ def StandardTseitinMorgensternQ2BSWParitySensitivitySourceDecomposition.toBSWPro
                               hboundary } } } } } }
 
 /--
-Stage1756 decomposition of the BSW Tseitin axiom-compatibility source fact.
+the local audit decomposition of the BSW Tseitin axiom-compatibility source fact.
 
 The local Lean side proves that each standard vertex parity clause is present
 in the direct Res(oplus) parity formula and is semantically equivalent, under
@@ -5119,7 +5119,7 @@ def StandardTseitinMorgensternQ2BSWAxiomCompatibilitySourceDecomposition.toBSWPa
     proper_subfamily_source := properSubfamilySource }
 
 /--
-Stage1757 decomposition of the BSW boundary-expansion source fact.
+the local audit decomposition of the BSW boundary-expansion source fact.
 
 The local Lean side supplies the selected q = 2 edge-expansion family through
 `StandardTseitinMorgensternQ2GraphFamilyHardening`.  This packet keeps the BSW
@@ -5224,9 +5224,9 @@ def StandardTseitinMorgensternQ2BSWBoundaryExpansionSourceDecomposition.toBSWAxi
     parity_sensitivity_source := paritySensitivitySource }
 
 /--
-Stage1758 audit of the BSW width-expansion strategy source fact.
+the local audit audit of the BSW width-expansion strategy source fact.
 
-After Stage1750-Stage1757, the Tseitin-specific sibling obligations in the BSW
+After the linked audit range, the Tseitin-specific sibling obligations in the BSW
 Theorem 4.4 width kernel have local decomposition packets.  The remaining
 `bsw_width_expansion_strategy_source` is still the source-side Section 5 proof
 strategy rather than a local Tseitin semantic fact.  This packet records that
@@ -5328,7 +5328,7 @@ def StandardTseitinMorgensternQ2BSWWidthExpansionStrategySourceBoundary.toBSWBou
     axiom_compatibility_source := axiomCompatibilitySource }
 
 /--
-Stage1745 decomposition of the BSW size-width conversion source fact.
+the local audit decomposition of the BSW size-width conversion source fact.
 
 The selected q = 2 lane continues to use the general-resolution BSW
 Theorem 3.5/Corollary 3.6 route already stored in the concrete-threshold
@@ -5472,7 +5472,7 @@ def StandardTseitinMorgensternQ2BSWSizeWidthConversionSourceDecomposition.toBSWW
         hthreshold
 
 /--
-Stage1746 decomposition of the BSW formula-threshold instantiation source fact.
+the local audit decomposition of the BSW formula-threshold instantiation source fact.
 
 The selected theorem-application lane should not carry a fresh threshold fact
 when the q = 2 concrete-threshold reassembly packet already records the
@@ -5563,7 +5563,7 @@ Narrow source-side shell for the selected Morgenstern q = 2 BSW witness lane.
 
 The shell carries source-side graph data directly as `StandardTseitinGraph`,
 avoiding the old `GraphEncodingData` convention.  Its proof obligations are
-exactly the five remaining fields from the Stage1688 external BSW certificate
+exactly the five remaining fields from the the local audit external BSW certificate
 premise record; no extra lower-bound proposition is introduced here.
 -/
 structure StandardTseitinMorgensternQ2SourceFamilyShell where
@@ -6314,7 +6314,7 @@ theorem edgeAt_allFin_map_eq_edges
 
 /--
 The local finite-index incident list has the same length as the graph-level
-incident edge list.  This is the reusable locality bridge behind the Stage1776
+incident edge list.  This is the reusable locality bridge behind the the local audit
 uniform cycle accounting theorem.
 -/
 theorem incidentIndices_length_eq_degree
@@ -6463,7 +6463,7 @@ theorem fourCycle_cnfResolution_formula_eq_data_clauses :
   rfl
 
 /--
-Stage1761 first structural-simplification smoke target.
+the local audit first structural-simplification smoke target.
 
 The concrete three-cycle Tseitin CNF has no empty clause, no unit clause, and
 no pure literal under the computable `CNFModel` cheap-simplification signal.
@@ -6476,7 +6476,7 @@ theorem threeCycle_tseitin_noCheapSimplificationSignal :
   native_decide
 
 /--
-Stage1761 symmetric finite smoke target for the four-cycle Tseitin CNF.
+the local audit symmetric finite smoke target for the four-cycle Tseitin CNF.
 
 The same cheap simplification signal is absent here as well, giving the general SAT-collapse
 algorithmic lane a second concrete adversarial input before any asymptotic
@@ -6488,7 +6488,7 @@ theorem fourCycle_tseitin_noCheapSimplificationSignal :
   native_decide
 
 /--
-Stage1763 first structural-simplifier fixed-point certificate for the concrete
+the local audit first structural-simplifier fixed-point certificate for the concrete
 three-cycle Tseitin CNF.  Duplicate-literal deletion plus tautological-clause
 deletion makes no progress on this smoke input.
 -/
@@ -6500,7 +6500,7 @@ theorem threeCycle_tseitin_branchFreeCleanupFixedPoint :
   native_decide
 
 /--
-Stage1763 first structural-simplifier fixed-point certificate for the concrete
+the local audit first structural-simplifier fixed-point certificate for the concrete
 four-cycle Tseitin CNF.  This symmetric smoke input is also already fixed by
 the branch-free cleanup pass.
 -/
@@ -6512,13 +6512,13 @@ theorem fourCycle_tseitin_branchFreeCleanupFixedPoint :
   native_decide
 
 /-!
-Stage1765 recognized GF(2) normalization candidate.
+the local audit recognized GF(2) normalization candidate.
 
 This is deliberately not an arbitrary-CNF SAT algorithm.  The operation is
 guarded by recognition: for Tseitin instances whose graph encoding is known,
 the expanded CNF vertex clauses are represented by the compact parity-equation
 formula already present in the local Res(oplus) layer.  The first measurable
-test is whether this algebraic representation makes progress on the Stage1761/Stage1763
+test is whether this algebraic representation makes progress on the the paired audit checkpoints
 smoke inputs where syntactic cleanup was fixed.
 -/
 
@@ -6540,7 +6540,7 @@ def RecognizedGF2NormalizationSurface.equationCount {m : Nat}
 /--
 Correctness invariant required of the recognized GF(2) normalization surface.
 
-Stage1765 records this as the semantic standard: compact equations must preserve
+the local audit records this as the semantic standard: compact equations must preserve
 the satisfiability semantics of the expanded CNF for every assignment.  Concrete
 compression below is a progress test; a future gate should push more of this
 invariant into reusable checked theorems for broader recognized families.
@@ -6564,13 +6564,13 @@ def recognizedTseitinGF2SurfaceFromEncoding
   { expandedCNF := TseitinCNFFormulaFromEncoding enc charge
     compactGF2 := TseitinParityFormulaFromEncoding enc charge }
 
-/-- Stage1765 GF(2) surface for the three-cycle smoke input. -/
+/-- the local audit GF(2) surface for the three-cycle smoke input. -/
 def threeCycleGF2NormalizationSurface :
     RecognizedGF2NormalizationSurface threeCycleGraph.m :=
   recognizedTseitinGF2SurfaceFromEncoding
     TseitinModel.encoding_three_cycle threeCycleCharge
 
-/-- Stage1765 GF(2) surface for the four-cycle smoke input. -/
+/-- the local audit GF(2) surface for the four-cycle smoke input. -/
 def fourCycleGF2NormalizationSurface :
     RecognizedGF2NormalizationSurface fourCycleGraph.m :=
   recognizedTseitinGF2SurfaceFromEncoding
@@ -6607,7 +6607,7 @@ theorem fourCycle_tseitin_gf2CompressionProgress :
   native_decide
 
 /-!
-Stage1766 semantic-preservation gate.
+the local audit semantic-preservation gate.
 
 Compression is only useful as an algorithmic candidate if the compact GF(2)
 view agrees with the expanded CNF under the same assignments.  The following
@@ -6697,9 +6697,9 @@ theorem fourCycle_tseitin_gf2SemanticPreservation :
       (TseitinModel.encoding_cycle_derived 4 (by decide)) fourCycleCharge
 
 /-!
-Stage1767 GF(2) elimination witness gate.
+the local audit GF(2) elimination witness gate.
 
-After Stage1765 compressed recognized Tseitin CNFs into parity equations and Stage1766
+After the local audit compressed recognized Tseitin CNFs into parity equations and the local audit
 proved assignment-level preservation, this gate records the first checked
 algorithmic output contract.  The operation is deliberately narrow: sum all
 GF(2) equations.  If the variable side cancels to zero while the right-hand
@@ -6898,9 +6898,9 @@ theorem fourCycle_tseitin_expandedCNFUnsat_from_gf2Contradiction :
     fourCycle_tseitin_gf2ContradictionOutput
 
 /-!
-Stage1768 GF(2) recognition and hybrid-boundary gate.
+the local audit GF(2) recognition and hybrid-boundary gate.
 
-Stage1765-Stage1767 prove that known Tseitin parity structure can be compressed,
+the linked audit range prove that known Tseitin parity structure can be compressed,
 preserved, and refuted by a compact GF(2) contradiction scan.  This gate
 separates that useful subroutine from arbitrary-CNF claims: recognition now
 starts from CNF blocks certified as permutations of parity-generated blocks,
@@ -7286,12 +7286,12 @@ theorem gf2ResidualControl_coreDoesNotDecideExpanded (m : Nat) :
   cases hl
 
 /-!
-Stage1769 computable parity-block syntactic recognizer gate.
+the local audit computable parity-block syntactic recognizer gate.
 
-Stage1768 accepted parity-block certificates.  This gate adds the first computable
+the local audit accepted parity-block certificates.  This gate adds the first computable
 recognition signal: given a candidate CNF block and a candidate parity support,
 check whether the block is a clause-list permutation of the parity-generated
-CNF expansion.  Successful recognition produces the Stage1768 certificate, while
+CNF expansion.  Successful recognition produces the the local audit certificate, while
 unrecognized or out-of-scope clauses remain explicit residual CNF.
 -/
 
@@ -7329,7 +7329,7 @@ structure SyntacticRecognizedParityBlock (m : Nat) where
   spec : ParityBlockSyntacticSpec m
   recognitionSignal : parityBlockRecognitionSignal blockCNF spec = true
 
-/-- A syntactically recognized block induces the Stage1768 certificate object. -/
+/-- A syntactically recognized block induces the the local audit certificate object. -/
 def SyntacticRecognizedParityBlock.toRecognized {m : Nat}
     (b : SyntacticRecognizedParityBlock m) :
     RecognizedParityCNFBlock m :=
@@ -7362,7 +7362,7 @@ structure SyntacticGF2HybridDecomposition (m : Nat) where
   blocks : List (SyntacticRecognizedParityBlock m)
   residualCNF : CNFModel.CNF m
 
-/-- Convert a syntactic decomposition into the Stage1768 semantic decomposition. -/
+/-- Convert a syntactic decomposition into the the local audit semantic decomposition. -/
 def SyntacticGF2HybridDecomposition.toGF2HybridDecomposition {m : Nat}
     (d : SyntacticGF2HybridDecomposition m) :
     GF2HybridDecomposition m where
@@ -7593,9 +7593,9 @@ theorem syntacticGF2ResidualControl_coreDoesNotDecideExpanded (m : Nat) :
   cases hl
 
 /-!
-Stage1770 support-inference and residual-splitter gate.
+the local audit support-inference and residual-splitter gate.
 
-Stage1769 recognizes a supplied block/support/charge.  This gate adds a first
+the local audit recognizes a supplied block/support/charge.  This gate adds a first
 formula-level splitter: scan the input in fixed eight-clause windows, infer a
 candidate support from the first clause of each window, try both parity charges,
 and keep every failed window or leftover clause as explicit residual CNF.
@@ -7773,9 +7773,9 @@ theorem arityFourFailedWindowResidualControlCounts_threeCycle :
   native_decide
 
 /-!
-Stage1771 support-grouping recognizer gate.
+the local audit support-grouping recognizer gate.
 
-Stage1770 still assumed fixed eight-clause windows.  This gate groups clauses by
+the local audit still assumed fixed eight-clause windows.  This gate groups clauses by
 their inferred support key across the whole input, attempts arity-four parity
 recognition on each complete support group, and returns every failed group as
 explicit residual CNF.
@@ -7968,9 +7968,9 @@ theorem threeCycle_tseitin_supportGroupedPartialNoiseInputPermutation :
   native_decide
 
 /-!
-Stage1772 canonical support-key and fingerprint recognizer gate.
+the local audit canonical support-key and fingerprint recognizer gate.
 
-Stage1771 groups by first-occurrence support keys and uses `List.Perm` as the
+the local audit groups by first-occurrence support keys and uses `List.Perm` as the
 executable block recognizer.  This gate adds canonical support keys and
 canonical clause/block fingerprints.  The fingerprint recognizer is the scalable
 executable surface; the older permutation recognizer remains available as the
@@ -8031,7 +8031,7 @@ def canonicalClauseSupportVars {m : Nat}
   (sortFinByVal (c.map (fun l => l.var))).eraseDups
 
 /--
-Canonical support key for one ordinary CNF clause.  Unlike Stage1771's
+Canonical support key for one ordinary CNF clause.  Unlike the local audit's
 first-occurrence key, this key is invariant under literal reordering inside the
 clause.
 -/
@@ -8316,14 +8316,14 @@ theorem fourCycle_tseitin_canonicalLiteralReorderedResourceCounts :
       (fourCycle_tseitin_canonicalLiteralReorderedDecomposition.recognitionScanSize = 176) := by
   native_decide
 
-/-- Existing proof bridge still succeeds on the non-literal-reordered Stage1771 input. -/
+/-- Existing proof bridge still succeeds on the non-literal-reordered the local audit input. -/
 def threeCycle_tseitin_canonicalBridgeableDecomposition :
     SyntacticGF2HybridDecomposition threeCycleGraph.m :=
   splitArityFourParitySupportGroups
     threeCycle_tseitin_supportGroupingInterleavedInputCNF
 
 /--
-The proof-producing Stage1769 bridge remains available for canonical-grouped input
+The proof-producing the local audit bridge remains available for canonical-grouped input
 whose literal order is already compatible with generated parity clauses.
 -/
 theorem threeCycle_tseitin_canonicalBridgeableResourceCounts :
@@ -8331,7 +8331,7 @@ theorem threeCycle_tseitin_canonicalBridgeableResourceCounts :
       (threeCycle_tseitin_canonicalBridgeableDecomposition.residualClauseCount = 0) := by
   native_decide
 
-/-- Canonical decomposition with the Stage1771 incomplete two-variable residual group. -/
+/-- Canonical decomposition with the the local audit incomplete two-variable residual group. -/
 def threeCycle_tseitin_canonicalPartialNoiseDecomposition :
     CanonicalFingerprintGF2Decomposition threeCycleGraph.m :=
   splitArityFourParityCanonicalSupportGroups
@@ -8407,7 +8407,7 @@ theorem threeCycle_tseitin_canonicalConflictingSupportResourceCounts :
       (threeCycle_tseitin_canonicalConflictingSupportDecomposition.residualClauseCount = 9) := by
   native_decide
 
-/-- Unary parity clause discovered during the Stage1771 noisy-control correction. -/
+/-- Unary parity clause discovered during the the local audit noisy-control correction. -/
 def threeCycle_tseitin_canonicalUnaryParityClause :
     CNFModel.Clause threeCycleGraph.m :=
   [{ var := Fin.mk 0 (by decide), sign := true }]
@@ -8426,14 +8426,14 @@ theorem threeCycle_tseitin_canonicalUnaryParityResourceCounts :
   native_decide
 
 /-!
-Stage1773 canonical-fingerprint semantic bridge gate.
+the local audit canonical-fingerprint semantic bridge gate.
 
-Stage1772 made canonical fingerprints the executable recognition surface, but a
+the local audit made canonical fingerprints the executable recognition surface, but a
 fingerprint match alone is not a semantic theorem.  This gate adds a
 proof-producing bridge object: a canonical-fingerprint block can feed the GF(2)
 semantic stack only when it also carries a direct block-level semantic
 certificate.  The first certified path is intentionally narrow and linear: take
-an existing Stage1769 syntactic certificate, reverse literal order inside every
+an existing the local audit syntactic certificate, reverse literal order inside every
 clause, and use the generic literal-reversal theorem above.
 -/
 
@@ -8689,14 +8689,14 @@ theorem threeCycle_tseitin_canonicalLiteralReorderedCertifiedSemanticPreservatio
   CanonicalSemanticCertifiedGF2Decomposition.emptyResidualSemanticPreservation
     threeCycle_tseitin_canonicalLiteralReorderedCertifiedDecomposition rfl a
 
-/-- The certified three-cycle bridge covers the Stage1772 splitter output up to clause order. -/
+/-- The certified three-cycle bridge covers the the local audit splitter output up to clause order. -/
 theorem threeCycle_tseitin_canonicalLiteralReorderedCertifiedMatchesSplitter :
     List.Perm
       threeCycle_tseitin_canonicalLiteralReorderedDecomposition.expandedCNF
       threeCycle_tseitin_canonicalLiteralReorderedCertifiedDecomposition.expandedCNF := by
   native_decide
 
-/-- The Stage1772 canonical three-cycle splitter output has checked certified GF(2) semantics. -/
+/-- The the local audit canonical three-cycle splitter output has checked certified GF(2) semantics. -/
 theorem threeCycle_tseitin_canonicalLiteralReorderedSplitterSemanticPreservation
     (a : CNFModel.Assignment threeCycleGraph.m) :
     CNFModel.cnfSat a
@@ -8717,7 +8717,7 @@ theorem threeCycle_tseitin_canonicalLiteralReorderedCertifiedInputPermutation :
       threeCycle_tseitin_canonicalLiteralReorderedInputCNF := by
   native_decide
 
-/-- Three-cycle Stage1773 bridge accounting. -/
+/-- Three-cycle the local audit bridge accounting. -/
 theorem threeCycle_tseitin_canonicalLiteralReorderedCertifiedResourceCounts :
     (threeCycle_tseitin_canonicalLiteralReorderedCertifiedDecomposition.coreExpandedClauseCount = 24) /\
       (threeCycle_tseitin_canonicalLiteralReorderedCertifiedDecomposition.coreEquationCount = 3) /\
@@ -8802,14 +8802,14 @@ theorem fourCycle_tseitin_canonicalLiteralReorderedCertifiedSemanticPreservation
   CanonicalSemanticCertifiedGF2Decomposition.emptyResidualSemanticPreservation
     fourCycle_tseitin_canonicalLiteralReorderedCertifiedDecomposition rfl a
 
-/-- The certified four-cycle bridge covers the Stage1772 splitter output up to clause order. -/
+/-- The certified four-cycle bridge covers the the local audit splitter output up to clause order. -/
 theorem fourCycle_tseitin_canonicalLiteralReorderedCertifiedMatchesSplitter :
     List.Perm
       fourCycle_tseitin_canonicalLiteralReorderedDecomposition.expandedCNF
       fourCycle_tseitin_canonicalLiteralReorderedCertifiedDecomposition.expandedCNF := by
   native_decide
 
-/-- The Stage1772 canonical four-cycle splitter output has checked certified GF(2) semantics. -/
+/-- The the local audit canonical four-cycle splitter output has checked certified GF(2) semantics. -/
 theorem fourCycle_tseitin_canonicalLiteralReorderedSplitterSemanticPreservation
     (a : CNFModel.Assignment fourCycleGraph.m) :
     CNFModel.cnfSat a
@@ -8830,7 +8830,7 @@ theorem fourCycle_tseitin_canonicalLiteralReorderedCertifiedInputPermutation :
       fourCycle_tseitin_canonicalLiteralReorderedInputCNF := by
   native_decide
 
-/-- Four-cycle Stage1773 bridge accounting. -/
+/-- Four-cycle the local audit bridge accounting. -/
 theorem fourCycle_tseitin_canonicalLiteralReorderedCertifiedResourceCounts :
     (fourCycle_tseitin_canonicalLiteralReorderedCertifiedDecomposition.coreExpandedClauseCount = 32) /\
       (fourCycle_tseitin_canonicalLiteralReorderedCertifiedDecomposition.coreEquationCount = 4) /\
@@ -8838,34 +8838,34 @@ theorem fourCycle_tseitin_canonicalLiteralReorderedCertifiedResourceCounts :
       (fourCycle_tseitin_canonicalLiteralReorderedCertifiedDecomposition.bridgeCertificateSize = 336) := by
   native_decide
 
-/-- Incomplete residual groups remain outside the Stage1773 empty-residual bridge. -/
+/-- Incomplete residual groups remain outside the the local audit empty-residual bridge. -/
 theorem threeCycle_tseitin_canonicalPartialNoise_not_emptyResidual :
     Not (threeCycle_tseitin_canonicalPartialNoiseDecomposition.hasEmptyResidual) := by
   change Not (threeCycle_tseitin_canonicalPartialNoiseDecomposition.residualCNF = [])
   native_decide
 
-/-- Missing-clause residual groups remain outside the Stage1773 empty-residual bridge. -/
+/-- Missing-clause residual groups remain outside the the local audit empty-residual bridge. -/
 theorem threeCycle_tseitin_canonicalMissingClause_not_emptyResidual :
     Not (threeCycle_tseitin_canonicalMissingClauseDecomposition.hasEmptyResidual) := by
   change Not (threeCycle_tseitin_canonicalMissingClauseDecomposition.residualCNF = [])
   native_decide
 
-/-- Duplicate-clause residual groups remain outside the Stage1773 empty-residual bridge. -/
+/-- Duplicate-clause residual groups remain outside the the local audit empty-residual bridge. -/
 theorem threeCycle_tseitin_canonicalDuplicateClause_not_emptyResidual :
     Not (threeCycle_tseitin_canonicalDuplicateClauseDecomposition.hasEmptyResidual) := by
   change Not (threeCycle_tseitin_canonicalDuplicateClauseDecomposition.residualCNF = [])
   native_decide
 
-/-- Conflicting-support residual groups remain outside the Stage1773 empty-residual bridge. -/
+/-- Conflicting-support residual groups remain outside the the local audit empty-residual bridge. -/
 theorem threeCycle_tseitin_canonicalConflictingSupport_not_emptyResidual :
     Not (threeCycle_tseitin_canonicalConflictingSupportDecomposition.hasEmptyResidual) := by
   change Not (threeCycle_tseitin_canonicalConflictingSupportDecomposition.residualCNF = [])
   native_decide
 
 /-!
-Stage1774 canonical-fingerprint certificate extraction gate.
+the local audit canonical-fingerprint certificate extraction gate.
 
-Stage1773 proved that a canonical block can feed the GF(2) stack once it carries an
+the local audit proved that a canonical block can feed the GF(2) stack once it carries an
 explicit semantic certificate.  This gate adds the first bounded extractor for
 such certificates.  The extractor checks canonical block fingerprints as a
 guard, then validates clause-level and literal-level coverage by finite scans.
@@ -8873,7 +8873,7 @@ It does not treat fingerprint equality alone as a theorem and it does not call
 `List.Perm` as the hidden scaling mechanism.
 -/
 
-/-- Bounded literal-membership scan used by Stage1774 certificate extraction. -/
+/-- Bounded literal-membership scan used by the local audit certificate extraction. -/
 def literalMemSignal {m : Nat}
     (l : CNFModel.Literal m) : CNFModel.Clause m -> Bool
   | [] => false
@@ -9048,7 +9048,7 @@ theorem blockClauseCoverageSignal_sound
 
 /--
 Two-sided bounded clause coverage proves direct CNF semantic preservation.
-This is the Stage1774 replacement for treating fingerprint equality as a theorem.
+This is the the local audit replacement for treating fingerprint equality as a theorem.
 -/
 theorem cnfSat_iff_of_blockClauseCoverageSignals
     {m : Nat} {source target : CNFModel.CNF m}
@@ -9120,7 +9120,7 @@ def extractCanonicalBlockFingerprintCertificate? {m : Nat}
   else
     none
 
-/-- Try to extract the Stage1774 semantic certificate for one canonical-fingerprint block. -/
+/-- Try to extract the the local audit semantic certificate for one canonical-fingerprint block. -/
 def CanonicalFingerprintRecognizedParityBlock.extractSemanticCertified? {m : Nat}
     (b : CanonicalFingerprintRecognizedParityBlock m) :
     Option (CanonicalSemanticCertifiedParityBlock m) :=
@@ -9170,18 +9170,18 @@ def CanonicalFingerprintGF2Decomposition.extractSemanticCertifiedOrResidual {m :
       { blocks := []
         residualCNF := d.expandedCNF }
 
-/-- Stage1774 extraction succeeds on the Stage1772 literal-reordered three-cycle splitter output. -/
+/-- the local audit extraction succeeds on the the local audit literal-reordered three-cycle splitter output. -/
 theorem threeCycle_tseitin_canonicalLiteralReorderedExtractionSucceeds :
     (threeCycle_tseitin_canonicalLiteralReorderedDecomposition.extractSemanticCertified?).isSome =
       true := by
   native_decide
 
-/-- Stage1774 extracted certified decomposition for the literal-reordered three-cycle output. -/
+/-- the local audit extracted certified decomposition for the literal-reordered three-cycle output. -/
 def threeCycle_tseitin_canonicalLiteralReorderedExtractedCertifiedDecomposition :
     CanonicalSemanticCertifiedGF2Decomposition threeCycleGraph.m :=
   threeCycle_tseitin_canonicalLiteralReorderedDecomposition.extractSemanticCertifiedOrResidual
 
-/-- Stage1774 extracted three-cycle certified decomposition preserves GF(2) semantics. -/
+/-- the local audit extracted three-cycle certified decomposition preserves GF(2) semantics. -/
 theorem threeCycle_tseitin_canonicalLiteralReorderedExtractedSemanticPreservation
     (a : CNFModel.Assignment threeCycleGraph.m) :
     CNFModel.cnfSat a
@@ -9199,7 +9199,7 @@ theorem threeCycle_tseitin_canonicalLiteralReorderedExtractedSemanticPreservatio
     CanonicalSemanticCertifiedGF2Decomposition.emptyResidualSemanticPreservation
       threeCycle_tseitin_canonicalLiteralReorderedExtractedCertifiedDecomposition hres a
 
-/-- Stage1774 extracted three-cycle certificate accounting. -/
+/-- the local audit extracted three-cycle certificate accounting. -/
 theorem threeCycle_tseitin_canonicalLiteralReorderedExtractedResourceCounts :
     (threeCycle_tseitin_canonicalLiteralReorderedExtractedCertifiedDecomposition.coreExpandedClauseCount = 24) /\
       (threeCycle_tseitin_canonicalLiteralReorderedExtractedCertifiedDecomposition.coreEquationCount = 3) /\
@@ -9207,18 +9207,18 @@ theorem threeCycle_tseitin_canonicalLiteralReorderedExtractedResourceCounts :
       (threeCycle_tseitin_canonicalLiteralReorderedExtractedCertifiedDecomposition.bridgeCertificateSize = 372) := by
   native_decide
 
-/-- Stage1774 extraction succeeds on the Stage1772 literal-reordered four-cycle splitter output. -/
+/-- the local audit extraction succeeds on the the local audit literal-reordered four-cycle splitter output. -/
 theorem fourCycle_tseitin_canonicalLiteralReorderedExtractionSucceeds :
     (fourCycle_tseitin_canonicalLiteralReorderedDecomposition.extractSemanticCertified?).isSome =
       true := by
   native_decide
 
-/-- Stage1774 extracted certified decomposition for the literal-reordered four-cycle output. -/
+/-- the local audit extracted certified decomposition for the literal-reordered four-cycle output. -/
 def fourCycle_tseitin_canonicalLiteralReorderedExtractedCertifiedDecomposition :
     CanonicalSemanticCertifiedGF2Decomposition fourCycleGraph.m :=
   fourCycle_tseitin_canonicalLiteralReorderedDecomposition.extractSemanticCertifiedOrResidual
 
-/-- Stage1774 extracted four-cycle certified decomposition preserves GF(2) semantics. -/
+/-- the local audit extracted four-cycle certified decomposition preserves GF(2) semantics. -/
 theorem fourCycle_tseitin_canonicalLiteralReorderedExtractedSemanticPreservation
     (a : CNFModel.Assignment fourCycleGraph.m) :
     CNFModel.cnfSat a
@@ -9236,7 +9236,7 @@ theorem fourCycle_tseitin_canonicalLiteralReorderedExtractedSemanticPreservation
     CanonicalSemanticCertifiedGF2Decomposition.emptyResidualSemanticPreservation
       fourCycle_tseitin_canonicalLiteralReorderedExtractedCertifiedDecomposition hres a
 
-/-- Stage1774 extracted four-cycle certificate accounting. -/
+/-- the local audit extracted four-cycle certificate accounting. -/
 theorem fourCycle_tseitin_canonicalLiteralReorderedExtractedResourceCounts :
     (fourCycle_tseitin_canonicalLiteralReorderedExtractedCertifiedDecomposition.coreExpandedClauseCount = 32) /\
       (fourCycle_tseitin_canonicalLiteralReorderedExtractedCertifiedDecomposition.coreEquationCount = 4) /\
@@ -10107,4 +10107,4 @@ def TseitinLiftedSearchRelFromMapping (G : Basic.Graph) (c : Charge)
     (b:=Basic.IP4.b) (by decide) B.data.clauses
 
 end TseitinCNFData
-end PvNP
+end CertifiedAffine

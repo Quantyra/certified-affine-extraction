@@ -9,7 +9,7 @@ affine-structure extraction from CNF.
   Tseitin family `encoding_cycle_derived n` under `1 < n`.
 - Uniform resource accounting for that direct surface:
   `expandedClauseCount = n * 8` and `equationCount = n`.
-- A guarded axiom audit for the exported theorem path in `lean/PvNP/Audit.lean`.
+- A guarded axiom audit for the exported theorem path in `lean/CertifiedAffine/Audit.lean`.
 - A finite canonical-fingerprint extractor scaffold retained as internal
   infrastructure for future compositionality work.
 
