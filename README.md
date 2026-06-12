@@ -1,5 +1,7 @@
 # Certified Affine Extraction
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20660863.svg)](https://doi.org/10.5281/zenodo.20660863)
+
 This repository is a Lean 4 artifact for certified affine-structure extraction
 from CNF and GF(2) semantic preservation for scoped Tseitin-style families.
 
