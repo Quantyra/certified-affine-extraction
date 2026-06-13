@@ -203,6 +203,9 @@ same-support fallback helper now tries the direct arity-three/four
 count-derived branch behind the legacy two-charge fast path, then an inferred
 support-size direct branch, with guarded soundness and syntactic-upgrade
 theorems for every successful return, before falling back to exhaustive search.
+The successful production fallback path now also has guarded semantic bridges:
+`class_of_recoverSameSupportGroupWithChargeSearchFallback` and
+`semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback`.
 The deterministic
 `recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm_supportCharges`
 theorem now proves that nonempty generated same-support components never need

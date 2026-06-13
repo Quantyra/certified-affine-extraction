@@ -9542,6 +9542,29 @@ theorem class_of_recoverTwoChargeSameSupportGroupPerm
   exact ParityEncoded.Class.cnf_perm hcorePerm hclassCore
 
 /--
+A successful residual-free local decomposition whose emitted canonical blocks
+upgrade to syntactic parity blocks yields a declarative semantic class witness.
+-/
+theorem class_of_decomposition_cover_toSyntacticOk
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hcover : List.Perm d.expandedCNF groupCNF)
+    (hresidual : d.hasEmptyResidual)
+    (hsyntactic : CanonicalBlocksToSyntacticOk d.blocks) :
+    ParityEncoded.Class m groupCNF d.coreGF2 := by
+  have hclassCore :
+      ParityEncoded.Class m d.coreCNF d.coreGF2 :=
+    class_of_canonicalFingerprintRecognizedBlocks_syntacticSignals_append
+      (CanonicalBlocksSyntacticSignals.of_toSyntacticOk hsyntactic)
+  have hres : d.residualCNF = [] := by
+    simpa [CanonicalFingerprintGF2Decomposition.hasEmptyResidual] using
+      hresidual
+  have hcorePerm : List.Perm d.coreCNF groupCNF := by
+    simpa [CanonicalFingerprintGF2Decomposition.expandedCNF, hres] using
+      hcover
+  exact ParityEncoded.Class.cnf_perm hcorePerm hclassCore
+
+/--
 Successful unguided same-support recovery from a single merged support group
 returns a local semantic class witness for that group's CNF component.
 -/
@@ -9643,6 +9666,71 @@ theorem class_of_recoverSingleMergedSupportGroupFromChargeSearchPerm
       subst groups
       simpa [recoverSingleMergedSupportGroupFromChargeSearchPerm?] using hrec)
 
+/--
+Any successful arity-three/four direct same-support fallback is semantically
+sound as a local CNF-to-GF(2) block.
+-/
+theorem class_of_recoverSameSupportGroupWithDirectChargeFallback
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithDirectChargeFallback? groupCNF = some d) :
+    ParityEncoded.Class m groupCNF d.coreGF2 := by
+  rcases recoverSameSupportGroupWithDirectChargeFallback_sound hrec with
+    ⟨hcover, hresidual⟩
+  exact
+    class_of_decomposition_cover_toSyntacticOk hcover hresidual
+      (recoverSameSupportGroupWithDirectChargeFallback_toSyntacticOk hrec)
+
+/--
+Any successful block-size-parameterized same-support fallback is semantically
+sound as a local CNF-to-GF(2) block.
+-/
+theorem class_of_recoverSameSupportGroupWithDirectBlockSizeFallback
+    {m : Nat} {groupCNF : CNFModel.CNF m} {blockSize : Nat}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGroupWithDirectBlockSizeFallback? groupCNF blockSize =
+        some d) :
+    ParityEncoded.Class m groupCNF d.coreGF2 := by
+  rcases recoverSameSupportGroupWithDirectBlockSizeFallback_sound hrec with
+    ⟨hcover, hresidual⟩
+  exact
+    class_of_decomposition_cover_toSyntacticOk hcover hresidual
+      (recoverSameSupportGroupWithDirectBlockSizeFallback_toSyntacticOk hrec)
+
+/--
+Any successful support-size-inferred same-support fallback is semantically
+sound as a local CNF-to-GF(2) block.
+-/
+theorem class_of_recoverSameSupportGroupWithDirectInferredBlockSizeFallback
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF =
+        some d) :
+    ParityEncoded.Class m groupCNF d.coreGF2 := by
+  rcases recoverSameSupportGroupWithDirectInferredBlockSizeFallback_sound hrec with
+    ⟨hcover, hresidual⟩
+  exact
+    class_of_decomposition_cover_toSyntacticOk hcover hresidual
+      (recoverSameSupportGroupWithDirectInferredBlockSizeFallback_toSyntacticOk
+        hrec)
+
+/--
+Any successful production-shaped same-support fallback is semantically sound as
+a local CNF-to-GF(2) block.
+-/
+theorem class_of_recoverSameSupportGroupWithChargeSearchFallback
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithChargeSearchFallback? groupCNF = some d) :
+    ParityEncoded.Class m groupCNF d.coreGF2 := by
+  rcases recoverSameSupportGroupWithChargeSearchFallback_sound hrec with
+    ⟨hcover, hresidual⟩
+  exact
+    class_of_decomposition_cover_toSyntacticOk hcover hresidual
+      (recoverSameSupportGroupWithChargeSearchFallback_toSyntacticOk hrec)
+
 /-- Per-assignment semantic preservation for a successful two-charge recovery. -/
 theorem semanticPreservation_of_recoverTwoChargeSameSupportGroup
     {m : Nat} {groupCNF : CNFModel.CNF m}
@@ -9667,6 +9755,20 @@ theorem semanticPreservation_of_recoverTwoChargeSameSupportGroupPerm
       ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 :=
   ParityEncoded.Class.sound
     (class_of_recoverTwoChargeSameSupportGroupPerm hrec) a
+
+/--
+Per-assignment semantic preservation for a successful production-shaped
+same-support fallback.
+-/
+theorem semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithChargeSearchFallback? groupCNF = some d)
+    (a : CNFModel.Assignment m) :
+    CNFModel.cnfSat a groupCNF <->
+      ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 :=
+  ParityEncoded.Class.sound
+    (class_of_recoverSameSupportGroupWithChargeSearchFallback hrec) a
 
 /--
 When the support groups for a CNF are all recognized, the emitted canonical

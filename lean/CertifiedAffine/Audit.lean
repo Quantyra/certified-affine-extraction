@@ -2069,6 +2069,12 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGeneratedParityChargesPerm
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_decomposition_cover_toSyntacticOk' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_decomposition_cover_toSyntacticOk
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverTwoChargeSameSupportGroup' depends on axioms: [propext,
  Classical.choice,
  Quot.sound] -/
@@ -2111,6 +2117,30 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSingleMergedSupportGroupFromChargeSearchPerm
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithDirectChargeFallback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithDirectChargeFallback
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithDirectBlockSizeFallback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithDirectBlockSizeFallback
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithDirectInferredBlockSizeFallback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithDirectInferredBlockSizeFallback
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithChargeSearchFallback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithChargeSearchFallback
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticPreservation_of_recoverTwoChargeSameSupportGroup' depends on axioms: [propext,
  Classical.choice,
  Quot.sound] -/
@@ -2122,6 +2152,12 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticPreservation_of_recoverTwoChargeSameSupportGroupPerm
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_twoCycle_eq_generated' depends on axioms: [propext,
  Classical.choice,

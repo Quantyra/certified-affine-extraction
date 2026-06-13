@@ -484,6 +484,11 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   theorem proves that these non-enumerative branches exhaust the production path
   for nonempty generated same-support components; exhaustive component-bound
   charge search remains only the last resort outside those generated hypotheses.
+  A successful production fallback now also lifts to the declarative semantic
+  class via
+  `AtomicClassBridge.class_of_recoverSameSupportGroupWithChargeSearchFallback`
+  and to per-assignment CNF/GF(2) preservation via
+  `AtomicClassBridge.semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback`.
 - `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`,
@@ -665,7 +670,10 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   Generically, the enhanced group-level and full-CNF splitters preserve every
   ordinary clause up to permutation: recognized one-block groups move into the
   core, successful same-support fallback groups move into the core as
-  residual-free local decompositions, and all other groups remain residual.  A
+  residual-free local decompositions, and all other groups remain residual.
+  The local production fallback branch itself now carries a
+  `ParityEncoded.Class` witness and per-assignment semantic preservation for
+  every successful return.  A
   residual-free enhanced fallback split whose
   emitted blocks pass the executable syntactic check now yields a
   dedicated `EnhancedExtractorCompleteOn` / `EnhancedSemanticExtractorCompleteOn`

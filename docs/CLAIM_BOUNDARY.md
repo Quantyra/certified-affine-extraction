@@ -691,7 +691,12 @@ support-size branch validates exact generated coverage.  The stronger
 theorem records the whole production result as the first successful
 non-exhaustive branch under the generated same-support hypotheses.  It still
 does not recover charge identity or the per-charge multiplicity split inside an
-arbitrary component.  The unguided
+arbitrary component.  Any successful production fallback result now also
+transports through `class_of_recoverSameSupportGroupWithChargeSearchFallback`
+and
+`semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback`,
+which state the local `ParityEncoded.Class` witness and per-assignment
+CNF/GF(2) preservation for the returned compact core.  The unguided
 two-charge probe
 infers the canonical support from that component, tries both charge orders,
 proves residual-free component coverage for any returned decomposition, proves
