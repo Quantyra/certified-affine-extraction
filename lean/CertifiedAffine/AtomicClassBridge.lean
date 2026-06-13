@@ -1939,6 +1939,90 @@ theorem clausesForVertex_exists_cons_of_vars_ne_empty
           exact Exists.intro c (Exists.intro tail rfl)
 
 /--
+If every bound list has at least one output element, binding cannot shrink the
+outer list's length.  This is the small counting fact used to turn a generated
+same-support CNF component into a safe charge-search bound.
+-/
+theorem length_le_bind_length_of_forall_exists_cons
+    {alpha beta : Type} (xs : List alpha) (f : alpha -> List beta)
+    (h :
+      forall x : alpha, List.Mem x xs ->
+        exists y : beta, exists ys : List beta, f x = y :: ys) :
+    xs.length <= (xs.bind f).length := by
+  induction xs with
+  | nil =>
+      simp
+  | cons x xs ih =>
+      have hx : exists y : beta, exists ys : List beta, f x = y :: ys :=
+        h x (List.Mem.head xs)
+      have htail :
+          forall z : alpha, List.Mem z xs ->
+            exists y : beta, exists ys : List beta, f z = y :: ys := by
+        intro z hz
+        exact h z (List.Mem.tail x hz)
+      rcases hx with ⟨y, ys, hy⟩
+      have hxs : xs.length <= (xs.bind f).length := ih htail
+      calc
+        (x :: xs).length = Nat.succ xs.length := rfl
+        _ <= Nat.succ (ys.length + (xs.bind f).length) := by
+          exact Nat.succ_le_succ
+            (Nat.le_trans hxs (Nat.le_add_left (xs.bind f).length ys.length))
+        _ = ((x :: xs).bind f).length := by
+          simp [List.bind, hy]
+
+/--
+For a nonempty support, the number of generated same-support parity blocks is
+bounded by the number of ordinary clauses in their CNF expansion.
+-/
+theorem generatedParitySpecsForSupportCharges_length_le_cnf_length_of_vars_ne_empty
+    {m : Nat} {vars : List (Fin m)}
+    (charges : List Bool)
+    (hvars : vars ≠ []) :
+    charges.length <=
+      (generatedParitySpecsCNF
+        (generatedParitySpecsForSupportCharges vars charges)).length := by
+  rw [generatedParitySpecsCNF_eq_bind]
+  have hspec :=
+    length_le_bind_length_of_forall_exists_cons
+      (generatedParitySpecsForSupportCharges vars charges)
+      generatedParitySpecCNF
+      (by
+        intro spec hspec
+        unfold generatedParitySpecsForSupportCharges at hspec
+        rcases List.mem_map.1 hspec with ⟨charge, _hcharge, hspec_eq⟩
+        cases hspec_eq
+        simpa [generatedParitySpecCNF] using
+          clausesForVertex_exists_cons_of_vars_ne_empty
+            (vars := vars) (charge := charge) hvars)
+  simpa [generatedParitySpecsForSupportCharges] using hspec
+
+/--
+The component-length version of the same bound, transported across clause
+permutation.  This removes the need for an externally supplied charge bound
+when the component is known to be a nonempty-support generated same-support
+CNF.
+-/
+theorem charges_length_le_of_perm_generatedParitySpecsForSupportCharges
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : vars ≠ [])
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    charges.length <= target.length := by
+  have hle :=
+    generatedParitySpecsForSupportCharges_length_le_cnf_length_of_vars_ne_empty
+      (vars := vars) charges hvars
+  have hlen :
+      target.length =
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)).length :=
+    hperm.length_eq
+  simpa [hlen] using hle
+
+/--
 Positive vertex degree supplies the nonempty generated CNF-block witness needed
 by incident-list generated-spec certificates.
 -/
@@ -6121,6 +6205,55 @@ theorem recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_suppo
   exact
     recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges
       hnormal hperm hnonempty hle
+
+/--
+For nonempty-support generated same-support components, the component's own
+clause count is a certified safe bound for bounded charge-search recovery.
+-/
+theorem recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : vars ≠ [])
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGeneratedParityChargeSearchPerm? target target.length =
+        some d := by
+  exact
+    recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges
+      hnormal hperm hnonempty
+      (charges_length_le_of_perm_generatedParitySpecsForSupportCharges
+        hvars hperm)
+
+/--
+The same component-derived bound lifts through the canonical support grouping
+wrapper for a single merged same-support component.
+-/
+theorem recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : vars ≠ [])
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSingleMergedSupportGroupFromChargeSearchPerm?
+          (groupClausesByCanonicalSupport target) target.length =
+        some d := by
+  exact
+    recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges
+      hnormal hperm hnonempty
+      (charges_length_le_of_perm_generatedParitySpecsForSupportCharges
+        hvars hperm)
 
 /--
 Unguided recovery for the one-merged-support-group boundary shape.  Other group

@@ -442,9 +442,17 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   charge list, callers supply a maximum number of charges; the recovery pass
   searches every Boolean charge list up to that bound, infers the support from
   the component, and proves success whenever the true charge list is within the
-  bound.  This still is not arbitrary same-support recognition: the remaining
-  discovery problem is deriving a defensible bound, or deriving the charge
-  multiplicities directly from the component.
+  bound.
+- `AtomicClassBridge.generatedParitySpecsForSupportCharges_length_le_cnf_length_of_vars_ne_empty`,
+  `AtomicClassBridge.charges_length_le_of_perm_generatedParitySpecsForSupportCharges`,
+  `AtomicClassBridge.recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound`,
+  and
+  `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound`:
+  prove that, for a nonempty support generated same-support component, the
+  component's own clause count is a safe charge-search bound.  This still is
+  not arbitrary same-support recognition: the search no longer needs an
+  external bound in this generated lane, but it still does not infer the charge
+  multiplicities directly from an arbitrary component.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify

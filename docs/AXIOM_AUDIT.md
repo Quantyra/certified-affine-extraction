@@ -560,6 +560,11 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_of_generatedKeyDisjointFamily` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_of_generatedKeyDisjointSpecList` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_of_generatedCanonicalKeyFreshSpecList` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.length_le_bind_length_of_forall_exists_cons` | `propext` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsForSupportCharges_length_le_cnf_length_of_vars_ne_empty` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.charges_length_le_of_perm_generatedParitySpecsForSupportCharges` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_disjoint_appendGroupRecognition` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_disjoint_appendGroupRecognition_toSyntacticOk_append` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_singleGroupRecognition_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |

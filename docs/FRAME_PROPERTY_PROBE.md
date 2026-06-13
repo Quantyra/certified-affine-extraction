@@ -190,8 +190,14 @@ and
 `recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges`
 prove success whenever the true charge list is inside that bound, while the
 corresponding soundness and class bridges keep any returned decomposition on
-the audited semantic path.  The remaining blocker is deriving the bound or the
-charge multiplicities from the component itself.
+the audited semantic path.  The component-bound theorem pair
+`recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound`
+and
+`recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound`
+now instantiates that search with the component's own clause count for
+nonempty-support generated same-support components.  The remaining blocker is
+deriving the charge multiplicities from arbitrary components, not supplying a
+safe bound in this generated lane.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

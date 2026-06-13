@@ -2999,3 +2999,29 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_of_disjoint_appendGroupRecognition_toSyntacticOk_append
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.length_le_bind_length_of_forall_exists_cons' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.length_le_bind_length_of_forall_exists_cons
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsForSupportCharges_length_le_cnf_length_of_vars_ne_empty' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsForSupportCharges_length_le_cnf_length_of_vars_ne_empty
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.charges_length_le_of_perm_generatedParitySpecsForSupportCharges' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.charges_length_le_of_perm_generatedParitySpecsForSupportCharges
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound

@@ -541,10 +541,18 @@ and
 `recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges`
 prove success whenever the true charge list is within that bound, and
 `class_of_recoverSingleMergedSupportGroupFromChargeSearchPerm` packages any
-successful one-group return as a local `ParityEncoded.Class` witness.  This is
-still not arbitrary same-support recognition: the remaining guidance is the
-charge-count bound, and the next discovery problem is deriving that bound or
-the charge multiplicities from the component.  The unguided two-charge probe
+successful one-group return as a local `ParityEncoded.Class` witness.  The
+component-bound lane now proves that nonempty-support generated same-support
+components supply a safe bound by their own clause count:
+`generatedParitySpecsForSupportCharges_length_le_cnf_length_of_vars_ne_empty`,
+`charges_length_le_of_perm_generatedParitySpecsForSupportCharges`,
+`recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound`,
+and
+`recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound`.
+This is still not arbitrary same-support recognition: this generated lane no
+longer needs an external bound, but the next discovery problem is deriving the
+charge multiplicities directly from arbitrary components.  The unguided
+two-charge probe
 infers the canonical support from that component, tries both charge orders,
 proves residual-free component coverage for any returned decomposition, proves
 that returned blocks pass the executable syntactic upgrade, and succeeds on the
