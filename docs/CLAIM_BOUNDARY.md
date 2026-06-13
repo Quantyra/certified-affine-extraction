@@ -563,8 +563,16 @@ charges are semantically redundant,
 Boolean case to false-charge and true-charge presence, and
 `not_gf2Sat_generatedParitySpecsForSupportCharges_of_mem_false_true` proves that
 containing both charges is unsatisfiable.  The remaining multiplicity problem
-is exact CNF coverage, not extra GF(2) semantic content.  The exact length lane
-now proves the corresponding generated-component accounting for the main
+is exact CNF coverage, not extra GF(2) semantic content.  The compact target
+keeps exact multiplicity when a generated split is present:
+`generatedParitySpecsGF2_forSupportCharges_rhs_eq` projects the generated GF(2)
+RHS list back to the input charge list, the true/false count corollaries preserve
+per-charge multiplicity, and the matching
+`generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*` theorems
+lift that invariant to the residual-free decomposition target.  Thus the
+remaining problem is discovering the charge split from arbitrary CNF, not
+representing it after recovery.  The exact length lane now proves the
+corresponding generated-component accounting for the main
 arity-three and arity-four surfaces:
 `generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,
 `generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four`,

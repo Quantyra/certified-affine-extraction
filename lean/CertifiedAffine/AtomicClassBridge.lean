@@ -1772,6 +1772,38 @@ theorem generatedParitySpecsGF2_forSupportCharges_eq_map
   simp [generatedParitySpecsForSupportCharges, generatedParitySpecGF2]
 
 /--
+The compact GF(2) RHS projection for generated same-support charges is exactly
+the input charge list.  Thus the compact generated core preserves charge
+multiplicity even though its satisfaction semantics only observes charge
+presence.
+-/
+theorem generatedParitySpecsGF2_forSupportCharges_rhs_eq
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsGF2
+      (generatedParitySpecsForSupportCharges vars charges)).map
+        (fun c => c.rhs)) = charges := by
+  rw [generatedParitySpecsGF2_forSupportCharges_eq_map]
+  simp only [List.map_map]
+  change List.map (fun charge => charge) charges = charges
+  exact List.map_id' charges
+
+/-- True-charge multiplicity is preserved in the compact generated GF(2) core. -/
+theorem generatedParitySpecsGF2_forSupportCharges_rhs_count_true
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsGF2
+      (generatedParitySpecsForSupportCharges vars charges)).map
+        (fun c => c.rhs)).count true = charges.count true := by
+  rw [generatedParitySpecsGF2_forSupportCharges_rhs_eq]
+
+/-- False-charge multiplicity is preserved in the compact generated GF(2) core. -/
+theorem generatedParitySpecsGF2_forSupportCharges_rhs_count_false
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsGF2
+      (generatedParitySpecsForSupportCharges vars charges)).map
+        (fun c => c.rhs)).count false = charges.count false := by
+  rw [generatedParitySpecsGF2_forSupportCharges_rhs_eq]
+
+/--
 Same-support generated GF(2) semantics depends only on which charges appear in
 the charge list.  Multiplicity is therefore a syntactic coverage issue, not a
 semantic one.
@@ -5386,6 +5418,40 @@ theorem generatedParitySpecsFallbackDecomposition_coreGF2_eq
     (generatedParitySpecsFallbackDecomposition specs).coreGF2 =
       generatedParitySpecsGF2 specs := by
   exact canonicalBlocksFromGeneratedParitySpecs_GF2_eq specs
+
+/--
+For generated same-support charges, the fallback decomposition compact core
+preserves the exact RHS charge list.
+-/
+theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_rhs_eq
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsFallbackDecomposition
+      (generatedParitySpecsForSupportCharges vars charges)).coreGF2.map
+        (fun c => c.rhs)) = charges := by
+  rw [generatedParitySpecsFallbackDecomposition_coreGF2_eq]
+  exact generatedParitySpecsGF2_forSupportCharges_rhs_eq vars charges
+
+/--
+For generated same-support charges, the fallback decomposition compact core
+preserves true-charge multiplicity.
+-/
+theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_rhs_count_true
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsFallbackDecomposition
+      (generatedParitySpecsForSupportCharges vars charges)).coreGF2.map
+        (fun c => c.rhs)).count true = charges.count true := by
+  rw [generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_rhs_eq]
+
+/--
+For generated same-support charges, the fallback decomposition compact core
+preserves false-charge multiplicity.
+-/
+theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_rhs_count_false
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsFallbackDecomposition
+      (generatedParitySpecsForSupportCharges vars charges)).coreGF2.map
+        (fun c => c.rhs)).count false = charges.count false := by
+  rw [generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_rhs_eq]
 
 /-- The fallback decomposition blocks pass the executable syntactic upgrade. -/
 theorem generatedParitySpecsFallbackDecomposition_toSyntacticOk
