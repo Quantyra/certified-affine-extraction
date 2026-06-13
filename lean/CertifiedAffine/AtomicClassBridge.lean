@@ -595,6 +595,105 @@ theorem clause_eq_allFalse_of_mem_clausesForVertex_true_and_fingerprint_eq
                 row_eq_replicate_false_of_canonicalClauseFingerprint_eq_allFalse
                   (vars := vars) (bs := bs) hlen hfp']
 
+private theorem allFalseClauseFingerprint_count_foldl_true_aux
+    {m : Nat} (vars : List (Fin m)) :
+    forall (rows : List (List Bool)) (acc : CNFModel.CNF m),
+      (forall bs, List.Mem bs rows -> bs.length = vars.length) ->
+      (((rows.foldl
+          (fun acc bs =>
+            if parity bs = true then acc else acc ++ [clauseForAssignment vars bs])
+          acc).map canonicalClauseFingerprint).count
+        (canonicalClauseFingerprint
+          (clauseForAssignment vars (List.replicate vars.length false)))) =
+        ((acc.map canonicalClauseFingerprint).count
+          (canonicalClauseFingerprint
+            (clauseForAssignment vars (List.replicate vars.length false)))) +
+          rows.count (List.replicate vars.length false) := by
+  intro rows
+  induction rows with
+  | nil =>
+      intro acc _hlen
+      simp
+  | cons row rows ih =>
+      intro acc hlen
+      have htailLen :
+          forall bs, List.Mem bs rows -> bs.length = vars.length := by
+        intro bs hmem
+        exact hlen bs (List.Mem.tail row hmem)
+      have hrowLen : row.length = vars.length :=
+        hlen row (List.Mem.head rows)
+      by_cases hpar : parity row = true
+      case pos =>
+        have hrowNe : Not (row = List.replicate vars.length false) := by
+          intro heq
+          have hpf : parity row = false := by
+            simpa [heq] using parity_replicate_false vars.length
+          rw [hpf] at hpar
+          contradiction
+        have hrowBeq :
+            (row == List.replicate vars.length false) = false :=
+          (beq_eq_false_iff_ne).2 hrowNe
+        have hih := ih acc htailLen
+        simp [hpar]
+        rw [hih]
+        simp [List.count_cons, hrowBeq]
+      case neg =>
+        by_cases hrowEq : row = List.replicate vars.length false
+        case pos =>
+          have hih := ih (acc ++ [clauseForAssignment vars row]) htailLen
+          simp [hpar]
+          rw [hih]
+          rw [List.map_append, List.count_append]
+          simp [hrowEq, List.count_cons]
+          omega
+        case neg =>
+          have hfpNe :
+              Not
+                (canonicalClauseFingerprint (clauseForAssignment vars row) =
+                  canonicalClauseFingerprint
+                    (clauseForAssignment vars
+                      (List.replicate vars.length false))) := by
+            intro hfp
+            have hrowAll :=
+              row_eq_replicate_false_of_canonicalClauseFingerprint_eq_allFalse
+                (vars := vars) (bs := row) hrowLen hfp
+            exact hrowEq hrowAll
+          have hfpBeq :
+              (canonicalClauseFingerprint (clauseForAssignment vars row) ==
+                canonicalClauseFingerprint
+                  (clauseForAssignment vars
+                    (List.replicate vars.length false))) = false :=
+            (beq_eq_false_iff_ne).2 hfpNe
+          have hrowBeq :
+              (row == List.replicate vars.length false) = false :=
+            (beq_eq_false_iff_ne).2 hrowEq
+          have hih := ih (acc ++ [clauseForAssignment vars row]) htailLen
+          simp [hpar]
+          rw [hih]
+          rw [List.map_append, List.count_append]
+          simp [List.count_cons, hfpBeq, hrowBeq]
+
+/--
+True-charge generated blocks contribute exactly one all-false clause
+fingerprint.
+-/
+theorem allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_true_eq_one
+    {m : Nat}
+    (vars : List (Fin m)) :
+    (canonicalBlockFingerprint (clausesForVertex vars true)).count
+      (canonicalClauseFingerprint
+        (clauseForAssignment vars (List.replicate vars.length false))) = 1 := by
+  unfold canonicalBlockFingerprint
+  rw [sortClauseFingerprints_count_eq]
+  unfold clausesForVertex
+  have hfold :=
+    allFalseClauseFingerprint_count_foldl_true_aux vars
+      (allAssignments vars.length) []
+      (by
+        intro bs hmem
+        exact length_of_mem_allAssignments hmem)
+  simpa [Bool.beq_eq_decide_eq, allAssignments_count_replicate_false] using hfold
+
 /-- A canonical parity-block signal is false when the block fingerprints differ. -/
 theorem canonicalParityBlockRecognitionSignal_eq_false_of_fingerprint_ne
     {m : Nat}

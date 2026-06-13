@@ -944,6 +944,7 @@ theorem that now finds the already-certified fallback blocks and powers an
 enhanced residual-free splitter for the `n = 2` boundary.  The all-false row is
 now proved unique in the generated Boolean rows, and the all-false canonical
 fingerprint is proved to identify exactly that generated clause inside a
-true-charge block.  This is a foundation for direct multiplicity reconstruction;
-it is not yet an exact merged-count theorem or an efficient same-support
-recovery algorithm.
+true-charge block.  A true-charge generated block is also now proved to
+contribute exactly one all-false fingerprint.  This is a foundation for direct
+multiplicity reconstruction; it is not yet an exact merged-count theorem or an
+efficient same-support recovery algorithm.

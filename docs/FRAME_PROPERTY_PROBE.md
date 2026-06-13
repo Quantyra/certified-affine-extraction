@@ -236,8 +236,11 @@ lower bound, not exact multiplicity reconstruction.  The row-enumeration
 lemmas now prove the all-false row is unique in `allAssignments`, and the
 fingerprint bridge proves that a true-charge block clause with the all-false
 canonical fingerprint is exactly the generated all-false clause.  That removes
-one local ambiguity for a future direct count reconstruction, but it does not
-yet prove exact merged multiplicity or replace exhaustive charge search.
+one local ambiguity for a future direct count reconstruction.  The exact
+single-block count theorem now proves that each true-charge block contributes
+exactly one all-false fingerprint.  What remains open is summing that exact
+single-block count across a merged same-support component and using it to
+replace exhaustive charge search.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`
