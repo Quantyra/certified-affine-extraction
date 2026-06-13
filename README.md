@@ -477,8 +477,10 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   not arbitrary same-support recognition: the search no longer needs an
   external bound in this generated lane, but it still does not infer the charge
   multiplicities directly from an arbitrary component.  The production-shaped
-  fallback branch now keeps the legacy two-charge fast path and then invokes
-  this exhaustive component-bound charge search when the fast path misses.
+  fallback branch now keeps the legacy two-charge fast path, then tries direct
+  arity-three/four count-derived recovery, leaving this exhaustive
+  component-bound charge search as the last resort when both earlier branches
+  miss.
 - `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`,
@@ -608,9 +610,10 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback`,
   and `AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitter_*`:
   package local same-support recovery as a production-shaped fallback splitter.
-  The same-support branch first tries the legacy two-charge recovery, then falls
-  through to exhaustive bounded charge search using the component length as the
-  bound.  On the direct two-cycle boundary it covers the CNF exactly, compacts
+  The same-support branch first tries the legacy two-charge recovery, then the
+  direct arity-three/four count-derived branch, and only then falls through to
+  exhaustive bounded charge search using the component length as the bound.  On
+  the direct two-cycle boundary it covers the CNF exactly, compacts
   to the direct two-equation GF(2) target, emits two compact equations, and
   leaves zero residual clauses.  The exact-list unguided recovery is proved to
   fail on the reversed direct two-cycle CNF, while the permutation-insensitive
@@ -680,8 +683,9 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   recognizer, and succeeds under the two-charge same-support recovery.  This is
   the generic form of the direct two-cycle boundary repair, still conditional
   on fallback success.  The production splitter now also has the broader
-  same-support charge-search branch after this two-charge path; the theorem name
-  is retained for the two-charge success condition it packages.
+  direct count-derived and same-support charge-search branches after this
+  two-charge path; the theorem name is retained for the two-charge success
+  condition it packages.
 - `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle`:
   packages the direct two-cycle boundary as a combined
   `EnhancedSemanticExtractorCompleteOn` theorem.  The proof deliberately pairs
@@ -1167,9 +1171,10 @@ two-cycle component.  Its permutation-insensitive variant succeeds for every
 nonempty clause permutation of that direct component, with the reversed
 component as the concrete regression theorem.  A production-shaped fallback
 splitter now wires that permutation-insensitive local probe after the existing
-one-block recognizer; on the direct two-cycle boundary it covers the CNF
-exactly, compacts to the direct two-equation GF(2) target, emits two equations,
-and leaves no residual clauses.  It also closes the reversed direct two-cycle
+one-block recognizer, followed by the direct arity-three/four count-derived
+branch and then bounded exhaustive search; on the direct two-cycle boundary it
+covers the CNF exactly, compacts to the direct two-equation GF(2) target, emits
+two equations, and leaves no residual clauses.  It also closes the reversed direct two-cycle
 boundary with the same compact target and a combined
 `EnhancedSemanticExtractorCompleteOn` theorem; this is now subsumed by a
 production-path theorem for every nonempty clause permutation of that direct

@@ -7078,10 +7078,71 @@ theorem recoverTwoChargeSameSupportGroupPerm_toSyntacticOk
       exact recoverSameSupportGeneratedParitySpecsPerm_toSyntacticOk hrec
 
 /--
+Direct same-support recovery branch for generated arity-three and arity-four
+components.  The candidate support is inferred from the component; the charge
+representative is derived from component length and the all-false fingerprint
+count.  Other arities remain outside this direct branch.
+-/
+def recoverSameSupportGroupWithDirectChargeFallback? {m : Nat}
+    (groupCNF : CNFModel.CNF m) :
+    Option (CanonicalFingerprintGF2Decomposition m) :=
+  let vars := parityCandidateCanonicalSupportFromBlock groupCNF
+  if vars.length = 3 then
+    recoverSameSupportGeneratedParityChargesPerm? groupCNF
+      (directSameSupportChargesFromTargetWithBlockSize vars groupCNF 4)
+  else if vars.length = 4 then
+    recoverSameSupportGeneratedParityChargesPerm? groupCNF
+      (directSameSupportChargesFromTargetWithBlockSize vars groupCNF 8)
+  else none
+
+/--
+Soundness for the direct same-support recovery branch.  Any returned
+decomposition covers the input component up to clause permutation and leaves no
+residual clauses.
+-/
+theorem recoverSameSupportGroupWithDirectChargeFallback_sound
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithDirectChargeFallback? groupCNF = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual := by
+  unfold recoverSameSupportGroupWithDirectChargeFallback? at hrec
+  set vars := parityCandidateCanonicalSupportFromBlock groupCNF
+  by_cases hthree : vars.length = 3
+  · simp [hthree] at hrec
+    rcases recoverSameSupportGeneratedParityChargesPerm_sound hrec with
+      ⟨hcover, hresidual, _hgf2⟩
+    exact ⟨hcover, hresidual⟩
+  · by_cases hfour : vars.length = 4
+    · simp [hthree, hfour] at hrec
+      rcases recoverSameSupportGeneratedParityChargesPerm_sound hrec with
+        ⟨hcover, hresidual, _hgf2⟩
+      exact ⟨hcover, hresidual⟩
+    · simp [hthree, hfour] at hrec
+
+/--
+The direct same-support recovery branch returns syntactically upgradable blocks
+whenever it succeeds.
+-/
+theorem recoverSameSupportGroupWithDirectChargeFallback_toSyntacticOk
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithDirectChargeFallback? groupCNF = some d) :
+    CanonicalBlocksToSyntacticOk d.blocks := by
+  unfold recoverSameSupportGroupWithDirectChargeFallback? at hrec
+  set vars := parityCandidateCanonicalSupportFromBlock groupCNF
+  by_cases hthree : vars.length = 3
+  · simp [hthree] at hrec
+    exact recoverSameSupportGeneratedParityChargesPerm_toSyntacticOk hrec
+  · by_cases hfour : vars.length = 4
+    · simp [hthree, hfour] at hrec
+      exact recoverSameSupportGeneratedParityChargesPerm_toSyntacticOk hrec
+    · simp [hthree, hfour] at hrec
+
+/--
 Production-shaped same-support recovery branch.  It preserves the existing
-two-charge fast path, then falls back to exhaustive bounded charge search using
-the component length as the search bound.  This is certified discovery, not an
-efficiency claim.
+two-charge fast path, then tries direct arity-three/four count-derived
+recovery, and only then falls back to exhaustive bounded charge search using
+the component length as the search bound.
 -/
 def recoverSameSupportGroupWithChargeSearchFallback? {m : Nat}
     (groupCNF : CNFModel.CNF m) :
@@ -7089,8 +7150,11 @@ def recoverSameSupportGroupWithChargeSearchFallback? {m : Nat}
   match recoverTwoChargeSameSupportGroupPerm? groupCNF with
   | some d => some d
   | none =>
-      if groupCNF = [] then none
-      else recoverSameSupportGeneratedParityChargeSearchPerm? groupCNF groupCNF.length
+      match recoverSameSupportGroupWithDirectChargeFallback? groupCNF with
+      | some d => some d
+      | none =>
+          if groupCNF = [] then none
+          else recoverSameSupportGeneratedParityChargeSearchPerm? groupCNF groupCNF.length
 
 /--
 Soundness for the production-shaped same-support recovery branch.  A returned
@@ -7109,13 +7173,19 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_sound
       cases hrec
       exact recoverTwoChargeSameSupportGroupPerm_sound htwo
   | none =>
-      by_cases hempty : groupCNF = []
-      · subst groupCNF
-        simp [htwo] at hrec
-      · simp [htwo, hempty] at hrec
-        rcases recoverSameSupportGeneratedParityChargeSearchPerm_sound hrec with
-          ⟨_charges, _hmem, hcover, hresidual, _hgf2⟩
-        exact ⟨hcover, hresidual⟩
+      cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? groupCNF with
+      | some dDirect =>
+          simp [htwo, hdirect] at hrec
+          cases hrec
+          exact recoverSameSupportGroupWithDirectChargeFallback_sound hdirect
+      | none =>
+          by_cases hempty : groupCNF = []
+          · subst groupCNF
+            simp [htwo, hdirect] at hrec
+          · simp [htwo, hdirect, hempty] at hrec
+            rcases recoverSameSupportGeneratedParityChargeSearchPerm_sound hrec with
+              ⟨_charges, _hmem, hcover, hresidual, _hgf2⟩
+            exact ⟨hcover, hresidual⟩
 
 /--
 The production-shaped same-support recovery branch returns syntactically
@@ -7133,11 +7203,17 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_toSyntacticOk
       cases hrec
       exact recoverTwoChargeSameSupportGroupPerm_toSyntacticOk htwo
   | none =>
-      by_cases hempty : groupCNF = []
-      · subst groupCNF
-        simp [htwo] at hrec
-      · simp [htwo, hempty] at hrec
-        exact recoverSameSupportGeneratedParityChargeSearchPerm_toSyntacticOk hrec
+      cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? groupCNF with
+      | some dDirect =>
+          simp [htwo, hdirect] at hrec
+          cases hrec
+          exact recoverSameSupportGroupWithDirectChargeFallback_toSyntacticOk hdirect
+      | none =>
+          by_cases hempty : groupCNF = []
+          · subst groupCNF
+            simp [htwo, hdirect] at hrec
+          · simp [htwo, hdirect, hempty] at hrec
+            exact recoverSameSupportGeneratedParityChargeSearchPerm_toSyntacticOk hrec
 
 /--
 For a nonempty clause permutation of two generated parity specs over the same
@@ -7570,6 +7646,120 @@ theorem recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCh
       hnormal hpermDirect hnonempty
 
 /--
+The production direct same-support branch succeeds on generated arity-three
+components using the count-derived charge representative.
+-/
+theorem recoverSameSupportGroupWithDirectChargeFallback_eq_some_of_directTargetCharges_arityThree
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSameSupportGroupWithDirectChargeFallback? target =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target 4))) := by
+  unfold recoverSameSupportGroupWithDirectChargeFallback?
+  have hsame :
+      GeneratedParitySpecsSameSupportVars
+        (generatedParitySpecsForSupportCharges vars charges) vars :=
+    generatedParitySpecsForSupportCharges_sameSupport vars charges
+  have hsupport :
+      parityCandidateCanonicalSupportFromBlock target = vars :=
+    parityCandidateCanonicalSupportFromBlock_eq_of_perm_generatedParitySpecs_sameSupport
+      hsame hnormal hperm hnonempty
+  rw [hsupport]
+  simp [hlen,
+    recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityThree
+      hlen hnormal hperm hnonempty]
+
+/--
+The production direct same-support branch succeeds on generated arity-four
+components using the count-derived charge representative.
+-/
+theorem recoverSameSupportGroupWithDirectChargeFallback_eq_some_of_directTargetCharges_arityFour
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSameSupportGroupWithDirectChargeFallback? target =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target 8))) := by
+  unfold recoverSameSupportGroupWithDirectChargeFallback?
+  have hsame :
+      GeneratedParitySpecsSameSupportVars
+        (generatedParitySpecsForSupportCharges vars charges) vars :=
+    generatedParitySpecsForSupportCharges_sameSupport vars charges
+  have hsupport :
+      parityCandidateCanonicalSupportFromBlock target = vars :=
+    parityCandidateCanonicalSupportFromBlock_eq_of_perm_generatedParitySpecs_sameSupport
+      hsame hnormal hperm hnonempty
+  rw [hsupport]
+  simp [hlen,
+    recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityFour
+      hlen hnormal hperm hnonempty]
+
+/--
+If the legacy two-charge fast path misses, the production same-support branch
+uses the direct count-derived arity-three branch before exhaustive search.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetCharges_arityThree_of_twoCharge_none
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = []))
+    (htwo : recoverTwoChargeSameSupportGroupPerm? target = none) :
+    recoverSameSupportGroupWithChargeSearchFallback? target =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target 4))) := by
+  unfold recoverSameSupportGroupWithChargeSearchFallback?
+  have hdirect :=
+    recoverSameSupportGroupWithDirectChargeFallback_eq_some_of_directTargetCharges_arityThree
+      hlen hnormal hperm hnonempty
+  simp [htwo, hdirect]
+
+/--
+If the legacy two-charge fast path misses, the production same-support branch
+uses the direct count-derived arity-four branch before exhaustive search.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetCharges_arityFour_of_twoCharge_none
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = []))
+    (htwo : recoverTwoChargeSameSupportGroupPerm? target = none) :
+    recoverSameSupportGroupWithChargeSearchFallback? target =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target 8))) := by
+  unfold recoverSameSupportGroupWithChargeSearchFallback?
+  have hdirect :=
+    recoverSameSupportGroupWithDirectChargeFallback_eq_some_of_directTargetCharges_arityFour
+      hlen hnormal hperm hnonempty
+  simp [htwo, hdirect]
+
+/--
 Bounded charge-search recovery succeeds whenever the component is a
 same-support generated parity expansion whose true charge list is within the
 search bound.
@@ -7662,8 +7852,8 @@ theorem recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_support
 /--
 For nonempty generated same-support components, the production-shaped
 same-support branch succeeds: either the legacy two-charge fast path accepts,
-or the exhaustive charge-search fallback finds the generated charge list within
-the component-length bound.
+or the direct arity-three/four branch accepts, or the exhaustive charge-search
+fallback finds the generated charge list within the component-length bound.
 -/
 theorem recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCharges_componentBound
     {m : Nat} {vars : List (Fin m)}
@@ -7683,10 +7873,14 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCh
   | some d =>
       exact ⟨d, by simp [htwo]⟩
   | none =>
-      have hsearch :=
-        recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound
-          hvars hnormal hperm hnonempty
-      simpa [htwo, hnonempty] using hsearch
+      cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? target with
+      | some d =>
+          exact ⟨d, by simp [htwo, hdirect]⟩
+      | none =>
+          have hsearch :=
+            recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound
+              hvars hnormal hperm hnonempty
+          simpa [htwo, hdirect, hnonempty] using hsearch
 
 /--
 The same component-derived bound lifts through the canonical support grouping
