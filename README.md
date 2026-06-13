@@ -389,9 +389,9 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
 - `AtomicClassBridge.twoCycleSameSupportFallback_exists`: instantiates that
   fallback target at the certified `n = 2` boundary.  There are exactly two
   canonical recognized blocks covering the direct two-cycle CNF and compacting
-  to the direct two-equation GF(2) target; the production splitter still
-  residualizes the merged support component, but the target blocks are now
-  explicit.
+  to the direct two-equation GF(2) target.  The baseline canonical splitter
+  residualizes the merged support component; the enhanced two-charge fallback
+  splitter below is the production-shaped repair for this boundary.
 - `AtomicClassBridge.generatedParitySpecsFallbackDecomposition_*` and
   `AtomicClassBridge.twoCycleSameSupportFallbackDecomposition_*`: lift the
   fallback target into the same residual-carrying decomposition structure used
@@ -414,25 +414,35 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   two-cycle CNF, that the actual canonical support grouping has one merged
   support group, and that guided recovery succeeds on that merged group.
 - `AtomicClassBridge.recoverTwoChargeSameSupportGroup?`,
+  `AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm?`,
   `AtomicClassBridge.recoverSingleMergedSupportGroupTwoCharge?`,
   `AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_twoCycle_eq_generated`,
+  `AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_eq_generated_of_perm_twoCycle`,
+  `AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_twoCycle`,
   `AtomicClassBridge.twoCycleSameSupportUnguidedDirectRecovery_eq_some`, and
   `AtomicClassBridge.twoCycleSameSupportUnguidedMergedSupportRecovery_isSome`:
   add the first unguided same-support recovery shape.  The recognizer infers the
   canonical support from the merged component, tries the two parity charges in
   both orders, proves any returned decomposition covers the component with empty
   residual, emits syntactically upgradable blocks, and succeeds on the actual
-  `n = 2` one-group boundary.  The returned local two-charge decomposition now
-  also carries a `ParityEncoded.Class` witness and per-assignment semantic
-  preservation for its compact GF(2) core.  The remaining gap is integrating
-  and generalizing this local splitter beyond the two-charge same-support case.
+  `n = 2` one-group boundary.  The permutation-insensitive variant proves
+  coverage up to `List.Perm` and succeeds for every nonempty clause permutation
+  of the direct two-cycle component; the exact-list variant is kept as a
+  diagnostic surface.  The returned local two-charge decomposition now also
+  carries a `ParityEncoded.Class` witness and per-assignment semantic
+  preservation for its compact GF(2) core.  The remaining gap is generalizing
+  this local splitter beyond the two-charge same-support case.
 - `AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback`,
   `AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback`,
   and `AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitter_*`:
   package that local recovery as a production-shaped fallback splitter.  On the
   direct two-cycle boundary it covers the CNF exactly, compacts to the direct
   two-equation GF(2) target, emits two compact equations, and leaves zero
-  residual clauses.  Generically, the enhanced group-level and full-CNF
+  residual clauses.  The exact-list unguided recovery is proved to fail on the
+  reversed direct two-cycle CNF, while the permutation-insensitive recovery and
+  production enhanced splitter are proved to accept that reversed boundary with
+  zero residual clauses and the same compact GF(2) target.  Generically, the
+  enhanced group-level and full-CNF
   splitters preserve every ordinary clause up to permutation: recognized
   one-block groups move into the core, successful two-charge fallback groups
   move into the core as residual-free local decompositions, and all other
@@ -501,6 +511,10 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   declarative cycle semantics with the enhanced splitter's residual-free
   executable output, so it does not require a proof-carrying block-list
   provenance lemma for the semantic half.
+- `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle_reversed`:
+  packages the reversed direct two-cycle boundary with the same combined
+  `EnhancedSemanticExtractorCompleteOn` target, closing the concrete
+  clause-order regression for the enhanced production splitter.
 - `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula`:
   proves the combined semantic/enhanced-executable extraction theorem for
   every derived cycle with `1 < n`.  Nondegenerate cycles use the ordinary
@@ -959,16 +973,21 @@ specification-side fallback target is certified for that boundary
 at the decomposition interface: two canonical recognized blocks cover the
 direct two-cycle CNF, compact to the direct two-equation GF(2) target, emit two
 equations, leave zero residual clauses, and cover sixteen expanded clauses,
-while the production splitter is also certified to miss them.  The guided
+while the baseline canonical splitter is certified to miss them.  The guided
 recovery validates exact CNF coverage for a supplied generated-spec split,
 returns the fallback decomposition on the direct CNF, and succeeds on the
 actual one-group canonical support component.  The unguided two-charge probe
 infers the component support, tries both charge orders, proves residual-free
 component coverage for any success, and succeeds on the same one-group
-two-cycle component.  A production-shaped fallback splitter now wires that
-local probe after the existing one-block recognizer; on the direct two-cycle
-boundary it covers the CNF exactly, compacts to the direct two-equation GF(2)
-target, emits two equations, and leaves no residual clauses.  Residual-free
+two-cycle component.  Its permutation-insensitive variant succeeds for every
+nonempty clause permutation of that direct component, with the reversed
+component as the concrete regression theorem.  A production-shaped fallback
+splitter now wires that permutation-insensitive local probe after the existing
+one-block recognizer; on the direct two-cycle boundary it covers the CNF
+exactly, compacts to the direct two-equation GF(2) target, emits two equations,
+and leaves no residual clauses.  It also closes the reversed direct two-cycle
+boundary with the same compact target and a combined
+`EnhancedSemanticExtractorCompleteOn` theorem.  Residual-free
 enhanced fallback witnesses now compose under the same grouping-frame,
 clause-key-disjoint, and ordinary support-disjoint side-condition packages as
 the baseline splitter, so the fallback API is no longer only a single-instance

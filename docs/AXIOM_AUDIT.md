@@ -209,6 +209,7 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.foldl_append_eq_append_bind` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsCNF_eq_bind` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsGF2_eq_map` | `propext` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.cnfClausesHaveCanonicalSupportVars_generatedParitySpecs_two_sameSupport` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_generatedParitySpecs` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.mem_generatedParitySpecsCNF_imp_exists_spec` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.clauseKeysDisjoint_generatedParitySpecsCNF_of_freshCanonicalSupportKeys` | `propext`, `Quot.sound` |
@@ -357,39 +358,52 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroup_sound` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroup_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParitySpecsPerm_eq_some_of_perm` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParitySpecsPerm_sound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParitySpecsPerm_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_sound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupTwoCharge_sound` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupTwoCharge_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGeneratedParitySpecs` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverTwoChargeSameSupportGroup` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverTwoChargeSameSupportGroupPerm` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSingleMergedSupportGroupTwoCharge` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticPreservation_of_recoverTwoChargeSameSupportGroup` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticPreservation_of_recoverTwoChargeSameSupportGroupPerm` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_twoCycle_eq_generated` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleCNF_clausesHaveCandidateSupportVars` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_eq_generated_of_perm_twoCycle` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_twoCycle` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportUnguidedDirectRecovery_eq_some` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportUnguidedMergedSupportRecovery_isSome` | `propext`, `Classical.choice`, `Quot.sound` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback_expandedCNF_perm` | `propext` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_expandedCNF_perm` | `propext` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportUnguidedDirectRecovery_reverse_isSome_false` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportUnguidedPermDirectRecovery_reverse_isSome` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback_expandedCNF_perm` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_expandedCNF_perm` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_syntacticSignals_append` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_toSyntacticOk_append` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticPreservation_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_toSyntacticOk_append` | `propext`, `Classical.choice`, `Quot.sound` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.EnhancedExtractorCompleteOn` | none |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.EnhancedSemanticExtractorCompleteOn` | none |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback` | none |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback_append_of_residual_free` | `propext` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_append_of_clauseKeysDisjoint` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.EnhancedExtractorCompleteOn` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.EnhancedSemanticExtractorCompleteOn` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback_append_of_residual_free` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_append_of_clauseKeysDisjoint` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_append_of_disjointSupport` | `propext`, `Classical.choice`, `Quot.sound` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback_of_groupsRecognized` | `propext` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_groupRecognition` | `propext` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_append_of_groupAppend` | `propext` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_append_of_clauseKeysDisjoint` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback_of_groupsRecognized` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_groupRecognition` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_append_of_groupAppend` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_append_of_clauseKeysDisjoint` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_append_of_disjointSupport` | `propext`, `Classical.choice`, `Quot.sound` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_class` | `propext`, `Quot.sound` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_append_of_groupAppend` | `propext` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_append_of_clauseKeysDisjoint` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_class` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_append_of_groupAppend` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_append_of_clauseKeysDisjoint` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_append_of_disjointSupport` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_toSyntacticOk_append` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_singleGroupTwoChargeFallback` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle_reversed` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_generatedKeyDisjointSpecList` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_generatedCanonicalKeyFreshSpecList` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_generatedKeyDisjointSpecList` | `propext`, `Classical.choice`, `Quot.sound` |
@@ -423,6 +437,11 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitter_hasEmptyResidual` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitter_coreEquationCount` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitter_residualClauseCount` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitterReversed_expandedCNF_perm` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitterReversed_coreGF2_eq` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitterReversed_hasEmptyResidual` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitterReversed_coreEquationCount` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitterReversed_residualClauseCount` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalFingerprintRecognizedBlocksCNF_perm_of_groupsRecognized` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_canonicalFingerprintRecognizedBlocks_syntacticSignals` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_canonicalFingerprintRecognizedBlocks_syntacticSignals_append` | `propext`, `Classical.choice`, `Quot.sound` |
@@ -492,7 +511,7 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_of_clausePermutedRecognizedClass` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.extractorCompleteOn_of_clausePermutedRecognizedClass_perm` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm` | `propext`, `Classical.choice`, `Quot.sound` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_empty` | `propext` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_empty` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass_perm` | `propext`, `Classical.choice`, `Quot.sound` |

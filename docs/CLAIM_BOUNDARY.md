@@ -509,19 +509,28 @@ decomposition facts: two equations, zero residual clauses, and sixteen covered
 expanded clauses.  The guided recovery pass validates exact CNF coverage for a
 supplied generated-spec split, returns that fallback decomposition on the
 direct two-cycle CNF, and succeeds on the actual one-group canonical support
-component that the unguided production splitter residualizes.  The unguided
-two-charge probe infers the canonical support from that component, tries both
-charge orders, proves residual-free component coverage for any returned
-decomposition, proves that returned blocks pass the executable syntactic
-upgrade, and succeeds on the same actual one-group two-cycle component.  Any
-successful two-charge same-support recovery now also carries a local
-`ParityEncoded.Class` witness and per-assignment semantic preservation for its
-compact GF(2) core.  This is still a returned-output soundness result, not a
-success/completeness theorem for arbitrary same-support components.
+component.  The unguided two-charge probe infers the canonical support from
+that component, tries both charge orders, proves residual-free component
+coverage for any returned decomposition, proves that returned blocks pass the
+executable syntactic upgrade, and succeeds on the same actual one-group
+two-cycle component.  The exact-list unguided recovery is now explicitly
+documented as order-sensitive: it fails on the reversed direct two-cycle CNF.
+The permutation-insensitive recovery proves coverage up to `List.Perm`,
+accepts every nonempty clause permutation of the direct two-cycle component
+with the same generated two-spec target, and carries the local
+`ParityEncoded.Class` witness plus per-assignment semantic preservation for its
+compact GF(2) core.
+This is still a returned-output soundness result, not a success/completeness
+theorem for arbitrary same-support components.
 The enhanced fallback splitter covers the direct two-cycle CNF exactly,
 compacts to the direct two-equation GF(2) target, emits two compact equations,
-and leaves zero residual ordinary clauses.  It also has a generic
-clause-preservation theorem: at both the grouped and full-CNF splitter
+and leaves zero residual ordinary clauses.  The production enhanced fallback
+splitter now uses the permutation-insensitive two-charge recovery, so the
+reversed direct two-cycle CNF is also certified residual-free as a concrete
+regression instance, with two compact equations, the same compact GF(2) target,
+expanded coverage up to `List.Perm`, and a combined
+`EnhancedSemanticExtractorCompleteOn` theorem.  It also has a
+generic clause-preservation theorem: at both the grouped and full-CNF splitter
 interfaces, the enhanced splitter's expanded CNF is a permutation of the input
 ordinary CNF.  This is a coverage invariant, not a residual-free completeness
 claim for arbitrary same-support components.  When an enhanced fallback split

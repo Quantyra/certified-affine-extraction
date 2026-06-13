@@ -1548,6 +1548,39 @@ theorem generatedParitySpecsGF2_eq_map
   simp [generatedParitySpecsGF2, foldl_append_singleton_eq_append_map]
 
 /--
+Two generated parity expansions over the same canonical support have
+support-variable-homogeneous ordinary clauses.
+-/
+theorem cnfClausesHaveCanonicalSupportVars_generatedParitySpecs_two_sameSupport
+    {m : Nat}
+    (vars : List (Fin m))
+    (charge1 charge2 : Bool)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars) :
+    GroupFrame.CNFClausesHaveCanonicalSupportVars
+      (generatedParitySpecsCNF [(vars, charge1), (vars, charge2)])
+      vars := by
+  intro c hc
+  rw [generatedParitySpecsCNF_eq_bind] at hc
+  have hcappend :
+      List.Mem c
+        (generatedParitySpecCNF (vars, charge1) ++
+          generatedParitySpecCNF (vars, charge2)) := by
+    simpa [List.bind] using hc
+  rcases List.mem_append.1 hcappend with hleft | hright
+  ·
+      have hleft' : List.Mem c (clausesForVertex vars charge1) := by
+        simpa [generatedParitySpecCNF] using hleft
+      exact
+        (GroupFrame.cnfClausesHaveCanonicalSupportVars_clausesForVertex
+          (m := m) vars charge1 c hleft').trans hnormal
+  ·
+      have hright' : List.Mem c (clausesForVertex vars charge2) := by
+        simpa [generatedParitySpecCNF] using hright
+      exact
+        (GroupFrame.cnfClausesHaveCanonicalSupportVars_clausesForVertex
+          (m := m) vars charge2 c hright').trans hnormal
+
+/--
 Every folded generated parity-spec list is semantically a parity-encoded class.
 This theorem has no freshness or disjointness premise: those side conditions
 belong to the executable residual-free extractor lane, not the declarative
@@ -5023,6 +5056,16 @@ def recoverSameSupportGeneratedParitySpecsPerm? {m : Nat}
   else
     none
 
+/-- Permutation coverage makes guided same-support recovery succeed. -/
+theorem recoverSameSupportGeneratedParitySpecsPerm_eq_some_of_perm
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {specs : List (GeneratedParitySpec m)}
+    (h : List.Perm (generatedParitySpecsCNF specs) groupCNF) :
+    recoverSameSupportGeneratedParitySpecsPerm? groupCNF specs =
+      some (generatedParitySpecsFallbackDecomposition specs) := by
+  unfold recoverSameSupportGeneratedParitySpecsPerm?
+  simp [h]
+
 /--
 Soundness of permutation-insensitive guided same-support recovery: any returned
 decomposition covers the input component up to clause permutation, has empty
@@ -5387,6 +5430,122 @@ theorem sameSupportTwoChargeCandidateSpecs_twoCycle_eq_generated :
       generatedParitySpecsForCycle 2 (by decide) := by
   decide
 
+/--
+All direct two-cycle clauses share the support inferred from the first clause.
+This is the support-stability fact needed to transport the two-charge fallback
+candidate generator across arbitrary permutations of the merged component.
+-/
+theorem twoCycleCNF_clausesHaveCandidateSupportVars :
+    GroupFrame.CNFClausesHaveCanonicalSupportVars
+      (TseitinCycleCNFFormula 2 (by decide))
+      (parityCandidateCanonicalSupportFromBlock
+        (TseitinCycleCNFFormula 2 (by decide))) := by
+  let vars :=
+    parityCandidateCanonicalSupportFromBlock
+      (TseitinCycleCNFFormula 2 (by decide))
+  have hspecs :
+      generatedParitySpecsForCycle 2 (by decide) =
+        [(vars, true), (vars, false)] := by
+    have h := sameSupportTwoChargeCandidateSpecs_twoCycle_eq_generated
+    simpa [sameSupportTwoChargeCandidateSpecs, vars] using h.symm
+  have hcnf :
+      generatedParitySpecsCNF (generatedParitySpecsForCycle 2 (by decide)) =
+        TseitinCycleCNFFormula 2 (by decide) := by
+    simpa [generatedParitySpecsForCycle, TseitinCycleCNFFormula] using
+      (generatedParitySpecsCNF_fromEncoding
+        (TseitinModel.encoding_cycle_derived 2 (by decide)) cycleRootCharge)
+  have hnormal : GroupFrame.VarsInCanonicalSupportOrder vars := by
+    dsimp [vars]
+    unfold GroupFrame.VarsInCanonicalSupportOrder
+    decide
+  change
+    GroupFrame.CNFClausesHaveCanonicalSupportVars
+      (TseitinCycleCNFFormula 2 (by decide)) vars
+  rw [← hcnf, hspecs]
+  exact
+    cnfClausesHaveCanonicalSupportVars_generatedParitySpecs_two_sameSupport
+      vars true false hnormal
+
+/--
+Any nonempty clause permutation of the direct two-cycle CNF infers the same
+two-charge generated-spec target as the direct component.
+-/
+theorem sameSupportTwoChargeCandidateSpecs_eq_generated_of_perm_twoCycle
+    {target : CNFModel.CNF
+      (TseitinModel.GraphEncodingData.toGraph
+        (TseitinModel.encoding_cycle_derived 2 (by decide))).m}
+    (hperm : List.Perm target (TseitinCycleCNFFormula 2 (by decide)))
+    (hnonempty : target ≠ []) :
+    sameSupportTwoChargeCandidateSpecs target =
+      generatedParitySpecsForCycle 2 (by decide) := by
+  let vars :=
+    parityCandidateCanonicalSupportFromBlock
+      (TseitinCycleCNFFormula 2 (by decide))
+  have hspecs :
+      generatedParitySpecsForCycle 2 (by decide) =
+        [(vars, true), (vars, false)] := by
+    have h := sameSupportTwoChargeCandidateSpecs_twoCycle_eq_generated
+    simpa [sameSupportTwoChargeCandidateSpecs, vars] using h.symm
+  cases htarget : target with
+  | nil =>
+      exact False.elim (hnonempty htarget)
+  | cons c tail =>
+      have hpermCons :
+          List.Perm (c :: tail)
+            (TseitinCycleCNFFormula 2 (by decide)) := by
+        simpa [htarget] using hperm
+      have htargetVars :
+          GroupFrame.CNFClausesHaveCanonicalSupportVars
+            (c :: tail) vars := by
+        simpa [vars] using
+          (GroupFrame.cnfClausesHaveCanonicalSupportVars_of_perm
+            (f := c :: tail)
+            (g := TseitinCycleCNFFormula 2 (by decide))
+            hpermCons
+            twoCycleCNF_clausesHaveCandidateSupportVars)
+      have hcandidate :
+          parityCandidateCanonicalSupportFromBlock (c :: tail) = vars :=
+        GroupFrame.parityCandidateCanonicalSupportFromBlock_eq_of_supportVars_cons
+          (f := c :: tail) (vars := vars) (c := c) (tail := tail)
+          htargetVars rfl
+      rw [hspecs]
+      simp [sameSupportTwoChargeCandidateSpecs, hcandidate]
+
+/--
+The permutation-insensitive two-charge recovery succeeds on any nonempty
+clause permutation of the direct two-cycle same-support component.
+-/
+theorem recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_twoCycle
+    {target : CNFModel.CNF
+      (TseitinModel.GraphEncodingData.toGraph
+        (TseitinModel.encoding_cycle_derived 2 (by decide))).m}
+    (hperm : List.Perm target (TseitinCycleCNFFormula 2 (by decide)))
+    (hnonempty : target ≠ []) :
+    recoverTwoChargeSameSupportGroupPerm? target =
+      some twoCycleSameSupportFallbackDecomposition := by
+  unfold recoverTwoChargeSameSupportGroupPerm?
+  have hcand :
+      sameSupportTwoChargeCandidateSpecs target =
+        generatedParitySpecsForCycle 2 (by decide) :=
+    sameSupportTwoChargeCandidateSpecs_eq_generated_of_perm_twoCycle
+      hperm hnonempty
+  have hcover :
+      List.Perm
+        (generatedParitySpecsCNF
+          (sameSupportTwoChargeCandidateSpecs target))
+        target := by
+    rw [hcand]
+    have hdirect :
+        generatedParitySpecsCNF (generatedParitySpecsForCycle 2 (by decide)) =
+          TseitinCycleCNFFormula 2 (by decide) := by
+      simpa [generatedParitySpecsForCycle, TseitinCycleCNFFormula] using
+        (generatedParitySpecsCNF_fromEncoding
+          (TseitinModel.encoding_cycle_derived 2 (by decide)) cycleRootCharge)
+    rw [hdirect]
+    exact hperm.symm
+  rw [recoverSameSupportGeneratedParitySpecsPerm_eq_some_of_perm hcover]
+  simp [twoCycleSameSupportFallbackDecomposition, hcand]
+
 /-- Direct-CNF unguided recovery returns the certified two-cycle fallback. -/
 theorem twoCycleSameSupportUnguidedDirectRecovery_eq_some :
     twoCycleSameSupportUnguidedDirectRecovery? =
@@ -5465,7 +5624,7 @@ def splitCanonicalSupportClauseGroupsWithTwoChargeFallback {m : Nat} :
           { blocks := b :: rest.blocks
             residualCNF := rest.residualCNF }
       | none =>
-          match recoverTwoChargeSameSupportGroup? g.2 with
+          match recoverTwoChargeSameSupportGroupPerm? g.2 with
           | some d =>
               { blocks := d.blocks ++ rest.blocks
                 residualCNF := d.residualCNF ++ rest.residualCNF }
@@ -5514,27 +5673,30 @@ theorem splitCanonicalSupportClauseGroupsWithTwoChargeFallback_expandedCNF_perm
             ExtractorCompleteness.canonicalSupportClauseGroupsCNF, hb]
           exact List.Perm.append_left g.2 ih
       | none =>
-          cases hrec : recoverTwoChargeSameSupportGroup? g.2 with
+          cases hrec : recoverTwoChargeSameSupportGroupPerm? g.2 with
           | some d =>
-              have hsound := recoverTwoChargeSameSupportGroup_sound hrec
+              have hsound := recoverTwoChargeSameSupportGroupPerm_sound hrec
               have hres : d.residualCNF = [] := by
                 simpa [CanonicalFingerprintGF2Decomposition.hasEmptyResidual] using
                   hsound.2
               have hdcore :
-                  canonicalFingerprintRecognizedBlocksCNF d.blocks = g.2 := by
+                  List.Perm (canonicalFingerprintRecognizedBlocksCNF d.blocks) g.2 := by
                 simpa [CanonicalFingerprintGF2Decomposition.expandedCNF,
                   CanonicalFingerprintGF2Decomposition.coreCNF,
                   hres] using hsound.1
-              have hdblocks :
-                  d.blocks.bind (fun b => b.blockCNF) = g.2 := by
-                simpa [canonicalFingerprintRecognizedBlocksCNF] using hdcore
+              have htail :
+                  List.Perm
+                    (splitCanonicalSupportClauseGroupsWithTwoChargeFallback groups).expandedCNF
+                    (groups.bind Prod.snd) := by
+                simpa [ExtractorCompleteness.canonicalSupportClauseGroupsCNF] using ih
               simp [hinfer, hrec, CanonicalFingerprintGF2Decomposition.expandedCNF,
                 CanonicalFingerprintGF2Decomposition.coreCNF,
                 canonicalFingerprintRecognizedBlocksCNF_append,
                 canonicalFingerprintRecognizedBlocksCNF,
                 ExtractorCompleteness.canonicalSupportClauseGroupsCNF,
-                hdcore, hdblocks, hres]
-              exact List.Perm.append_left g.2 ih
+                hres]
+              simpa [canonicalFingerprintRecognizedBlocksCNF] using
+                List.Perm.append hdcore htail
           | none =>
               simp [hinfer, hrec, CanonicalFingerprintGF2Decomposition.expandedCNF,
                 CanonicalFingerprintGF2Decomposition.coreCNF,
@@ -5641,7 +5803,7 @@ theorem splitCanonicalSupportClauseGroupsWithTwoChargeFallback_append_of_residua
                       unfold splitCanonicalSupportClauseGroupsWithTwoChargeFallback
                       simp [hinfer, hih]
       | none =>
-          cases hrec : recoverTwoChargeSameSupportGroup? g.2 with
+          cases hrec : recoverTwoChargeSameSupportGroupPerm? g.2 with
           | some d =>
               cases htail :
                   splitCanonicalSupportClauseGroupsWithTwoChargeFallback groups with
@@ -5685,7 +5847,7 @@ theorem splitCanonicalSupportClauseGroupsWithTwoChargeFallback_append_of_residua
                                 ([] : CNFModel.CNF m) = none := by
                             simpa [hgempty] using hinfer
                           have hrecEmpty :
-                              recoverTwoChargeSameSupportGroup?
+                              recoverTwoChargeSameSupportGroupPerm?
                                 ([] : CNFModel.CNF m) = none := by
                             simpa [hgempty] using hrec
                           unfold splitCanonicalSupportClauseGroupsWithTwoChargeFallback
@@ -5812,6 +5974,63 @@ theorem twoCycleSameSupportTwoChargeFallbackSplitter_coreEquationCount :
 /-- The enhanced two-cycle splitter has zero residual ordinary clauses. -/
 theorem twoCycleSameSupportTwoChargeFallbackSplitter_residualClauseCount :
     twoCycleSameSupportTwoChargeFallbackSplitter.residualClauseCount = 0 := by
+  decide
+
+/--
+Enhanced splitter output on the reversed direct two-cycle same-support boundary.
+The exact-list fallback used to residualize this input; the production splitter
+now uses the permutation-insensitive same-support recovery.
+-/
+def twoCycleSameSupportTwoChargeFallbackSplitterReversed :
+    CanonicalFingerprintGF2Decomposition
+      (TseitinModel.GraphEncodingData.toGraph
+        (TseitinModel.encoding_cycle_derived 2 (by decide))).m :=
+  splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback
+    (List.reverse (TseitinCycleCNFFormula 2 (by decide)))
+
+/--
+The enhanced splitter preserves the reversed direct two-cycle CNF up to
+permutation.
+-/
+theorem twoCycleSameSupportTwoChargeFallbackSplitterReversed_expandedCNF_perm :
+    List.Perm
+      twoCycleSameSupportTwoChargeFallbackSplitterReversed.expandedCNF
+      (List.reverse (TseitinCycleCNFFormula 2 (by decide))) :=
+  splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_expandedCNF_perm
+    (List.reverse (TseitinCycleCNFFormula 2 (by decide)))
+
+/--
+The enhanced splitter compacts the reversed direct two-cycle CNF to the same
+direct two-equation GF(2) target.
+-/
+theorem twoCycleSameSupportTwoChargeFallbackSplitterReversed_coreGF2_eq :
+    twoCycleSameSupportTwoChargeFallbackSplitterReversed.coreGF2 =
+      TseitinParityFormulaFromEncoding
+        (TseitinModel.encoding_cycle_derived 2 (by decide)) cycleRootCharge := by
+  rfl
+
+/--
+The enhanced splitter now leaves no residual clauses on the reversed direct
+two-cycle CNF.
+-/
+theorem twoCycleSameSupportTwoChargeFallbackSplitterReversed_hasEmptyResidual :
+    twoCycleSameSupportTwoChargeFallbackSplitterReversed.hasEmptyResidual := by
+  rfl
+
+/--
+The enhanced splitter still emits exactly two compact equations on the reversed
+direct two-cycle CNF.
+-/
+theorem twoCycleSameSupportTwoChargeFallbackSplitterReversed_coreEquationCount :
+    twoCycleSameSupportTwoChargeFallbackSplitterReversed.coreEquationCount = 2 := by
+  decide
+
+/--
+The enhanced splitter has zero residual ordinary clauses on the reversed direct
+two-cycle CNF.
+-/
+theorem twoCycleSameSupportTwoChargeFallbackSplitterReversed_residualClauseCount :
+    twoCycleSameSupportTwoChargeFallbackSplitterReversed.residualClauseCount = 0 := by
   decide
 
 /-- Accepted syntactic signals supply the per-block permutation certificates. -/
@@ -5962,6 +6181,31 @@ theorem class_of_recoverTwoChargeSameSupportGroup
   simpa [hcore] using hclassCore
 
 /--
+Any successful permutation-insensitive unguided two-charge same-support
+recovery is semantically sound as a local CNF-to-GF(2) block.  The local
+decomposition only covers the source component up to clause permutation, so the
+semantic class transports across the CNF permutation witness.
+-/
+theorem class_of_recoverTwoChargeSameSupportGroupPerm
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverTwoChargeSameSupportGroupPerm? groupCNF = some d) :
+    ParityEncoded.Class m groupCNF d.coreGF2 := by
+  have hsyntactic :
+      CanonicalBlocksToSyntacticOk d.blocks :=
+    recoverTwoChargeSameSupportGroupPerm_toSyntacticOk hrec
+  have hclassCore :
+      ParityEncoded.Class m d.coreCNF d.coreGF2 :=
+    class_of_canonicalFingerprintRecognizedBlocks_syntacticSignals_append
+      (CanonicalBlocksSyntacticSignals.of_toSyntacticOk hsyntactic)
+  have hsound := recoverTwoChargeSameSupportGroupPerm_sound hrec
+  have hres : d.residualCNF = [] := hsound.2
+  have hcorePerm : List.Perm d.coreCNF groupCNF := by
+    simpa [CanonicalFingerprintGF2Decomposition.expandedCNF, hres] using
+      hsound.1
+  exact ParityEncoded.Class.cnf_perm hcorePerm hclassCore
+
+/--
 Successful unguided same-support recovery from a single merged support group
 returns a local semantic class witness for that group's CNF component.
 -/
@@ -5994,6 +6238,20 @@ theorem semanticPreservation_of_recoverTwoChargeSameSupportGroup
       ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 :=
   ParityEncoded.Class.sound
     (class_of_recoverTwoChargeSameSupportGroup hrec) a
+
+/--
+Per-assignment semantic preservation for a successful permutation-insensitive
+two-charge recovery.
+-/
+theorem semanticPreservation_of_recoverTwoChargeSameSupportGroupPerm
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverTwoChargeSameSupportGroupPerm? groupCNF = some d)
+    (a : CNFModel.Assignment m) :
+    CNFModel.cnfSat a groupCNF <->
+      ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 :=
+  ParityEncoded.Class.sound
+    (class_of_recoverTwoChargeSameSupportGroupPerm hrec) a
 
 /--
 When the support groups for a CNF are all recognized, the emitted canonical
@@ -6731,10 +6989,10 @@ theorem enhancedSemanticExtractorCompleteOn_of_singleGroupTwoChargeFallback
     {d : CanonicalFingerprintGF2Decomposition m}
     (hgroups : groupClausesByCanonicalSupport f = [(key, f)])
     (hinfer : inferCanonicalParityBlock f = none)
-    (hrec : recoverTwoChargeSameSupportGroup? f = some d) :
+    (hrec : recoverTwoChargeSameSupportGroupPerm? f = some d) :
     EnhancedSemanticExtractorCompleteOn f d.coreGF2 := by
   have hres : d.residualCNF = [] :=
-    (recoverTwoChargeSameSupportGroup_sound hrec).2
+    (recoverTwoChargeSameSupportGroupPerm_sound hrec).2
   have hsplit :
       splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback f =
         { blocks := d.blocks, residualCNF := [] } := by
@@ -6750,7 +7008,7 @@ theorem enhancedSemanticExtractorCompleteOn_of_singleGroupTwoChargeFallback
     simp [CanonicalFingerprintGF2Decomposition.coreGF2]
   exact
     enhancedSemanticExtractorCompleteOn_of_class
-      (class_of_recoverTwoChargeSameSupportGroup hrec)
+      (class_of_recoverTwoChargeSameSupportGroupPerm hrec)
       (enhancedExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback
         hsplit hgf2)
 
@@ -6795,6 +7053,51 @@ theorem enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle :
               (TseitinModel.encoding_cycle_derived 2 (by decide)) cycleRootCharge := by
         simpa [CanonicalFingerprintGF2Decomposition.coreGF2] using
           twoCycleSameSupportTwoChargeFallbackSplitter_coreGF2_eq
+      exact hcore ▸ List.Perm.refl _
+
+/--
+The enhanced fallback splitter satisfies the combined semantic/enhanced-executable
+package on the reversed direct two-cycle boundary.  This is the production-path
+regression theorem for the permutation-insensitive same-support fallback.
+-/
+theorem enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle_reversed :
+    EnhancedSemanticExtractorCompleteOn
+      (List.reverse (TseitinCycleCNFFormula 2 (by decide)))
+      (TseitinParityFormulaFromEncoding
+        (TseitinModel.encoding_cycle_derived 2 (by decide)) cycleRootCharge) := by
+  refine And.intro ?sem ?extract
+  · exact ParityEncoded.Class.sound
+      (ParityEncoded.Class.cnf_perm
+        (List.Perm.symm
+          (TseitinCycleCNFFormula 2 (by decide)).reverse_perm)
+        (class_of_TseitinCycleCNFFormula 2 (by decide)))
+  · refine ⟨twoCycleSameSupportTwoChargeFallbackSplitterReversed.blocks, ?split, ?gf2⟩
+    · have hres :
+          (splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback
+            (List.reverse (TseitinCycleCNFFormula 2 (by decide)))).residualCNF = [] := by
+          simpa [twoCycleSameSupportTwoChargeFallbackSplitterReversed,
+            CanonicalFingerprintGF2Decomposition.hasEmptyResidual] using
+            twoCycleSameSupportTwoChargeFallbackSplitterReversed_hasEmptyResidual
+      change
+        splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback
+            (List.reverse (TseitinCycleCNFFormula 2 (by decide))) =
+          { blocks :=
+              (splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback
+                (List.reverse (TseitinCycleCNFFormula 2 (by decide)))).blocks,
+            residualCNF := [] }
+      cases h :
+          splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback
+            (List.reverse (TseitinCycleCNFFormula 2 (by decide))) with
+      | mk blocks residualCNF =>
+          simp [h] at hres ⊢
+          exact hres
+    · have hcore :
+          canonicalFingerprintRecognizedBlocksGF2
+              twoCycleSameSupportTwoChargeFallbackSplitterReversed.blocks =
+            TseitinParityFormulaFromEncoding
+              (TseitinModel.encoding_cycle_derived 2 (by decide)) cycleRootCharge := by
+        simpa [CanonicalFingerprintGF2Decomposition.coreGF2] using
+          twoCycleSameSupportTwoChargeFallbackSplitterReversed_coreGF2_eq
       exact hcore ▸ List.Perm.refl _
 
 /--
