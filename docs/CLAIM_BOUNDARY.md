@@ -520,6 +520,12 @@ accepts every nonempty clause permutation of the direct two-cycle component
 with the same generated two-spec target, and carries the local
 `ParityEncoded.Class` witness plus per-assignment semantic preservation for its
 compact GF(2) core.
+The graph-specific statement now factors through a generic local theorem,
+`enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport`:
+for any canonical support, any nonempty clause permutation of the generated
+true/false parity expansions over that support, and an ordinary one-block
+recognizer miss, the production enhanced fallback splitter emits the generated
+two-equation GF(2) target with no residual clauses.
 This is still a returned-output soundness result, not a success/completeness
 theorem for arbitrary same-support components.
 The enhanced fallback splitter covers the direct two-cycle CNF exactly,

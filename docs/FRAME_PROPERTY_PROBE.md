@@ -157,7 +157,11 @@ The enhanced two-charge fallback itself now uses permutation-insensitive
 same-support recovery: the exact-list recovery is certified to fail on the
 reversed direct two-cycle CNF, while the permutation-insensitive recovery is
 certified to accept every nonempty clause permutation of the direct two-cycle
-component.  The production enhanced splitter is certified residual-free on the
+component.  The same local repair is now factored as the generic
+`enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport`
+theorem for any generated true/false pair over one canonical support, assuming
+the ordinary one-block recognizer misses.  The production enhanced splitter is
+certified residual-free on the
 reversed boundary and preserves the input up to `List.Perm`; the stronger
 `enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle_of_perm`
 theorem lifts that production result to every nonempty clause permutation of

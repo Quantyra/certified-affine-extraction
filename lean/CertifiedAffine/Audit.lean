@@ -1793,6 +1793,22 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_toSyntacticOk
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_eq_of_perm_generatedParitySpecs_two_sameSupport' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_eq_of_perm_generatedParitySpecs_two_sameSupport
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_two_sameSupport' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_two_sameSupport
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_generatedParitySpecs_two_sameSupport' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_generatedParitySpecs_two_sameSupport
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupTwoCharge_sound' depends on axioms: [propext] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupTwoCharge_sound
@@ -2042,6 +2058,12 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_singleGroupTwoChargeFallback
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle' depends on axioms: [propext,
  Classical.choice,

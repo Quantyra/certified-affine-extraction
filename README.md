@@ -415,6 +415,9 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   support group, and that guided recovery succeeds on that merged group.
 - `AtomicClassBridge.recoverTwoChargeSameSupportGroup?`,
   `AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm?`,
+  `AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_eq_of_perm_generatedParitySpecs_two_sameSupport`,
+  `AtomicClassBridge.groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_two_sameSupport`,
+  `AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_generatedParitySpecs_two_sameSupport`,
   `AtomicClassBridge.recoverSingleMergedSupportGroupTwoCharge?`,
   `AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_twoCycle_eq_generated`,
   `AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_eq_generated_of_perm_twoCycle`,
@@ -434,6 +437,14 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   carries a `ParityEncoded.Class` witness and per-assignment semantic
   preservation for its compact GF(2) core.  The remaining gap is generalizing
   this local splitter beyond the two-charge same-support case.
+- `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport`:
+  extracts the two-cycle-independent core of that repair.  For any canonical
+  support `vars`, any nonempty clause permutation of the generated true/false
+  parity expansions over `vars`, and any ordinary one-block recognizer miss,
+  the production enhanced fallback splitter emits the generated two-equation
+  GF(2) target with no residual clauses.  This removes the graph-specific
+  two-cycle dependency from the local theorem, while still leaving
+  arbitrary same-support recovery open.
 - `AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback`,
   `AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback`,
   and `AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitter_*`:

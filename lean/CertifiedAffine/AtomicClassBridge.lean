@@ -5364,6 +5364,121 @@ theorem recoverTwoChargeSameSupportGroupPerm_toSyntacticOk
       exact recoverSameSupportGeneratedParitySpecsPerm_toSyntacticOk hrec
 
 /--
+For a nonempty clause permutation of two generated parity specs over the same
+canonical support, the two-charge same-support candidate generator recovers the
+original support and canonical charge order.
+-/
+theorem sameSupportTwoChargeCandidateSpecs_eq_of_perm_generatedParitySpecs_two_sameSupport
+    {m : Nat} {vars : List (Fin m)} {target : CNFModel.CNF m}
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF [(vars, true), (vars, false)]))
+    (hnonempty : target ≠ []) :
+    sameSupportTwoChargeCandidateSpecs target =
+      [(vars, true), (vars, false)] := by
+  cases htarget : target with
+  | nil =>
+      exact False.elim (hnonempty htarget)
+  | cons c tail =>
+      have hpermCons :
+          List.Perm (c :: tail)
+            (generatedParitySpecsCNF [(vars, true), (vars, false)]) := by
+        simpa [htarget] using hperm
+      have htargetVars :
+          GroupFrame.CNFClausesHaveCanonicalSupportVars
+            (c :: tail) vars := by
+        exact
+          GroupFrame.cnfClausesHaveCanonicalSupportVars_of_perm
+            hpermCons
+            (cnfClausesHaveCanonicalSupportVars_generatedParitySpecs_two_sameSupport
+              vars true false hnormal)
+      have hcandidate :
+          parityCandidateCanonicalSupportFromBlock (c :: tail) = vars :=
+        GroupFrame.parityCandidateCanonicalSupportFromBlock_eq_of_supportVars_cons
+          (f := c :: tail) (vars := vars) (c := c) (tail := tail)
+          htargetVars rfl
+      simp [sameSupportTwoChargeCandidateSpecs, hcandidate]
+
+/--
+Any nonempty clause permutation of two generated parity specs over the same
+canonical support still forms one executable canonical support group.
+-/
+theorem groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_two_sameSupport
+    {m : Nat} {vars : List (Fin m)} {target : CNFModel.CNF m}
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF [(vars, true), (vars, false)]))
+    (hnonempty : target ≠ []) :
+    groupClausesByCanonicalSupport target =
+      [(GroupFrame.canonicalSupportKeyForVars vars, target)] := by
+  cases htarget : target with
+  | nil =>
+      exact False.elim (hnonempty htarget)
+  | cons c tail =>
+      have hpermCons :
+          List.Perm (c :: tail)
+            (generatedParitySpecsCNF [(vars, true), (vars, false)]) := by
+        simpa [htarget] using hperm
+      have htargetVars :
+          GroupFrame.CNFClausesHaveCanonicalSupportVars
+            (c :: tail) vars := by
+        exact
+          GroupFrame.cnfClausesHaveCanonicalSupportVars_of_perm
+            hpermCons
+            (cnfClausesHaveCanonicalSupportVars_generatedParitySpecs_two_sameSupport
+              vars true false hnormal)
+      change
+        groupClausesByCanonicalSupport (c :: tail) =
+          [(GroupFrame.canonicalSupportKeyForVars vars, c :: tail)]
+      apply GroupFrame.groupClausesByCanonicalSupport_cons_eq_single_of_same_key
+      ·
+        have hcvars :
+            canonicalClauseSupportVars c = vars :=
+          htargetVars c (List.Mem.head tail)
+        rw [canonicalClauseSupportKey, GroupFrame.canonicalSupportKeyForVars,
+          hcvars, hnormal]
+      ·
+        intro d hd
+        have hdvars :
+            canonicalClauseSupportVars d = vars :=
+          htargetVars d (List.Mem.tail c hd)
+        rw [canonicalClauseSupportKey, GroupFrame.canonicalSupportKeyForVars,
+          hdvars, hnormal]
+
+/--
+The public permutation-insensitive two-charge fallback succeeds on every
+nonempty clause permutation of two generated parity specs over the same
+canonical support.
+-/
+theorem recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_generatedParitySpecs_two_sameSupport
+    {m : Nat} {vars : List (Fin m)} {target : CNFModel.CNF m}
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF [(vars, true), (vars, false)]))
+    (hnonempty : target ≠ []) :
+    recoverTwoChargeSameSupportGroupPerm? target =
+      some (generatedParitySpecsFallbackDecomposition
+        [(vars, true), (vars, false)]) := by
+  unfold recoverTwoChargeSameSupportGroupPerm?
+  have hcand :
+      sameSupportTwoChargeCandidateSpecs target =
+        [(vars, true), (vars, false)] :=
+    sameSupportTwoChargeCandidateSpecs_eq_of_perm_generatedParitySpecs_two_sameSupport
+      hnormal hperm hnonempty
+  have hcover :
+      List.Perm
+        (generatedParitySpecsCNF
+          (sameSupportTwoChargeCandidateSpecs target))
+        target := by
+    rw [hcand]
+    exact hperm.symm
+  rw [recoverSameSupportGeneratedParitySpecsPerm_eq_some_of_perm hcover]
+  simp [hcand]
+
+/--
 Unguided recovery for the one-merged-support-group boundary shape.  Other group
 shapes remain outside this narrow local recovery pass.
 -/
@@ -7155,6 +7270,54 @@ theorem enhancedSemanticExtractorCompleteOn_of_singleGroupTwoChargeFallback
       (class_of_recoverTwoChargeSameSupportGroupPerm hrec)
       (enhancedExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback
         hsplit hgf2)
+
+/--
+Generic production-path theorem for the two-charge same-support fallback.  If a
+nonempty CNF is a clause permutation of the generated true/false parity
+expansions over one canonical support, and the ordinary one-block recognizer
+misses it, then the enhanced fallback splitter emits the generated two-equation
+GF(2) target with no residual clauses.
+-/
+theorem enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport
+    {m : Nat} {vars : List (Fin m)} {target : CNFModel.CNF m}
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF [(vars, true), (vars, false)]))
+    (hnonempty : target ≠ [])
+    (hinfer : inferCanonicalParityBlock target = none) :
+    EnhancedSemanticExtractorCompleteOn
+      target
+      (generatedParitySpecsGF2 [(vars, true), (vars, false)]) := by
+  have hgroups :
+      groupClausesByCanonicalSupport target =
+        [(GroupFrame.canonicalSupportKeyForVars vars, target)] :=
+    groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_two_sameSupport
+      hnormal hperm hnonempty
+  have hrec :
+      recoverTwoChargeSameSupportGroupPerm? target =
+        some (generatedParitySpecsFallbackDecomposition
+          [(vars, true), (vars, false)]) :=
+    recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_generatedParitySpecs_two_sameSupport
+      hnormal hperm hnonempty
+  have hmain :
+      EnhancedSemanticExtractorCompleteOn
+        target
+        (generatedParitySpecsFallbackDecomposition
+          [(vars, true), (vars, false)]).coreGF2 :=
+    enhancedSemanticExtractorCompleteOn_of_singleGroupTwoChargeFallback
+      (f := target)
+      (key := GroupFrame.canonicalSupportKeyForVars vars)
+      (d := generatedParitySpecsFallbackDecomposition
+        [(vars, true), (vars, false)])
+      hgroups hinfer hrec
+  have hcore :
+      (generatedParitySpecsFallbackDecomposition
+        [(vars, true), (vars, false)]).coreGF2 =
+        generatedParitySpecsGF2 [(vars, true), (vars, false)] :=
+    generatedParitySpecsFallbackDecomposition_coreGF2_eq
+      [(vars, true), (vars, false)]
+  simpa [hcore] using hmain
 
 /--
 The enhanced fallback splitter satisfies the combined semantic/enhanced-executable
