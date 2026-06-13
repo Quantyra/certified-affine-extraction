@@ -676,6 +676,11 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.mem_canonicalBlockFingerprint_iff
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.mem_canonicalBlockFingerprint_append_iff' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.mem_canonicalBlockFingerprint_append_iff
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalClauseFingerprint_mem_canonicalBlockFingerprint_of_mem' depends on axioms: [propext,
  Quot.sound] -/
 #guard_msgs in
@@ -3125,6 +3130,20 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_signal_clausesForVertex_eq_charge
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsCNF_forSupportCharges_cons' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsCNF_forSupportCharges_cons
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_mem_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_iff_true_mem' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_mem_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_iff_true_mem
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_signals_eq' depends on axioms: [propext,
  Quot.sound] -/

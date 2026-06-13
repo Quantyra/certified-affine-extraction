@@ -214,6 +214,14 @@ preserve per-charge multiplicities,
 recovers the same charge list from the canonical recognized-block layer, and
 `allFalseClauseFingerprint_signal_clausesForVertex_eq_charge` makes the
 all-false clause fingerprint a CNF-side charge witness for generated blocks.
+The merged same-support component exposes a weaker pre-split signal:
+`allFalseClauseFingerprint_mem_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_iff_true_mem`
+proves that the merged canonical block fingerprint contains the all-false
+fingerprint exactly when the hidden charge list contains `true`, and
+`allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges`
+transports that presence theorem across clause permutation.  This moves the
+charge witness one layer earlier, but it is still only a true-charge presence
+result, not exact multiplicity reconstruction.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`

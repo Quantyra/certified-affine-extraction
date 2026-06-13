@@ -374,6 +374,12 @@ affine-structure extraction from CNF.
   block-fingerprint separation is proved by showing that the all-false
   assignment clause fingerprint is present in every true-charge generated block
   and absent from the corresponding false-charge block.
+- A v0.2 merged same-support presence theorem: for a generated same-support CNF
+  formed from one support and a Boolean charge list, the merged canonical block
+  fingerprint contains the all-false clause fingerprint if and only if `true`
+  appears in the charge list.  The theorem also transports across clause
+  permutation of the generated component.  This is a CNF-side presence signal,
+  not exact charge-multiplicity recovery.
 - A v0.2 list-level recognizer-to-class bridge: canonical-fingerprint block
   lists with per-block permutation certificates and append-disjoint supports
   instantiate `ParityEncoded.Class` over
@@ -572,6 +578,14 @@ per-charge multiplicity,
 does the same at the canonical recognized-block layer, and
 `allFalseClauseFingerprint_signal_clausesForVertex_eq_charge` proves that the
 all-false clause fingerprint is a CNF-side charge witness for generated blocks.
+The merged-CNF presence lane now moves that witness one layer earlier:
+`allFalseClauseFingerprint_mem_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_iff_true_mem`
+proves that the merged same-support generated CNF contains the all-false
+fingerprint exactly when the charge list contains `true`, and
+`allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges`
+transports the statement across clause permutations of the generated component.
+This proves true-charge presence before a split is known; it does not recover
+true-charge multiplicity.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`

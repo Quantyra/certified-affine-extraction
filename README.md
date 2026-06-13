@@ -193,6 +193,8 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
 - `AtomicClassBridge.mem_canonicalBlockFingerprint_iff`: characterizes
   membership in a sorted canonical block fingerprint by membership of a source
   clause with that canonical clause fingerprint.
+- `AtomicClassBridge.mem_canonicalBlockFingerprint_append_iff`: distributes
+  canonical block-fingerprint membership across ordinary CNF append.
 - `AtomicClassBridge.mem_canonicalClauseFingerprint_iff`: characterizes
   membership in a sorted canonical clause fingerprint by membership of a source
   literal with that signed-literal atom.
@@ -470,6 +472,9 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_count_true`,
   `AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_count_false`,
   `AtomicClassBridge.allFalseClauseFingerprint_signal_clausesForVertex_eq_charge`,
+  `AtomicClassBridge.generatedParitySpecsCNF_forSupportCharges_cons`,
+  `AtomicClassBridge.allFalseClauseFingerprint_mem_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_iff_true_mem`,
+  `AtomicClassBridge.allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges`,
   `AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_signals_eq`,
   and the matching
   `AtomicClassBridge.generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`
@@ -481,9 +486,13 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   GF(2) core preserve the exact charge list and its true/false multiplicities
   once a same-support split has been supplied or recovered.  The block layer
   also exposes the true-charge positions through the all-false clause
-  fingerprint, a CNF-side witness rather than a GF(2) semantic fact.  This pins
-  the open problem to discovering the split from CNF; neither the residual-free
-  block target nor the compact GF(2) target loses multiplicity data.
+  fingerprint, a CNF-side witness rather than a GF(2) semantic fact.  Before
+  the split is known, the merged same-support CNF already exposes true-charge
+  presence through that fingerprint, and this presence signal transports across
+  clause permutation.  It is a presence theorem, not a multiplicity theorem.
+  This pins the open problem to discovering the exact split from CNF; neither
+  the residual-free block target nor the compact GF(2) target loses
+  multiplicity data once that split is supplied or recovered.
 - `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,
   `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four`,
   `AtomicClassBridge.target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges`,

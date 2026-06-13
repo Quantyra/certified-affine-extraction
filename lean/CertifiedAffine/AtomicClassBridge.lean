@@ -137,6 +137,30 @@ theorem mem_canonicalBlockFingerprint_iff
     rcases hmem with ⟨c, hc, hfp⟩
     exact List.mem_map.2 ⟨c, hc, hfp⟩
 
+/-- Canonical block-fingerprint membership distributes over CNF append. -/
+theorem mem_canonicalBlockFingerprint_append_iff
+    {m : Nat}
+    {fingerprint : List Nat}
+    {f g : CNFModel.CNF m} :
+    List.Mem fingerprint (canonicalBlockFingerprint (f ++ g)) <->
+      List.Mem fingerprint (canonicalBlockFingerprint f) \/
+        List.Mem fingerprint (canonicalBlockFingerprint g) := by
+  rw [mem_canonicalBlockFingerprint_iff]
+  constructor
+  · intro hmem
+    rcases hmem with ⟨c, hc, hfp⟩
+    rcases List.mem_append.1 hc with hf | hg
+    · exact Or.inl
+        (mem_canonicalBlockFingerprint_iff.2 ⟨c, hf, hfp⟩)
+    · exact Or.inr
+        (mem_canonicalBlockFingerprint_iff.2 ⟨c, hg, hfp⟩)
+  · intro hmem
+    rcases hmem with hf | hg
+    · rcases mem_canonicalBlockFingerprint_iff.1 hf with ⟨c, hc, hfp⟩
+      exact ⟨c, List.mem_append.2 (Or.inl hc), hfp⟩
+    · rcases mem_canonicalBlockFingerprint_iff.1 hg with ⟨c, hc, hfp⟩
+      exact ⟨c, List.mem_append.2 (Or.inr hc), hfp⟩
+
 /-- A clause contributes its canonical fingerprint to the containing block fingerprint. -/
 theorem canonicalClauseFingerprint_mem_canonicalBlockFingerprint_of_mem
     {m : Nat}
@@ -1629,6 +1653,93 @@ theorem generatedParitySpecsForSupportCharges_sameSupport
   rcases List.mem_map.1 hspec with ⟨charge, _hcharge, hspec_eq⟩
   cases hspec_eq
   rfl
+
+/-- The same-support generated CNF fold exposes its head block by append. -/
+theorem generatedParitySpecsCNF_forSupportCharges_cons
+    {m : Nat} (vars : List (Fin m)) (charge : Bool)
+    (charges : List Bool) :
+    generatedParitySpecsCNF
+        (generatedParitySpecsForSupportCharges vars (charge :: charges)) =
+      clausesForVertex vars charge ++
+        generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges) := by
+  rw [generatedParitySpecsCNF_eq_bind, generatedParitySpecsCNF_eq_bind]
+  simp [generatedParitySpecsForSupportCharges, generatedParitySpecCNF]
+
+/--
+On the merged same-support generated CNF, the all-false clause fingerprint is
+present exactly when at least one hidden generated charge is true. This is a
+pre-split CNF-side presence signal; it does not claim multiplicity recovery.
+-/
+theorem allFalseClauseFingerprint_mem_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_iff_true_mem
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    List.Mem
+      (canonicalClauseFingerprint
+        (clauseForAssignment vars (List.replicate vars.length false)))
+      (canonicalBlockFingerprint
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) <->
+      List.Mem true charges := by
+  induction charges with
+  | nil =>
+      constructor
+      · intro hmem
+        rcases mem_canonicalBlockFingerprint_iff.1 hmem with ⟨c, hc, _hfp⟩
+        simp [generatedParitySpecsForSupportCharges, generatedParitySpecsCNF] at hc
+        cases hc
+      · intro hmem
+        cases hmem
+  | cons charge charges ih =>
+      rw [generatedParitySpecsCNF_forSupportCharges_cons]
+      rw [mem_canonicalBlockFingerprint_append_iff]
+      cases charge
+      · have hfalse :=
+          allFalseClauseFingerprint_not_mem_canonicalBlockFingerprint_clausesForVertex_false
+            vars
+        constructor
+        · intro hmem
+          rcases hmem with hblock | htail
+          · exact False.elim (hfalse hblock)
+          · exact List.Mem.tail false (ih.1 htail)
+        · intro hmem
+          cases hmem with
+          | tail _ htail =>
+              exact Or.inr (ih.2 htail)
+      · have htrue :=
+          allFalseClauseFingerprint_mem_canonicalBlockFingerprint_clausesForVertex_true
+            vars
+        constructor
+        · intro _hmem
+          exact List.Mem.head charges
+        · intro _hmem
+          exact Or.inl htrue
+
+/--
+The same merged-CNF all-false fingerprint presence signal is invariant under
+clause permutation of the generated same-support component.
+-/
+theorem allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    List.Mem
+      (canonicalClauseFingerprint
+        (clauseForAssignment vars (List.replicate vars.length false)))
+      (canonicalBlockFingerprint target) <->
+      List.Mem true charges := by
+  have hfingerprint :
+      canonicalBlockFingerprint target =
+        canonicalBlockFingerprint
+          (generatedParitySpecsCNF
+            (generatedParitySpecsForSupportCharges vars charges)) :=
+    canonicalBlockFingerprint_eq_of_perm hperm
+  rw [hfingerprint]
+  exact
+    allFalseClauseFingerprint_mem_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_iff_true_mem
+      vars charges
 
 /--
 If every generated block over the support has the same ordinary CNF length,
