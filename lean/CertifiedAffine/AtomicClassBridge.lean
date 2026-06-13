@@ -1569,6 +1569,115 @@ theorem generatedParitySpecsForSupportCharges_sameSupport
   cases hspec_eq
   rfl
 
+/--
+If every generated block over the support has the same ordinary CNF length,
+then the generated same-support component length is exactly charge-count times
+that block length.  This is the syntactic multiplicity counterpart to the
+charge-presence semantic lemmas below.
+-/
+theorem generatedParitySpecsForSupportCharges_cnf_length_eq_mul_of_block_length
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) (k : Nat)
+    (hlen :
+      forall charge : Bool, List.Mem charge charges ->
+        (clausesForVertex vars charge).length = k) :
+    (generatedParitySpecsCNF
+      (generatedParitySpecsForSupportCharges vars charges)).length =
+        charges.length * k := by
+  rw [generatedParitySpecsCNF_eq_bind]
+  induction charges with
+  | nil =>
+      simp [generatedParitySpecsForSupportCharges]
+  | cons charge charges ih =>
+      have hhead :
+          (clausesForVertex vars charge).length = k :=
+        hlen charge (List.Mem.head charges)
+      have htail :
+          forall charge' : Bool, List.Mem charge' charges ->
+            (clausesForVertex vars charge').length = k := by
+        intro charge' hmem
+        exact hlen charge' (List.Mem.tail charge hmem)
+      have ih' := ih htail
+      calc
+        ((generatedParitySpecsForSupportCharges vars (charge :: charges)).bind
+            generatedParitySpecCNF).length =
+            k + ((generatedParitySpecsForSupportCharges vars charges).bind
+              generatedParitySpecCNF).length := by
+          simp [generatedParitySpecsForSupportCharges, generatedParitySpecCNF,
+            hhead]
+        _ = k + charges.length * k := by
+          rw [ih']
+        _ = (charge :: charges).length * k := by
+          simp [Nat.succ_mul, Nat.add_assoc, Nat.add_comm,
+            Nat.add_left_comm]
+
+/-- Exact same-support generated CNF length for arity-three parity blocks. -/
+theorem generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three
+    {m : Nat} {vars : List (Fin m)}
+    (charges : List Bool)
+    (hlen : vars.length = 3) :
+    (generatedParitySpecsCNF
+      (generatedParitySpecsForSupportCharges vars charges)).length =
+        charges.length * 4 := by
+  exact
+    generatedParitySpecsForSupportCharges_cnf_length_eq_mul_of_block_length
+      vars charges 4
+      (by
+        intro charge _hmem
+        exact clausesForVertex_length_of_length_three (vars := vars)
+          (charge := charge) hlen)
+
+/-- Exact same-support generated CNF length for arity-four parity blocks. -/
+theorem generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four
+    {m : Nat} {vars : List (Fin m)}
+    (charges : List Bool)
+    (hlen : vars.length = 4) :
+    (generatedParitySpecsCNF
+      (generatedParitySpecsForSupportCharges vars charges)).length =
+        charges.length * 8 := by
+  exact
+    generatedParitySpecsForSupportCharges_cnf_length_eq_mul_of_block_length
+      vars charges 8
+      (by
+        intro charge _hmem
+        exact clausesForVertex_length_of_length_four (vars := vars)
+          (charge := charge) hlen)
+
+/--
+For a clause permutation of an arity-three same-support generated component,
+the component length exactly determines the total generated charge count.
+-/
+theorem target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    target.length = charges.length * 4 := by
+  exact hperm.length_eq.trans
+    (generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three
+      (vars := vars) charges hlen)
+
+/--
+For a clause permutation of an arity-four same-support generated component,
+the component length exactly determines the total generated charge count.
+-/
+theorem target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    target.length = charges.length * 8 := by
+  exact hperm.length_eq.trans
+    (generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four
+      (vars := vars) charges hlen)
+
 /-- The compact GF(2) formula for same-support charges is just the charge map. -/
 theorem generatedParitySpecsGF2_forSupportCharges_eq_map
     {m : Nat} (vars : List (Fin m)) (charges : List Bool) :

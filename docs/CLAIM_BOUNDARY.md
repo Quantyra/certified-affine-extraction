@@ -563,7 +563,19 @@ charges are semantically redundant,
 Boolean case to false-charge and true-charge presence, and
 `not_gf2Sat_generatedParitySpecsForSupportCharges_of_mem_false_true` proves that
 containing both charges is unsatisfiable.  The remaining multiplicity problem
-is exact CNF coverage, not extra GF(2) semantic content.  The unguided
+is exact CNF coverage, not extra GF(2) semantic content.  The exact length lane
+now proves the corresponding generated-component accounting for the main
+arity-three and arity-four surfaces:
+`generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,
+`generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four`,
+`target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges`,
+and
+`target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges`
+show that arity-three same-support generated components have length
+`charge_count * 4`, arity-four components have length `charge_count * 8`, and
+both facts transport across clause permutation.  Thus component length
+determines total generated charge count in these lanes, but not charge identity
+or the per-charge multiplicity split inside an arbitrary component.  The unguided
 two-charge probe
 infers the canonical support from that component, tries both charge orders,
 proves residual-free component coverage for any returned decomposition, proves

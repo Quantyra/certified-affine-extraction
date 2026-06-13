@@ -206,6 +206,18 @@ pin down that blocker: duplicate same-support charges do not change GF(2)
 semantics, while both charges together make the generated same-support GF(2)
 formula unsatisfiable.  What remains is exact component coverage and
 multiplicity reconstruction, not discovering new same-support semantic cases.
+The exact length lane now proves arity-three and arity-four generated
+same-support component accounting:
+`generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,
+`generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four`,
+`target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges`,
+and
+`target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges`
+show that component length is `charge_count * 4` for arity three and
+`charge_count * 8` for arity four, transported across clause permutation.  This
+lets component size determine total generated charge count in those lanes, but
+still does not recover charge identity or per-charge multiplicity inside an
+arbitrary same-support component.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

@@ -463,6 +463,17 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   charges are semantically redundant, and a same-support generated GF(2) formula
   containing both charges is unsatisfiable.  The remaining multiplicity problem
   is therefore exact CNF coverage, not added GF(2) semantic strength.
+- `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,
+  `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four`,
+  `AtomicClassBridge.target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges`,
+  and
+  `AtomicClassBridge.target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges`:
+  give exact same-support generated-component length accounting for the main
+  arity-three and arity-four lanes.  For arity three, component length is
+  `charge_count * 4`; for arity four, it is `charge_count * 8`; both facts
+  transport across clause permutation.  This lets component size determine the
+  total generated charge count in those lanes, while still not identifying the
+  charge values or per-charge multiplicities inside an arbitrary component.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify
