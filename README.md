@@ -421,6 +421,17 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `ParityEncoded.Class` witness.  This proves the verification/grouping half
   for arbitrary supplied same-support decompositions; it still does not infer
   the spec list from an arbitrary CNF.
+- `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm?`,
+  `AtomicClassBridge.parityCandidateCanonicalSupportFromBlock_eq_of_perm_generatedParitySpecs_sameSupport`,
+  `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_perm_supportCharges`,
+  `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_perm_supportCharges`,
+  and
+  `AtomicClassBridge.class_of_recoverSingleMergedSupportGroupFromChargesPerm`:
+  remove the support variables from the guided same-support input.  Given a
+  correct charge list, the recovery pass infers the canonical support from the
+  merged component, validates the generated CNF up to clause permutation, and
+  returns a local `ParityEncoded.Class` witness.  The remaining discovery
+  problem is now the charge list and its multiplicities.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify

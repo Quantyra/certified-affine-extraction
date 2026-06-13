@@ -174,6 +174,15 @@ cover any supplied generated-spec list whose specs share one canonical
 support, up to clause permutation.  This narrows the remaining blocker to
 unguided discovery of that split, rather than verification of a supplied
 same-support split.
+The charge-guided support-inference lane removes the support variables from
+that supplied split:
+`parityCandidateCanonicalSupportFromBlock_eq_of_perm_generatedParitySpecs_sameSupport`
+recovers the generator support from any nonempty same-support generated
+component, and
+`recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_perm_supportCharges`
+accepts the component when the supplied charge list is correct.  The blocker is
+therefore now charge-list and multiplicity discovery, not support inference for
+this generated same-support lane.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

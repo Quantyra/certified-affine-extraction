@@ -515,13 +515,25 @@ verification side beyond the two-charge boundary:
 and
 `recoverSingleMergedSupportGroupFromGeneratedSpecsPerm_eq_some_of_perm_generatedParitySpecs_sameSupport`
 show that any nonempty clause permutation of a supplied generated-spec list
-whose specs all use one canonical support groups as one canonical support
-component and is accepted by the guided recovery for that supplied split.  The
+whose specs all use one canonical support is grouped as a single canonical
+support component and is accepted by the guided recovery for that supplied
+split.  The
 corresponding class bridge,
 `class_of_recoverSingleMergedSupportGroupFromGeneratedSpecsPerm`, gives a
 local `ParityEncoded.Class` witness for any successful return.  This is still
 not unguided recognition: the spec list is supplied as a premise, not inferred
-from an arbitrary CNF.  The unguided two-charge probe infers the canonical
+from an arbitrary CNF.  The support-inferred charge-guided lane now removes one
+piece of that supplied spec data:
+`parityCandidateCanonicalSupportFromBlock_eq_of_perm_generatedParitySpecs_sameSupport`
+proves that a nonempty same-support generated component reveals the canonical
+support used by its generator, and
+`recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_perm_supportCharges`
+uses that inferred support to recover the supplied charge list up to clause
+permutation.  The corresponding class bridge,
+`class_of_recoverSingleMergedSupportGroupFromChargesPerm`, packages a
+successful return as a local `ParityEncoded.Class` witness.  This is still not
+arbitrary same-support recognition: the remaining discovery problem is the
+charge list and multiplicities.  The unguided two-charge probe infers the canonical
 support from that component, tries both charge orders, proves residual-free
 component coverage for any returned decomposition, proves that returned blocks
 pass the executable syntactic upgrade, and succeeds on the same actual
