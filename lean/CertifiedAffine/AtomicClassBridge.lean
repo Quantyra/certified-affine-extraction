@@ -7173,6 +7173,37 @@ theorem recoverTwoChargeSameSupportGroup_sound
       exact And.intro hsound.1 hsound.2.1
 
 /--
+Exact-core soundness for unguided two-charge same-support recovery.  A
+successful return covers the input exactly, leaves no residual clauses, and
+its compact GF(2) core is the generated two-charge target in one of the two
+candidate orders.
+-/
+theorem recoverTwoChargeSameSupportGroup_sound_coreGF2
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverTwoChargeSameSupportGroup? groupCNF = some d) :
+    d.expandedCNF = groupCNF /\ d.hasEmptyResidual /\
+      (d.coreGF2 =
+          generatedParitySpecsGF2
+            (sameSupportTwoChargeCandidateSpecs groupCNF) \/
+        d.coreGF2 =
+          generatedParitySpecsGF2
+            (sameSupportTwoChargeCandidateSpecsFlipped groupCNF)) := by
+  unfold recoverTwoChargeSameSupportGroup? at hrec
+  cases hfirst :
+      recoverSameSupportGeneratedParitySpecs?
+        groupCNF (sameSupportTwoChargeCandidateSpecs groupCNF) with
+  | some dfirst =>
+      simp [hfirst] at hrec
+      cases hrec
+      have hsound := recoverSameSupportGeneratedParitySpecs_sound hfirst
+      exact ⟨hsound.1, hsound.2.1, Or.inl hsound.2.2⟩
+  | none =>
+      simp [hfirst] at hrec
+      have hsound := recoverSameSupportGeneratedParitySpecs_sound hrec
+      exact ⟨hsound.1, hsound.2.1, Or.inr hsound.2.2⟩
+
+/--
 The unguided two-charge same-support recovery emits only syntactically
 upgradable generated-spec fallback blocks.
 -/
@@ -7216,6 +7247,37 @@ theorem recoverTwoChargeSameSupportGroupPerm_sound
       simp [hfirst] at hrec
       have hsound := recoverSameSupportGeneratedParitySpecsPerm_sound hrec
       exact And.intro hsound.1 hsound.2.1
+
+/--
+Exact-core soundness for permutation-insensitive unguided two-charge
+same-support recovery.  A successful return covers the input up to clause
+permutation, leaves no residual clauses, and its compact GF(2) core is the
+generated two-charge target in one of the two candidate orders.
+-/
+theorem recoverTwoChargeSameSupportGroupPerm_sound_coreGF2
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverTwoChargeSameSupportGroupPerm? groupCNF = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual /\
+      (d.coreGF2 =
+          generatedParitySpecsGF2
+            (sameSupportTwoChargeCandidateSpecs groupCNF) \/
+        d.coreGF2 =
+          generatedParitySpecsGF2
+            (sameSupportTwoChargeCandidateSpecsFlipped groupCNF)) := by
+  unfold recoverTwoChargeSameSupportGroupPerm? at hrec
+  cases hfirst :
+      recoverSameSupportGeneratedParitySpecsPerm?
+        groupCNF (sameSupportTwoChargeCandidateSpecs groupCNF) with
+  | some dfirst =>
+      simp [hfirst] at hrec
+      cases hrec
+      have hsound := recoverSameSupportGeneratedParitySpecsPerm_sound hfirst
+      exact ⟨hsound.1, hsound.2.1, Or.inl hsound.2.2⟩
+  | none =>
+      simp [hfirst] at hrec
+      have hsound := recoverSameSupportGeneratedParitySpecsPerm_sound hrec
+      exact ⟨hsound.1, hsound.2.1, Or.inr hsound.2.2⟩
 
 /--
 The permutation-insensitive unguided two-charge same-support recovery emits

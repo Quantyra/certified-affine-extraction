@@ -160,6 +160,9 @@ bounded charge search outside the generated lane:
 the exact-list recovery is certified to fail on the reversed direct two-cycle
 CNF, while the permutation-insensitive two-charge recovery is certified to
 accept every nonempty clause permutation of the direct two-cycle component.
+The strengthened `recoverTwoChargeSameSupportGroupPerm_sound_coreGF2` theorem
+now keeps the exact generated compact-core target for successful two-charge
+recovery, in addition to coverage and empty residual.
 The same local repair is now factored as the generic
 `enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport`
 theorem for any generated true/false pair over one canonical support, assuming

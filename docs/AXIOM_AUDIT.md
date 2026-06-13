@@ -395,11 +395,13 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroup_sound` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroup_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroup_sound_coreGF2` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParitySpecsPerm_eq_some_of_perm` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParitySpecsPerm_sound` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParitySpecsPerm_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_sound` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_sound_coreGF2` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_eq_of_perm_generatedParitySpecs_two_sameSupport` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_two_sameSupport` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_generatedParitySpecs_two_sameSupport` | `propext`, `Classical.choice`, `Quot.sound` |

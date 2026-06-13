@@ -1955,6 +1955,10 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroup_toSyntacticOk
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroup_sound_coreGF2' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroup_sound_coreGF2
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParitySpecsPerm_eq_some_of_perm' depends on axioms: [propext,
  Classical.choice,
  Quot.sound] -/
@@ -1984,6 +1988,12 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_toSyntacticOk
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_sound_coreGF2' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_sound_coreGF2
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_eq_of_perm_generatedParitySpecs_two_sameSupport' depends on axioms: [propext,
  Quot.sound] -/

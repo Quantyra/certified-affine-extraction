@@ -713,7 +713,11 @@ The permutation-insensitive recovery proves coverage up to `List.Perm`,
 accepts every nonempty clause permutation of the direct two-cycle component
 with the same generated two-spec target, and carries the local
 `ParityEncoded.Class` witness plus per-assignment semantic preservation for its
-compact GF(2) core.
+compact GF(2) core.  The strengthened
+`recoverTwoChargeSameSupportGroupPerm_sound_coreGF2` theorem also records exact
+compact-core identity: any successful permutation-insensitive two-charge
+recovery emits the generated GF(2) target for either the normal or flipped
+candidate order.
 The graph-specific statement now factors through a generic local theorem,
 `enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport`:
 for any canonical support, any nonempty clause permutation of the generated

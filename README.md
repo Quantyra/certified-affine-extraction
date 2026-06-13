@@ -644,8 +644,12 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   of the direct two-cycle component; the exact-list variant is kept as a
   diagnostic surface.  The returned local two-charge decomposition now also
   carries a `ParityEncoded.Class` witness and per-assignment semantic
-  preservation for its compact GF(2) core.  The remaining gap is generalizing
-  this local splitter beyond the two-charge same-support case.
+  preservation for its compact GF(2) core.  The strengthened
+  `AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_sound_coreGF2`
+  theorem records not only coverage and zero residual clauses, but also that
+  the emitted compact core is exactly one of the two generated two-charge
+  candidate GF(2) targets.  The remaining gap is generalizing this local
+  splitter beyond the two-charge same-support case.
 - `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport`:
   extracts the two-cycle-independent core of that repair.  For any canonical
   support `vars`, any nonempty clause permutation of the generated true/false
