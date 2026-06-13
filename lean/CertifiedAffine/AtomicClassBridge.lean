@@ -9760,6 +9760,44 @@ def splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback {m : Nat}
     (groupClausesByCanonicalSupport f)
 
 /--
+Canonical support splitter with the no-search same-support fallback prefix.  It
+uses the existing one-block canonical recognizer first; if that misses, it
+tries the non-exhaustive same-support branch and residualizes the group if that
+also misses.  Unlike `splitCanonicalSupportClauseGroupsWithTwoChargeFallback`,
+this splitter never invokes bounded `chargeListsUpTo` search.
+-/
+def splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback {m : Nat} :
+    List (CanonicalSupportClauseGroup m) ->
+      CanonicalFingerprintGF2Decomposition m
+  | [] =>
+      { blocks := []
+        residualCNF := [] }
+  | g :: groups =>
+      let rest := splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups
+      match inferCanonicalParityBlock g.2 with
+      | some b =>
+          { blocks := b :: rest.blocks
+            residualCNF := rest.residualCNF }
+      | none =>
+          match recoverSameSupportGroupWithNonexhaustiveFallback? g.2 with
+          | some d =>
+              { blocks := d.blocks ++ rest.blocks
+                residualCNF := d.residualCNF ++ rest.residualCNF }
+          | none =>
+              { blocks := rest.blocks
+                residualCNF := g.2 ++ rest.residualCNF }
+
+/--
+Full-CNF canonical splitter with the no-search same-support fallback prefix.
+This is the executable no-enumeration surface for lanes where bounded
+charge-list search is deliberately excluded.
+-/
+def splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback {m : Nat}
+    (f : CNFModel.CNF m) : CanonicalFingerprintGF2Decomposition m :=
+  splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback
+    (groupClausesByCanonicalSupport f)
+
+/--
 The enhanced fallback splitter preserves all ordinary clauses up to
 permutation.  Recognized one-block groups move into the core, successful
 same-support fallback groups move into the core as a residual-free local
@@ -9869,6 +9907,119 @@ theorem splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_expanded
   exact
     List.Perm.trans
       (splitCanonicalSupportClauseGroupsWithTwoChargeFallback_expandedCNF_perm
+        (groupClausesByCanonicalSupport f))
+      (GroupFrame.canonicalSupportClauseGroupsCNF_groupClausesByCanonicalSupport_perm f)
+
+/--
+The no-search same-support splitter preserves all ordinary clauses up to
+permutation.  Recognized one-block groups move into the core, successful
+non-exhaustive same-support groups move into the core as residual-free local
+decompositions, and all other groups remain residual.
+-/
+theorem splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_expandedCNF_perm
+    {m : Nat}
+    (groups : List (CanonicalSupportClauseGroup m)) :
+    List.Perm
+      (splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).expandedCNF
+      (ExtractorCompleteness.canonicalSupportClauseGroupsCNF groups) := by
+  induction groups with
+  | nil =>
+      simp [splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback,
+        CanonicalFingerprintGF2Decomposition.expandedCNF,
+        CanonicalFingerprintGF2Decomposition.coreCNF,
+        canonicalFingerprintRecognizedBlocksCNF,
+        ExtractorCompleteness.canonicalSupportClauseGroupsCNF]
+  | cons g groups ih =>
+      unfold splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback
+      cases hinfer : inferCanonicalParityBlock g.2 with
+      | some b =>
+          have hb : b.blockCNF = g.2 :=
+            ExtractorCompleteness.blockCNF_eq_of_inferCanonicalParityBlock hinfer
+          simp [hinfer, CanonicalFingerprintGF2Decomposition.expandedCNF,
+            CanonicalFingerprintGF2Decomposition.coreCNF,
+            canonicalFingerprintRecognizedBlocksCNF,
+            ExtractorCompleteness.canonicalSupportClauseGroupsCNF, hb]
+          exact List.Perm.append_left g.2 ih
+      | none =>
+          cases hrec : recoverSameSupportGroupWithNonexhaustiveFallback? g.2 with
+          | some d =>
+              have hsound := recoverSameSupportGroupWithNonexhaustiveFallback_sound hrec
+              have hres : d.residualCNF = [] := by
+                simpa [CanonicalFingerprintGF2Decomposition.hasEmptyResidual] using
+                  hsound.2
+              have hdcore :
+                  List.Perm (canonicalFingerprintRecognizedBlocksCNF d.blocks) g.2 := by
+                simpa [CanonicalFingerprintGF2Decomposition.expandedCNF,
+                  CanonicalFingerprintGF2Decomposition.coreCNF,
+                  hres] using hsound.1
+              have htail :
+                  List.Perm
+                    (splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).expandedCNF
+                    (groups.bind Prod.snd) := by
+                simpa [ExtractorCompleteness.canonicalSupportClauseGroupsCNF] using ih
+              simp [hinfer, hrec, CanonicalFingerprintGF2Decomposition.expandedCNF,
+                CanonicalFingerprintGF2Decomposition.coreCNF,
+                canonicalFingerprintRecognizedBlocksCNF_append,
+                canonicalFingerprintRecognizedBlocksCNF,
+                ExtractorCompleteness.canonicalSupportClauseGroupsCNF,
+                hres]
+              simpa [canonicalFingerprintRecognizedBlocksCNF] using
+                List.Perm.append hdcore htail
+          | none =>
+              simp [hinfer, hrec, CanonicalFingerprintGF2Decomposition.expandedCNF,
+                CanonicalFingerprintGF2Decomposition.coreCNF,
+                canonicalFingerprintRecognizedBlocksCNF,
+                ExtractorCompleteness.canonicalSupportClauseGroupsCNF]
+              have htail :
+                  List.Perm
+                    (((splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).blocks.bind
+                      fun b => b.blockCNF) ++
+                        (splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).residualCNF)
+                    (groups.bind Prod.snd) := by
+                simpa [CanonicalFingerprintGF2Decomposition.expandedCNF,
+                  CanonicalFingerprintGF2Decomposition.coreCNF,
+                  canonicalFingerprintRecognizedBlocksCNF,
+                  ExtractorCompleteness.canonicalSupportClauseGroupsCNF] using ih
+              have hswap :
+                  List.Perm
+                    (((splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).blocks.bind
+                      fun b => b.blockCNF) ++
+                        (g.2 ++
+                          (splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).residualCNF))
+                    (g.2 ++
+                      (((splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).blocks.bind
+                        fun b => b.blockCNF) ++
+                          (splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).residualCNF)) := by
+                simpa [List.append_assoc] using
+                  List.Perm.append_right
+                    (splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).residualCNF
+                    (List.perm_append_comm :
+                      List.Perm
+                        (((splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).blocks.bind
+                          fun b => b.blockCNF) ++ g.2)
+                        (g.2 ++
+                          ((splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).blocks.bind
+                            fun b => b.blockCNF)))
+              have htailLeft :
+                  List.Perm
+                    (g.2 ++
+                      (((splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).blocks.bind
+                        fun b => b.blockCNF) ++
+                          (splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups).residualCNF))
+                    (g.2 ++ groups.bind Prod.snd) :=
+                List.Perm.append_left g.2 htail
+              exact List.Perm.trans hswap htailLeft
+
+/-- The no-search full-CNF splitter preserves the input CNF up to permutation. -/
+theorem splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_expandedCNF_perm
+    {m : Nat} (f : CNFModel.CNF m) :
+    List.Perm
+      (splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback f).expandedCNF
+      f := by
+  unfold splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+  exact
+    List.Perm.trans
+      (splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_expandedCNF_perm
         (groupClausesByCanonicalSupport f))
       (GroupFrame.canonicalSupportClauseGroupsCNF_groupClausesByCanonicalSupport_perm f)
 

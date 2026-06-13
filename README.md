@@ -518,6 +518,17 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   extraction result whose emitted compact core is assignment-equivalent to the
   hidden generated GF(2) source.  This still assumes a generated same-support
   source up to clause permutation and an ordinary one-block recognizer miss.
+  The no-search branch now also has its own full-CNF splitter surface:
+  `AtomicClassBridge.splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback`
+  and
+  `AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback`
+  run the one-block recognizer plus the non-exhaustive same-support fallback,
+  never the bounded `chargeListsUpTo` branch.  Their preservation theorems
+  `AtomicClassBridge.splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_expandedCNF_perm`
+  and
+  `AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_expandedCNF_perm`
+  prove that this no-search splitter still represents the input CNF up to
+  clause permutation.
 - `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`,

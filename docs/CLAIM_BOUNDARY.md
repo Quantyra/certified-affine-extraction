@@ -603,6 +603,17 @@ extraction result, together with assignment-equivalence between the emitted
 compact core and the hidden generated GF(2) source.  This theorem still assumes
 a generated same-support presentation up to clause permutation and an ordinary
 one-block recognizer miss; it does not recognize arbitrary same-support CNF.
+There is now a separate no-search full-CNF splitter surface:
+`splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback` and
+`splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback` use the
+ordinary one-block recognizer plus the non-exhaustive same-support fallback, but
+do not call the bounded `chargeListsUpTo` branch.  The preservation theorems
+`splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_expandedCNF_perm`
+and
+`splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_expandedCNF_perm`
+prove that this no-search splitter still accounts for the input CNF up to
+permutation.  This is a sound no-enumeration executable surface, not a general
+same-support completeness theorem.
 The semantic
 charge-presence lane now proves that this multiplicity problem is not semantic
 strength:

@@ -253,7 +253,14 @@ same-support wrapper
 `enhancedSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport`
 now packages production-path enhanced extraction plus assignment-equivalence to
 the hidden generated GF(2) source under the generated same-support and
-one-block-miss hypotheses.  The
+one-block-miss hypotheses.  The no-search prefix now also has a full-CNF
+splitter surface:
+`splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback` and
+`splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback` run the
+ordinary one-block recognizer plus the non-exhaustive same-support fallback
+without calling the bounded `chargeListsUpTo` branch.  Their
+`*_expandedCNF_perm` theorems prove that this executable no-enumeration
+splitter still preserves the input CNF up to permutation.  The
 remaining blocker is deriving charge
 multiplicities from arbitrary components; the current last-resort search is
 still exhaustive outside the generated lane, not an efficient reconstruction

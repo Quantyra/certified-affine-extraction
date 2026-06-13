@@ -2275,6 +2275,30 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_expandedCNF_perm
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_expandedCNF_perm' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_expandedCNF_perm
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_expandedCNF_perm' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_expandedCNF_perm
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback_syntacticSignals_append' depends on axioms: [propext,
  Classical.choice,
  Quot.sound] -/
