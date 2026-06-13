@@ -271,6 +271,62 @@ private theorem mem_foldl_clausesForVertexStep_of_bad_row
       | tail _ htail =>
           exact ih (acc := clausesForVertexStep vars charge acc row) htail hbad
 
+private theorem mem_foldl_clausesForVertexStep_imp_mem_acc_or_bad_row
+    {m : Nat} (vars : List (Fin m)) (charge : Bool) :
+    forall (rows : List (List Bool)) {acc : List (CNFModel.Clause m)}
+      {c : CNFModel.Clause m},
+      List.Mem c (rows.foldl (clausesForVertexStep vars charge) acc) ->
+        List.Mem c acc \/
+          exists bs : List Bool,
+            List.Mem bs rows /\
+              (parity bs == charge) = false /\
+              c = clauseForAssignment vars bs := by
+  intro rows
+  induction rows with
+  | nil =>
+      intro acc c hmem
+      exact Or.inl hmem
+  | cons row rows ih =>
+      intro acc c hmem
+      by_cases hgood : parity row == charge
+      · have htail :
+          List.Mem c (rows.foldl (clausesForVertexStep vars charge) acc) := by
+            simpa [clausesForVertexStep, hgood] using hmem
+        cases ih (acc := acc) htail with
+        | inl hacc =>
+            exact Or.inl hacc
+        | inr hwit =>
+            rcases hwit with ⟨bs, hbs, hbad, hc⟩
+            exact Or.inr
+              ⟨bs, List.Mem.tail row hbs, hbad, hc⟩
+      · have htail :
+          List.Mem c
+            (rows.foldl (clausesForVertexStep vars charge)
+              (acc ++ [clauseForAssignment vars row])) := by
+            simpa [clausesForVertexStep, hgood] using hmem
+        have hbadRow : (parity row == charge) = false := by
+          cases hpar : (parity row == charge)
+          · rfl
+          · exact False.elim (hgood hpar)
+        cases ih (acc := acc ++ [clauseForAssignment vars row]) htail with
+        | inl haccAppend =>
+            cases List.mem_append.1 haccAppend with
+            | inl hacc =>
+                exact Or.inl hacc
+            | inr hsingle =>
+                have hc : c = clauseForAssignment vars row := by
+                  cases hsingle with
+                  | head =>
+                      rfl
+                  | tail _ hnil =>
+                      cases hnil
+                exact Or.inr
+                  ⟨row, List.Mem.head rows, hbadRow, hc⟩
+        | inr hwit =>
+            rcases hwit with ⟨bs, hbs, hbad, hc⟩
+            exact Or.inr
+              ⟨bs, List.Mem.tail row hbs, hbad, hc⟩
+
 theorem clauseForAssignment_mem_clausesForVertex_of_bad_row
     {m : Nat} {vars : List (Fin m)} {charge : Bool} {bs : List Bool}
     (hrow : List.Mem bs (allAssignments vars.length))
@@ -428,6 +484,25 @@ theorem length_of_mem_allAssignments :
       · rcases List.mem_map.1 hright with ⟨tail, htail, hbs⟩
         rw [← hbs]
         simp [ih htail]
+
+theorem mem_clausesForVertex_imp_exists_bad_row
+    {m : Nat} {vars : List (Fin m)} {charge : Bool}
+    {c : CNFModel.Clause m}
+    (hmem : List.Mem c (clausesForVertex vars charge)) :
+    exists bs : List Bool,
+      bs.length = vars.length /\
+        (parity bs == charge) = false /\
+        c = clauseForAssignment vars bs := by
+  unfold clausesForVertex at hmem
+  have hsource :=
+    mem_foldl_clausesForVertexStep_imp_mem_acc_or_bad_row
+      vars charge (allAssignments vars.length) (acc := []) hmem
+  cases hsource with
+  | inl hnil =>
+      cases hnil
+  | inr hwit =>
+      rcases hwit with ⟨bs, hbs, hbad, hc⟩
+      exact ⟨bs, length_of_mem_allAssignments hbs, hbad, hc⟩
 
 private theorem not_assignmentMatches_of_bad_parity
     {m : Nat} (a : CNFModel.Assignment m)
@@ -2800,19 +2875,19 @@ structure StandardTseitinMorgensternQ2NaturalLogSizeCoefficientExtraction where
     natural_log_size_coefficient =
       standardTseitinMorgensternQ2NaturalLogSizeCoefficient
   width_gap_accounting_statement : String
-  stage1729_inversion_statement : String
+  coefficient_inversion_statement : String
   gamma_square_divide_statement : String
   base_two_nat_blocker_statement : String
   side_conditions_statement : String
-  stage1729_inversion_source : Prop
-  stage1729_inversion_source_holds : stage1729_inversion_source
+  coefficient_inversion_source : Prop
+  coefficient_inversion_source_holds : coefficient_inversion_source
   gamma_square_divide_arithmetic_source : Prop
   gamma_square_divide_arithmetic_source_holds :
     gamma_square_divide_arithmetic_source
   natural_log_size_target : Prop
   natural_log_size_target_of_sources :
     width_gap_consumption.width_gap_accounting_target ->
-    stage1729_inversion_source ->
+    coefficient_inversion_source ->
     gamma_square_divide_arithmetic_source ->
     natural_log_size_target
   base_two_nat_conversion_target : Prop
@@ -2830,7 +2905,7 @@ def StandardTseitinMorgensternQ2NaturalLogSizeCoefficientExtraction.toNaturalLog
     packet.natural_log_size_target :=
   packet.natural_log_size_target_of_sources
     packet.toWidthGapAccountingTarget
-    packet.stage1729_inversion_source_holds
+    packet.coefficient_inversion_source_holds
     packet.gamma_square_divide_arithmetic_source_holds
 
 /-- Positive rational coefficient for base-2 Nat exponent lower bounds. -/

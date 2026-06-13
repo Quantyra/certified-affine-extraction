@@ -1,2 +1,8 @@
 import CertifiedAffine.TseitinCNFData
+import CertifiedAffine.FrameProbe
+import CertifiedAffine.ParityEncoded
+import CertifiedAffine.ExtractorCompleteness
+import CertifiedAffine.CanonicalSort
+import CertifiedAffine.GroupFrame
+import CertifiedAffine.AtomicClassBridge
 import CertifiedAffine.Audit

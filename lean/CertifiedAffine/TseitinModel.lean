@@ -879,6 +879,102 @@ theorem circulant12_jumpTwo_index_count_eq_two
       | succ k =>
           simpa using circulant12_jumpTwo_index_count_eq_two_succ_succ n k hv
 
+theorem circulant12_edges_n_le_length (n : Nat) :
+    n <= (circulant12_edges n).length := by
+  have hlen : (circulant12_edges n).length = 4 * n :=
+    circulant12_edges_length n
+  have hpos : 1 <= 4 := by decide
+  have hle : n <= 4 * n := by
+    simpa [Nat.mul_comm] using (Nat.mul_le_mul_left n hpos)
+  simpa [hlen] using hle
+
+theorem circulant12_edges_undirected (n : Nat) :
+    undirected_pred (circulant12_edges n) := by
+  intro e he
+  simp [circulant12_edges, circulant12_edge_block] at he
+  rcases he with ⟨i, hi, h⟩
+  apply List.mem_bind.mpr
+  refine ⟨i, ?_, ?_⟩
+  · simpa [List.mem_range] using hi
+  · rcases h with h | h | h | h <;> subst e <;>
+      simp [circulant12_edge_block]
+
+theorem circulant12_edges_endpoints_in_range (n : Nat) (hn : 0 < n) :
+    endpoints_in_range_pred n (circulant12_edges n) := by
+  intro e he
+  simp [circulant12_edges, circulant12_edge_block] at he
+  rcases he with ⟨i, hi, h⟩
+  have hi' : i < n := by
+    simpa [List.mem_range] using hi
+  rcases h with h | h | h | h <;> subst e
+  · exact ⟨hi', Nat.mod_lt _ hn⟩
+  · exact ⟨Nat.mod_lt _ hn, hi'⟩
+  · exact ⟨hi', Nat.mod_lt _ hn⟩
+  · exact ⟨Nat.mod_lt _ hn, hi'⟩
+
+theorem cycle_succ_mod_ne_self (n i : Nat) (hn : 1 < n) (hi : i < n) :
+    Not ((i + 1) % n = i) := by
+  intro hEq
+  by_cases hlt : i + 1 < n
+  · have hmod : (i + 1) % n = i + 1 := Nat.mod_eq_of_lt hlt
+    have : i + 1 = i := by simpa [hmod] using hEq
+    exact Nat.succ_ne_self _ this
+  · have hle : i + 1 <= n := Nat.succ_le_of_lt hi
+    have hge : n <= i + 1 := Nat.le_of_not_gt hlt
+    have hEqn : i + 1 = n := Nat.le_antisymm hle hge
+    have hmod : (i + 1) % n = 0 := by simpa [hEqn]
+    have hi0 : i = 0 := by simpa [hmod] using hEq.symm
+    exact (Nat.ne_of_gt hn) (by simpa [hi0] using hEqn.symm)
+
+theorem circulant12_succ_two_mod_ne_self (n i : Nat) (hn : 2 < n) (hi : i < n) :
+    Not ((i + 2) % n = i) := by
+  cases i with
+  | zero =>
+      intro h
+      have hzero :
+          0 = n - 2 :=
+        (circulant12_succ_two_mod_eq_zero_iff n 0 hn hi).mp h
+      omega
+  | succ i =>
+      cases i with
+      | zero =>
+          intro h
+          have hone :
+              1 = n - 1 :=
+            (circulant12_succ_two_mod_eq_one_iff n 1 hn hi).mp h
+          omega
+      | succ k =>
+          intro h
+          have hk : k + 2 < n := by omega
+          have hEq :
+              k + 2 = k :=
+            (circulant12_succ_two_mod_eq_succ_succ_iff n (k + 2) k hi hk).mp h
+          omega
+
+theorem circulant12_edges_no_self_loops (n : Nat) (hn : 2 < n) :
+    no_self_loops_pred (circulant12_edges n) := by
+  intro e he
+  simp [circulant12_edges, circulant12_edge_block] at he
+  rcases he with ⟨i, hi, h⟩
+  have hi' : i < n := by
+    simpa [List.mem_range] using hi
+  have hn1 : 1 < n := by omega
+  rcases h with h | h | h | h <;> subst e
+  · intro hEq
+    exact cycle_succ_mod_ne_self n i hn1 hi' hEq.symm
+  · exact cycle_succ_mod_ne_self n i hn1 hi'
+  · intro hEq
+    exact circulant12_succ_two_mod_ne_self n i hn hi' hEq.symm
+  · exact circulant12_succ_two_mod_ne_self n i hn hi'
+
+def encoding_circulant12_derived (n : Nat) (hn : 2 < n) : GraphEncodingData :=
+  { n := n
+    edges := circulant12_edges n
+    undirected := circulant12_edges_undirected n
+    no_self_loops := circulant12_edges_no_self_loops n hn
+    endpoints_in_range := circulant12_edges_endpoints_in_range n (by omega)
+    n_le_edges_length := circulant12_edges_n_le_length n }
+
 theorem circulant12_edges_incident_length
     (n v : Nat) :
     ((circulant12_edges n).filter (fun e => UEdge.incident e v)).length =
@@ -1005,6 +1101,22 @@ theorem circulant12_edges_normalized_incident_degree_eq_four
     (n v : Nat) (hn : 2 < n) (hv : v < n) :
     ((circulant12_edges n).filter (fun e => UEdge.incident e v)).length / 2 = 4 := by
   rw [circulant12_edges_incident_length_eq_eight n v hn hv]
+
+theorem circulant12_degree_eq_eight
+    (n v : Nat) (hn : 2 < n)
+    (hv : v < (encoding_circulant12_derived n hn).toGraph.n) :
+    degree (encoding_circulant12_derived n hn).toGraph v = 8 := by
+  have hv' : v < n := by
+    simpa [encoding_circulant12_derived, GraphEncodingData.toGraph] using hv
+  simpa [degree, incident, encoding_circulant12_derived, GraphEncodingData.toGraph]
+    using circulant12_edges_incident_length_eq_eight n v hn hv'
+
+theorem circulant12_degree_pos
+    (n v : Nat) (hn : 2 < n)
+    (hv : v < (encoding_circulant12_derived n hn).toGraph.n) :
+    0 < degree (encoding_circulant12_derived n hn).toGraph v := by
+  rw [circulant12_degree_eq_eight n v hn hv]
+  decide
 
 theorem incident_count_in_range_eq_two (n : Nat) (e : UEdge)
     (h_range : e.u < n ∧ e.v < n) (h_noloop : e.u ≠ e.v) :
@@ -1749,5 +1861,3 @@ theorem mapping_dtdepth_eq (m : Mapping) (F : Basic.CNF) :
 
 end TseitinModel
 end CertifiedAffine
-
-
