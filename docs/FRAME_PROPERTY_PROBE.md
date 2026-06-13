@@ -212,9 +212,12 @@ charge list from the generated GF(2) core, its true/false count corollaries
 preserve per-charge multiplicities,
 `canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_eq`
 recovers the same charge list from the canonical recognized-block layer, and
-the matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`
-and `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`
-theorems lift both facts to the residual-free decomposition interface.
+`allFalseClauseFingerprint_signal_clausesForVertex_eq_charge` makes the
+all-false clause fingerprint a CNF-side charge witness for generated blocks.
+The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
+`generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
+`generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`
+theorems lift these facts to the residual-free decomposition interface.
 The exact length lane now proves arity-three and arity-four generated
 same-support component accounting:
 `generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,

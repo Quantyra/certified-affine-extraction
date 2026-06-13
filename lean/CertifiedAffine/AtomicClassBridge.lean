@@ -391,6 +391,67 @@ theorem canonicalBlockFingerprint_clausesForVertex_true_false_ne
       (allFalseClauseFingerprint_not_mem_canonicalBlockFingerprint_clausesForVertex_false
         vars)
 
+/--
+The all-false assignment fingerprint is a charge witness for generated parity
+blocks: it appears exactly in true-charge generated blocks.
+-/
+theorem allFalseClauseFingerprint_mem_canonicalBlockFingerprint_clausesForVertex_iff_charge
+    {m : Nat}
+    (vars : List (Fin m)) (charge : Bool) :
+    List.Mem
+      (canonicalClauseFingerprint
+        (clauseForAssignment vars (List.replicate vars.length false)))
+      (canonicalBlockFingerprint (clausesForVertex vars charge)) ↔
+      charge = true := by
+  cases charge
+  · constructor
+    · intro hmem
+      exact False.elim
+        ((allFalseClauseFingerprint_not_mem_canonicalBlockFingerprint_clausesForVertex_false
+          vars) hmem)
+    · intro hcharge
+      cases hcharge
+  · constructor
+    · intro _hmem
+      rfl
+    · intro _hcharge
+      exact
+        allFalseClauseFingerprint_mem_canonicalBlockFingerprint_clausesForVertex_true
+          vars
+
+/--
+Executable Boolean form of the all-false fingerprint charge witness.
+-/
+theorem allFalseClauseFingerprint_signal_clausesForVertex_eq_charge
+    {m : Nat}
+    (vars : List (Fin m)) (charge : Bool) :
+    (canonicalBlockFingerprint (clausesForVertex vars charge)).contains
+      (canonicalClauseFingerprint
+        (clauseForAssignment vars (List.replicate vars.length false))) =
+      charge := by
+  cases charge
+  · have hnot :=
+      allFalseClauseFingerprint_not_mem_canonicalBlockFingerprint_clausesForVertex_false
+        vars
+    cases hcontains :
+        (canonicalBlockFingerprint (clausesForVertex vars false)).contains
+          (canonicalClauseFingerprint
+            (clauseForAssignment vars (List.replicate vars.length false))) with
+    | false =>
+        rfl
+    | true =>
+        have hmem :
+            List.Mem
+              (canonicalClauseFingerprint
+                (clauseForAssignment vars (List.replicate vars.length false)))
+              (canonicalBlockFingerprint (clausesForVertex vars false)) :=
+          List.elem_iff.mp (by simpa [List.contains] using hcontains)
+        exact False.elim (hnot hmem)
+  · have hmem :=
+      allFalseClauseFingerprint_mem_canonicalBlockFingerprint_clausesForVertex_true
+        vars
+    simpa [List.contains] using (List.elem_iff.mpr hmem)
+
 /-- A canonical parity-block signal is false when the block fingerprints differ. -/
 theorem canonicalParityBlockRecognitionSignal_eq_false_of_fingerprint_ne
     {m : Nat}
@@ -5278,6 +5339,82 @@ theorem canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_c
         (fun b => b.spec.charge)).count false = charges.count false := by
   rw [canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_eq]
 
+/--
+The all-false clause fingerprint signal recovers the charge sequence from
+generated same-support canonical fallback blocks.
+-/
+theorem canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_signals_eq
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((canonicalBlocksFromGeneratedParitySpecs
+      (generatedParitySpecsForSupportCharges vars charges)).map
+        (fun b =>
+          (canonicalBlockFingerprint b.blockCNF).contains
+            (canonicalClauseFingerprint
+              (clauseForAssignment vars (List.replicate vars.length false))))) =
+      charges := by
+  induction charges with
+  | nil =>
+      simp [generatedParitySpecsForSupportCharges,
+        canonicalBlocksFromGeneratedParitySpecs]
+  | cons charge charges ih =>
+      cases charge
+      · change
+          (canonicalBlockFingerprint (clausesForVertex vars false)).contains
+              (canonicalClauseFingerprint
+                (clauseForAssignment vars (List.replicate vars.length false))) ::
+            ((canonicalBlocksFromGeneratedParitySpecs
+              (generatedParitySpecsForSupportCharges vars charges)).map
+                (fun b =>
+                  (canonicalBlockFingerprint b.blockCNF).contains
+                    (canonicalClauseFingerprint
+                      (clauseForAssignment vars
+                        (List.replicate vars.length false))))) =
+            false :: charges
+        rw [allFalseClauseFingerprint_signal_clausesForVertex_eq_charge, ih]
+      · change
+          (canonicalBlockFingerprint (clausesForVertex vars true)).contains
+              (canonicalClauseFingerprint
+                (clauseForAssignment vars (List.replicate vars.length false))) ::
+            ((canonicalBlocksFromGeneratedParitySpecs
+              (generatedParitySpecsForSupportCharges vars charges)).map
+                (fun b =>
+                  (canonicalBlockFingerprint b.blockCNF).contains
+                    (canonicalClauseFingerprint
+                      (clauseForAssignment vars
+                        (List.replicate vars.length false))))) =
+            true :: charges
+        rw [allFalseClauseFingerprint_signal_clausesForVertex_eq_charge, ih]
+
+/--
+The all-false fingerprint signal counts true charges in generated same-support
+canonical fallback blocks.
+-/
+theorem canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_count_true
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((canonicalBlocksFromGeneratedParitySpecs
+      (generatedParitySpecsForSupportCharges vars charges)).map
+        (fun b =>
+          (canonicalBlockFingerprint b.blockCNF).contains
+            (canonicalClauseFingerprint
+              (clauseForAssignment vars (List.replicate vars.length false))))).count true =
+      charges.count true := by
+  rw [canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_signals_eq]
+
+/--
+The all-false fingerprint signal counts false charges in generated same-support
+canonical fallback blocks.
+-/
+theorem canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_count_false
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((canonicalBlocksFromGeneratedParitySpecs
+      (generatedParitySpecsForSupportCharges vars charges)).map
+        (fun b =>
+          (canonicalBlockFingerprint b.blockCNF).contains
+            (canonicalClauseFingerprint
+              (clauseForAssignment vars (List.replicate vars.length false))))).count false =
+      charges.count false := by
+  rw [canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_signals_eq]
+
 /-- Fallback canonical blocks cover exactly the generated ordinary CNF fold. -/
 theorem canonicalBlocksFromGeneratedParitySpecs_CNF_eq
     {m : Nat} (specs : List (GeneratedParitySpec m)) :
@@ -5534,6 +5671,54 @@ theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charge
       (generatedParitySpecsForSupportCharges vars charges)).blocks.map
         (fun b => b.spec.charge)).count false = charges.count false := by
   rw [generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_eq]
+
+/--
+For generated same-support charges, the fallback decomposition block
+fingerprints expose the exact charge sequence through the all-false clause
+fingerprint signal.
+-/
+theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_signals_eq
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsFallbackDecomposition
+      (generatedParitySpecsForSupportCharges vars charges)).blocks.map
+        (fun b =>
+          (canonicalBlockFingerprint b.blockCNF).contains
+            (canonicalClauseFingerprint
+              (clauseForAssignment vars (List.replicate vars.length false))))) =
+      charges := by
+  exact
+    canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_signals_eq
+      vars charges
+
+/--
+For generated same-support charges, the fallback decomposition all-false
+fingerprint signal preserves true-charge multiplicity.
+-/
+theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_count_true
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsFallbackDecomposition
+      (generatedParitySpecsForSupportCharges vars charges)).blocks.map
+        (fun b =>
+          (canonicalBlockFingerprint b.blockCNF).contains
+            (canonicalClauseFingerprint
+              (clauseForAssignment vars (List.replicate vars.length false))))).count true =
+      charges.count true := by
+  rw [generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_signals_eq]
+
+/--
+For generated same-support charges, the fallback decomposition all-false
+fingerprint signal preserves false-charge multiplicity.
+-/
+theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_count_false
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsFallbackDecomposition
+      (generatedParitySpecsForSupportCharges vars charges)).blocks.map
+        (fun b =>
+          (canonicalBlockFingerprint b.blockCNF).contains
+            (canonicalClauseFingerprint
+              (clauseForAssignment vars (List.replicate vars.length false))))).count false =
+      charges.count false := by
+  rw [generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_signals_eq]
 
 /-- The fallback decomposition blocks pass the executable syntactic upgrade. -/
 theorem generatedParitySpecsFallbackDecomposition_toSyntacticOk
