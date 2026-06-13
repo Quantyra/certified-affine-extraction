@@ -5009,6 +5009,65 @@ theorem recoverSameSupportGeneratedParitySpecs_toSyntacticOk
     cases hrec
 
 /--
+Permutation-insensitive guided same-support recovery.  This variant accepts a
+generated-spec split when its expanded CNF covers the component up to clause
+permutation.  It records the theorem-forming fix for the exact-list
+order-sensitivity of `recoverSameSupportGeneratedParitySpecs?`.
+-/
+def recoverSameSupportGeneratedParitySpecsPerm? {m : Nat}
+    (groupCNF : CNFModel.CNF m)
+    (specs : List (GeneratedParitySpec m)) :
+    Option (CanonicalFingerprintGF2Decomposition m) :=
+  if _h : List.Perm (generatedParitySpecsCNF specs) groupCNF then
+    some (generatedParitySpecsFallbackDecomposition specs)
+  else
+    none
+
+/--
+Soundness of permutation-insensitive guided same-support recovery: any returned
+decomposition covers the input component up to clause permutation, has empty
+residual, and compacts to the supplied generated-spec GF(2) fold.
+-/
+theorem recoverSameSupportGeneratedParitySpecsPerm_sound
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {specs : List (GeneratedParitySpec m)}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGeneratedParitySpecsPerm? groupCNF specs = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual /\
+      d.coreGF2 = generatedParitySpecsGF2 specs := by
+  unfold recoverSameSupportGeneratedParitySpecsPerm? at hrec
+  split at hrec
+  next hcover =>
+    cases hrec
+    exact And.intro
+      (by
+        rw [generatedParitySpecsFallbackDecomposition_expandedCNF_eq]
+        exact hcover)
+      (And.intro
+        (generatedParitySpecsFallbackDecomposition_hasEmptyResidual specs)
+        (generatedParitySpecsFallbackDecomposition_coreGF2_eq specs))
+  next _hcover =>
+    cases hrec
+
+/--
+Permutation-insensitive guided same-support recovery only returns generated-spec
+fallback blocks, and those blocks pass the executable syntactic upgrade.
+-/
+theorem recoverSameSupportGeneratedParitySpecsPerm_toSyntacticOk
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {specs : List (GeneratedParitySpec m)}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGeneratedParitySpecsPerm? groupCNF specs = some d) :
+    CanonicalBlocksToSyntacticOk d.blocks := by
+  unfold recoverSameSupportGeneratedParitySpecsPerm? at hrec
+  split at hrec
+  next _hcover =>
+    cases hrec
+    exact generatedParitySpecsFallbackDecomposition_toSyntacticOk specs
+  next _hcover =>
+    cases hrec
+
+/--
 Guided recovery for the current same-support boundary shape: one canonical
 support group that may contain multiple parity blocks sharing the same support.
 Other group shapes are rejected by this local recovery pass.
@@ -5157,6 +5216,22 @@ def recoverTwoChargeSameSupportGroup? {m : Nat}
         groupCNF (sameSupportTwoChargeCandidateSpecsFlipped groupCNF)
 
 /--
+Permutation-insensitive unguided two-charge same-support recovery.  It keeps
+the same inferred two-charge candidates as `recoverTwoChargeSameSupportGroup?`,
+but accepts either candidate when its generated CNF covers the component up to
+clause permutation.
+-/
+def recoverTwoChargeSameSupportGroupPerm? {m : Nat}
+    (groupCNF : CNFModel.CNF m) :
+    Option (CanonicalFingerprintGF2Decomposition m) :=
+  match recoverSameSupportGeneratedParitySpecsPerm?
+      groupCNF (sameSupportTwoChargeCandidateSpecs groupCNF) with
+  | some d => some d
+  | none =>
+      recoverSameSupportGeneratedParitySpecsPerm?
+        groupCNF (sameSupportTwoChargeCandidateSpecsFlipped groupCNF)
+
+/--
 Soundness for unguided two-charge same-support recovery.  Any returned
 decomposition exactly covers the input component and has no residual clauses.
 -/
@@ -5199,6 +5274,51 @@ theorem recoverTwoChargeSameSupportGroup_toSyntacticOk
   | none =>
       simp [hfirst] at hrec
       exact recoverSameSupportGeneratedParitySpecs_toSyntacticOk hrec
+
+/--
+Soundness for permutation-insensitive unguided two-charge same-support
+recovery.  Any returned decomposition covers the input component up to clause
+permutation and has no residual clauses.
+-/
+theorem recoverTwoChargeSameSupportGroupPerm_sound
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverTwoChargeSameSupportGroupPerm? groupCNF = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual := by
+  unfold recoverTwoChargeSameSupportGroupPerm? at hrec
+  cases hfirst :
+      recoverSameSupportGeneratedParitySpecsPerm?
+        groupCNF (sameSupportTwoChargeCandidateSpecs groupCNF) with
+  | some dfirst =>
+      simp [hfirst] at hrec
+      cases hrec
+      have hsound := recoverSameSupportGeneratedParitySpecsPerm_sound hfirst
+      exact And.intro hsound.1 hsound.2.1
+  | none =>
+      simp [hfirst] at hrec
+      have hsound := recoverSameSupportGeneratedParitySpecsPerm_sound hrec
+      exact And.intro hsound.1 hsound.2.1
+
+/--
+The permutation-insensitive unguided two-charge same-support recovery emits
+only syntactically upgradable generated-spec fallback blocks.
+-/
+theorem recoverTwoChargeSameSupportGroupPerm_toSyntacticOk
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverTwoChargeSameSupportGroupPerm? groupCNF = some d) :
+    CanonicalBlocksToSyntacticOk d.blocks := by
+  unfold recoverTwoChargeSameSupportGroupPerm? at hrec
+  cases hfirst :
+      recoverSameSupportGeneratedParitySpecsPerm?
+        groupCNF (sameSupportTwoChargeCandidateSpecs groupCNF) with
+  | some dfirst =>
+      simp [hfirst] at hrec
+      cases hrec
+      exact recoverSameSupportGeneratedParitySpecsPerm_toSyntacticOk hfirst
+  | none =>
+      simp [hfirst] at hrec
+      exact recoverSameSupportGeneratedParitySpecsPerm_toSyntacticOk hrec
 
 /--
 Unguided recovery for the one-merged-support-group boundary shape.  Other group
@@ -5288,6 +5408,25 @@ theorem twoCycleSameSupportUnguidedDirectRecovery_eq_some :
         (TseitinModel.encoding_cycle_derived 2 (by decide)) cycleRootCharge)
   rw [recoverSameSupportGeneratedParitySpecs_eq_some_of_cnf_eq hcover]
   simp [twoCycleSameSupportFallbackDecomposition, hcand]
+
+/--
+The exact-list unguided recovery is order-sensitive: reversing the direct
+two-cycle CNF defeats the current exact-coverage check.
+-/
+theorem twoCycleSameSupportUnguidedDirectRecovery_reverse_isSome_false :
+    (recoverTwoChargeSameSupportGroup?
+      (List.reverse (TseitinCycleCNFFormula 2 (by decide)))).isSome = false := by
+  decide
+
+/--
+The permutation-insensitive unguided recovery repairs that order-sensitivity:
+the same reversed two-cycle CNF is accepted as the certified same-support
+fallback component.
+-/
+theorem twoCycleSameSupportUnguidedPermDirectRecovery_reverse_isSome :
+    (recoverTwoChargeSameSupportGroupPerm?
+      (List.reverse (TseitinCycleCNFFormula 2 (by decide)))).isSome = true := by
+  decide
 
 /--
 Unguided same-support recovery applied to the actual canonical support grouping
@@ -7849,11 +7988,30 @@ inductive ClausePermutedRecognizedClass (m : Nat) :
       (hg : ClausePermutedRecognizedClass m g t)
       (hkeyDisjoint : GroupFrame.CNFClauseKeysDisjoint f g) :
       ClausePermutedRecognizedClass m (f ++ g) (s ++ t)
+  | cnf_perm {f g : CNFModel.CNF m}
+      {s : ParityEncoded.GF2Formula m}
+      (hperm : List.Perm f g)
+      (hf : ClausePermutedRecognizedClass m f s) :
+      ClausePermutedRecognizedClass m g s
   | gf2_perm {f : CNFModel.CNF m}
       {s t : ParityEncoded.GF2Formula m}
       (hperm : List.Perm s t)
       (hf : ClausePermutedRecognizedClass m f s) :
       ClausePermutedRecognizedClass m f t
+
+/--
+Recognizer-complete fragments are closed under arbitrary whole-CNF clause
+permutation.  This is a named wrapper around the class constructor so external
+theorem inventories can cite the closure property directly.
+-/
+theorem clausePermutedRecognizedClass_of_cnf_perm
+    {m : Nat}
+    {source target : CNFModel.CNF m}
+    {s : ParityEncoded.GF2Formula m}
+    (hperm : List.Perm source target)
+    (hclass : ClausePermutedRecognizedClass m source s) :
+    ClausePermutedRecognizedClass m target s :=
+  ClausePermutedRecognizedClass.cnf_perm hperm hclass
 
 /--
 Recognizer-complete fragments compose after each side is independently
@@ -7913,6 +8071,8 @@ theorem class_of_clausePermutedRecognizedClass
       exact class_of_clausePermutedRecognizedBlock hblock
   | append_keyDisjoint _hf _hg _hkeyDisjoint ihf ihg =>
       exact ParityEncoded.Class.append ihf ihg
+  | cnf_perm hperm _hf ih =>
+      exact ParityEncoded.Class.cnf_perm hperm ih
   | gf2_perm hperm _hf ih =>
       exact ParityEncoded.Class.gf2_perm hperm ih
 
@@ -7965,6 +8125,16 @@ theorem groupsRecognized_exists_of_clausePermutedRecognizedClass
             hleftRecognized hrightRecognized
       · rw [canonicalFingerprintRecognizedBlocksGF2_append]
         exact hleftGF2.append hrightGF2
+  | cnf_perm hperm _hf ih =>
+      rcases ih with ⟨sourceBlocks, hsourceRecognized, hsourceGF2⟩
+      rcases
+        GroupFrame.groupsRecognized_groupClausesByCanonicalSupport_gf2_perm_of_perm
+          hperm hsourceRecognized with
+        ⟨targetBlocks, htargetRecognized, htargetGF2⟩
+      exact
+        Exists.intro targetBlocks
+          (And.intro htargetRecognized
+            (List.Perm.trans htargetGF2 hsourceGF2))
   | gf2_perm hperm _hf ih =>
       rcases ih with ⟨blocks, hrecognized, hgf2⟩
       exact
@@ -7989,6 +8159,17 @@ theorem extractorCompleteOn_of_clausePermutedRecognizedClass
       exact
         GroupFrame.extractorCompleteOn_append_of_clauseKeysDisjoint
           hkeyDisjoint ihf ihg
+  | cnf_perm hperm _hf _ih =>
+      rcases
+        groupsRecognized_exists_of_clausePermutedRecognizedClass
+          (ClausePermutedRecognizedClass.cnf_perm hperm _hf) with
+        ⟨blocks, hrecognized, hgf2⟩
+      exact
+        ExtractorCompleteness.extractorCompleteOn_of_groupRecognition
+          (f := _)
+          (groups := groupClausesByCanonicalSupport _)
+          (blocks := blocks)
+          rfl hrecognized hgf2
   | gf2_perm hperm _hf ih =>
       rcases ih with ⟨blocks, hsplit, hgf2⟩
       exact ⟨blocks, hsplit, List.Perm.trans hgf2 hperm⟩
@@ -8081,6 +8262,17 @@ theorem enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass
   | append_keyDisjoint _hf _hg hkeyDisjoint ihf ihg =>
       exact enhancedExtractorCompleteOn_append_of_clauseKeysDisjoint
         hkeyDisjoint ihf ihg
+  | cnf_perm hperm _hf _ih =>
+      rcases
+        groupsRecognized_exists_of_clausePermutedRecognizedClass
+          (ClausePermutedRecognizedClass.cnf_perm hperm _hf) with
+        ⟨blocks, hrecognized, hgf2⟩
+      exact
+        enhancedExtractorCompleteOn_of_groupRecognition
+          (f := _)
+          (groups := groupClausesByCanonicalSupport _)
+          (blocks := blocks)
+          rfl hrecognized hgf2
   | gf2_perm hperm _hf ih =>
       rcases ih with ⟨blocks, hsplit, hgf2⟩
       exact ⟨blocks, hsplit, List.Perm.trans hgf2 hperm⟩
@@ -8097,6 +8289,33 @@ theorem enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass
   enhancedSemanticExtractorCompleteOn_of_class
     (class_of_clausePermutedRecognizedClass hclass)
     (enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass hclass)
+
+/--
+The enhanced two-charge fallback splitter remains residual-free after arbitrary
+whole-CNF permutation of a clause-permuted recognizer-complete fragment.
+-/
+theorem enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass_perm
+    {m : Nat} {source target : CNFModel.CNF m}
+    {s : ParityEncoded.GF2Formula m}
+    (hperm : List.Perm source target)
+    (hclass : ClausePermutedRecognizedClass m source s) :
+    EnhancedExtractorCompleteOn target s :=
+  enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass
+    (ClausePermutedRecognizedClass.cnf_perm hperm hclass)
+
+/--
+Any arbitrary whole-CNF permutation of a clause-permuted recognizer-complete
+fragment satisfies the combined semantic/enhanced-executable extraction
+surface.
+-/
+theorem enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm
+    {m : Nat} {source target : CNFModel.CNF m}
+    {s : ParityEncoded.GF2Formula m}
+    (hperm : List.Perm source target)
+    (hclass : ClausePermutedRecognizedClass m source s) :
+    EnhancedSemanticExtractorCompleteOn target s :=
+  enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass
+    (ClausePermutedRecognizedClass.cnf_perm hperm hclass)
 
 /--
 Nonempty clause permutations of generated parity atoms in canonical support

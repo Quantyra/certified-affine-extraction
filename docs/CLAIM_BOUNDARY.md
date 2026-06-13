@@ -244,14 +244,14 @@ affine-structure extraction from CNF.
   `AtomicClassBridge.ClausePermutedRecognizedClass` is an induction-shaped
   fragment for arbitrary clause-permuted recognized blocks connected by
   canonical support-key-disjoint appends, with GF(2)-target permutation
-  closure.  The class forgets to `ParityEncoded.Class` and proves both
-  baseline `SemanticExtractorCompleteOn` and enhanced
-  `EnhancedSemanticExtractorCompleteOn`.  It also exposes recognized executable
-  support-group witnesses and transports the baseline `ExtractorCompleteOn` and
-  `SemanticExtractorCompleteOn` claims through arbitrary whole-CNF clause
-  permutation.  Generated key-disjoint families and their key-disjoint/fresh-key
-  spec-list wrappers now instantiate this class, so the generated-family lane
-  factors through a more general recognizer completeness surface.
+  closure and whole-CNF clause permutation closure.  The class forgets to
+  `ParityEncoded.Class` and proves both baseline `SemanticExtractorCompleteOn`
+  and enhanced `EnhancedSemanticExtractorCompleteOn`.  It also exposes
+  recognized executable support-group witnesses and transports the baseline and
+  enhanced extractor surfaces through arbitrary whole-CNF clause permutation.
+  Generated key-disjoint families and their key-disjoint/fresh-key spec-list
+  wrappers now instantiate this class, so the generated-family lane factors
+  through a more general recognizer completeness surface.
 - A v0.2 support-disjoint group-recognition combined bridge: two CNF fragments
   whose support groups are recognized, whose emitted blocks pass
   `toSyntactic?`, and whose supports frame the append satisfy
@@ -568,14 +568,16 @@ recognizer result, `toSyntactic?` success, and expected compact equation without
 caller-supplied canonical-signal or false-miss premises.  The new
 `ClausePermutedRecognizedClass` packages the corresponding induction principle:
 recognized single-component witnesses compose under canonical
-support-key-disjoint appends and GF(2)-target permutation, yielding both
-baseline and enhanced combined extractor surfaces.  This is not a full hidden
-affine recognizer-completeness theorem; callers must still provide the
-clause-permuted recognized-block witnesses and the append frame conditions
-outside the generated-atom wrapper.  The generated-atom wrapper now also lifts
-straight into `ClausePermutedRecognizedClass`, so the remaining permutation
-gate is whole-CNF interleaving across multiple support components rather than
-per-atom clause order.
+support-key-disjoint appends, whole-CNF clause permutation, and GF(2)-target
+permutation, yielding both baseline and enhanced combined extractor surfaces.
+The baseline and enhanced whole-CNF permutation wrappers expose those surfaces
+for arbitrary interleavings of a class instance.
+This is not a full hidden affine recognizer-completeness theorem; callers must
+still provide the clause-permuted recognized-block witnesses and the append
+frame conditions outside the generated-atom wrapper.  The generated-atom
+wrapper now also lifts straight into `ClausePermutedRecognizedClass`, so the
+remaining gate is not clause ordering but stronger declarative-class
+recognition, bounded overlap, and same-support recovery.
 More specifically,
 any CNF that
 groups as one support component,

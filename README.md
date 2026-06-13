@@ -790,6 +790,7 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   v0.2 frontier is arbitrary declarative-class completeness and stronger
   overlap/general graph recovery, not local canonical fingerprint invariance.
 - `AtomicClassBridge.ClausePermutedRecognizedClass` plus
+  `AtomicClassBridge.clausePermutedRecognizedClass_of_cnf_perm`,
   `AtomicClassBridge.class_of_clausePermutedRecognizedClass`,
   `AtomicClassBridge.groupsRecognized_exists_of_clausePermutedRecognizedClass`,
   `AtomicClassBridge.extractorCompleteOn_of_clausePermutedRecognizedClass`,
@@ -797,14 +798,17 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `AtomicClassBridge.extractorCompleteOn_of_clausePermutedRecognizedClass_perm`,
   `AtomicClassBridge.semanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm`,
   `AtomicClassBridge.enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass`,
+  `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass`,
+  `AtomicClassBridge.enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass_perm`,
   and
-  `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass`:
+  `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm`:
   an induction-shaped recognizer-complete fragment for arbitrary
   clause-permuted recognized blocks joined by canonical support-key-disjoint
-  appends, with GF(2)-target permutation closure.  The class also carries
-  recognized executable support-group witnesses, and its baseline
-  semantic/executable extractor surfaces transport through arbitrary
-  whole-CNF clause permutation.
+  appends, with both whole-CNF clause permutation closure and GF(2)-target
+  permutation closure.  The class also carries recognized executable
+  support-group witnesses, and both its baseline and enhanced
+  semantic/executable extractor surfaces transport through arbitrary whole-CNF
+  clause permutation.
 - `AtomicClassBridge.clausePermutedRecognizedClass_of_perm_clausesForVertex_normal`:
   arbitrary nonempty clause permutations of generated parity atoms in canonical
   support order now enter that recognizer-complete class directly, with the
@@ -914,10 +918,13 @@ local canonicalization.
 The `ClausePermutedRecognizedClass` theorem package is the first
 induction-shaped recognizer-complete fragment beyond generated spec lists: it
 composes arbitrary clause-permuted recognized blocks across canonical
-support-key-disjoint appends and preserves GF(2)-target permutation closure,
-yielding `ParityEncoded.Class`, baseline `SemanticExtractorCompleteOn`, and
-enhanced `EnhancedSemanticExtractorCompleteOn`.  Generated key-disjoint
-families and their fresh-key spec-list wrappers now factor through this class.
+support-key-disjoint appends and is closed under both arbitrary whole-CNF
+clause permutation and GF(2)-target permutation, yielding
+`ParityEncoded.Class`, baseline `SemanticExtractorCompleteOn`, and enhanced
+`EnhancedSemanticExtractorCompleteOn`.  Generated key-disjoint families and
+their fresh-key spec-list wrappers now factor through this class.
+The baseline and enhanced permutation wrappers expose those extractor surfaces
+across arbitrary interleavings of a class instance.
 Residual-free extractor completeness itself now has a function-level append
 composition theorem: already-complete fragments can be reused when the grouping
 pass frames the append, with caller-facing wrappers for clause-key disjointness
@@ -986,9 +993,11 @@ whole-CNF interleaving are now audited for recognized source groups; executable
 support groups now provide the support-stability condition needed by the current
 first-clause recognizer; and recognizer hits now transport across clause
 permutations of actual grouped components. The `ClausePermutedRecognizedClass`
-surface now carries the corresponding executable support-group witness and
-transports its baseline extractor-completeness claims through arbitrary
-whole-CNF clause permutation. The remaining obligations are to prove arbitrary
+surface now has constructor-level whole-CNF clause permutation closure, carries
+the corresponding executable support-group witness, and transports its baseline
+and enhanced extractor-completeness claims through arbitrary whole-CNF clause
+permutation.
+The remaining obligations are to prove arbitrary
 declarative-class completeness, a bounded-overlap/function-level frame theorem,
 or a generalized executable same-support recovery theorem before advertising a
 uniform residual-free extractor over arbitrary graph encodings,

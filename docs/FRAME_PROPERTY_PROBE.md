@@ -147,10 +147,12 @@ The same whole-CNF permutation result is exposed through the proof-carrying
 `AtomicClassBridge.semanticExtractorCompleteOn_of_certifiedRecognizedCNF_perm`.
 It is also exposed through the induction-shaped
 `ClausePermutedRecognizedClass` surface by
+`AtomicClassBridge.clausePermutedRecognizedClass_of_cnf_perm`,
 `AtomicClassBridge.groupsRecognized_exists_of_clausePermutedRecognizedClass`,
 `AtomicClassBridge.extractorCompleteOn_of_clausePermutedRecognizedClass_perm`,
 and
-`AtomicClassBridge.semanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm`.
+`AtomicClassBridge.semanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm`,
+with matching enhanced two-charge fallback wrappers.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

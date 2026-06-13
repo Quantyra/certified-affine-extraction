@@ -484,8 +484,9 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedBlock` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_append_keyDisjoint_perm` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_append_comm_keyDisjoint` | `propext` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_of_cnf_perm` | none |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_clausePermutedRecognizedClass` | `propext`, `Classical.choice`, `Quot.sound` |
-| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.groupsRecognized_exists_of_clausePermutedRecognizedClass` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.groupsRecognized_exists_of_clausePermutedRecognizedClass` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.extractorCompleteOn_empty` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.extractorCompleteOn_of_clausePermutedRecognizedClass` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_of_clausePermutedRecognizedClass` | `propext`, `Classical.choice`, `Quot.sound` |
@@ -494,6 +495,8 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_empty` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass_perm` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_of_perm_clausesForVertex_normal` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedBlock_exists_clausesForVertex_normal` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_clausesForVertex_normal_via_clausePermutedRecognizedBlock` | `propext`, `Classical.choice`, `Quot.sound` |

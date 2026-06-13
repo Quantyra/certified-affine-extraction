@@ -2482,6 +2482,10 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_append_comm_keyDisjoint
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_of_cnf_perm' does not depend on any axioms -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_of_cnf_perm
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_clausePermutedRecognizedClass' depends on axioms: [propext,
  Classical.choice,
  Quot.sound] -/
@@ -2489,6 +2493,7 @@ internal trust boundary and is not included in this clean audit surface yet.
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_clausePermutedRecognizedClass
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.groupsRecognized_exists_of_clausePermutedRecognizedClass' depends on axioms: [propext,
+ Classical.choice,
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.groupsRecognized_exists_of_clausePermutedRecognizedClass
@@ -2536,6 +2541,18 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass_perm' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_clausePermutedRecognizedClass_perm
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.clausePermutedRecognizedClass_of_perm_clausesForVertex_normal' depends on axioms: [propext,
  Classical.choice,
