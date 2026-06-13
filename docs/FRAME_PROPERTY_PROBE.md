@@ -252,7 +252,11 @@ canonical charge representative without enumerating `chargeListsUpTo`.  The
 block-size-parameterized fallback hook now packages this at the
 production-shaped same-support interface, with returned-output soundness and
 syntactic-upgrade guards.  The public production branch still instantiates this
-only for the generated arity-three and arity-four cases.
+only for the generated arity-three and arity-four cases.  The base generator
+now proves the missing uniform block-size fact:
+`clausesForVertex_length_eq_pow_pred_of_vars_ne_empty` derives
+`2^(vars.length - 1)` clauses for every nonempty generated support, via
+`allAssignments_length` and `allAssignments_countP_parity_eq_succ`.
 What remains open is extending the executable direct recovery lane beyond
 generated arity-three and arity-four components.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
@@ -274,7 +278,10 @@ and
 `target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges`
 show that component length is `charge_count * 4` for arity three and
 `charge_count * 8` for arity four, transported across clause permutation.  This
-lets component size determine total generated charge count in those lanes.  The
+lets component size determine total generated charge count in those lanes; the
+new base `clausesForVertex` size theorem supplies the reusable generated-block
+certificate needed to instantiate the same shape for other nonempty generated
+support arities.  The
 quotient/divisibility corollaries
 `charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges`,
 `charges_length_eq_target_length_div_eight_of_perm_generatedParitySpecsForSupportCharges`,
@@ -314,8 +321,10 @@ replaces exhaustive `chargeListsUpTo` enumeration for generated arity-three and
 arity-four same-support components in the production path after the two-charge
 fast path, while the generic theorem records the reusable proof obligation for
 future block-size instances and the new hook records the executable interface
-that can use those certificates.  It still does not recover charge identity or per-charge
-multiplicity inside an arbitrary same-support component.
+that can use those certificates.  That proof obligation is now discharged for
+single generated blocks by support arity; production branches beyond arity
+three/four remain to be instantiated.  It still does not recover charge
+identity or per-charge multiplicity inside an arbitrary same-support component.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

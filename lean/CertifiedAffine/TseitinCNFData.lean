@@ -93,6 +93,59 @@ def allAssignments : Nat -> List (List Bool)
       let rest := allAssignments k
       (rest.map (fun xs => false :: xs)) ++ (rest.map (fun xs => true :: xs))
 
+private theorem countP_map_false_cons_parity_eq
+    (charge : Bool) (rows : List (List Bool)) :
+    List.countP (fun bs => parity bs == charge)
+        (rows.map (fun xs => false :: xs)) =
+      List.countP (fun xs => parity xs == charge) rows := by
+  induction rows with
+  | nil => simp
+  | cons row rows ih =>
+      simp [List.countP_cons, parity_cons, ih]
+
+private theorem countP_map_true_cons_parity_eq
+    (charge : Bool) (rows : List (List Bool)) :
+    List.countP (fun bs => parity bs == charge)
+        (rows.map (fun xs => true :: xs)) =
+      List.countP (fun xs => parity xs == !charge) rows := by
+  induction rows with
+  | nil => simp
+  | cons row rows ih =>
+      simp [List.countP_cons, parity_cons, ih]
+
+/-- The Boolean row enumerator contains exactly `2^n` rows. -/
+theorem allAssignments_length (n : Nat) :
+    (allAssignments n).length = 2 ^ n := by
+  induction n with
+  | zero =>
+      simp [allAssignments]
+  | succ k ih =>
+      simp [allAssignments, ih, Nat.pow_succ]
+      omega
+
+/--
+For every positive arity, exactly half of the generated Boolean rows have each
+parity.  This is the counting fact behind the uniform parity-block CNF size.
+-/
+theorem allAssignments_countP_parity_eq_succ (n : Nat) (charge : Bool) :
+    List.countP (fun bs => parity bs == charge) (allAssignments (Nat.succ n)) =
+      2 ^ n := by
+  induction n generalizing charge with
+  | zero =>
+      cases charge <;> simp [allAssignments, parity]
+  | succ k ih =>
+      change
+        List.countP (fun bs => parity bs == charge)
+          ((allAssignments (Nat.succ k)).map (fun xs => false :: xs) ++
+            (allAssignments (Nat.succ k)).map (fun xs => true :: xs)) =
+          2 ^ Nat.succ k
+      rw [List.countP_append]
+      rw [countP_map_false_cons_parity_eq]
+      rw [countP_map_true_cons_parity_eq]
+      rw [ih charge, ih (!charge)]
+      simp [Nat.pow_succ]
+      omega
+
 theorem mem_allAssignments_of_length :
     forall {n : Nat} {bs : List Bool}, bs.length = n -> List.Mem bs (allAssignments n) := by
   intro n
@@ -272,6 +325,102 @@ private def clausesForVertexStep {m : Nat} (vars : List (Fin m)) (charge : Bool)
     acc
   else
     acc ++ [clauseForAssignment vars bs]
+
+private theorem bool_not_beq_eq_true_of_beq_false {b c : Bool} :
+    (b == c) = false -> ((!b) == c) = true := by
+  cases b <;> cases c <;> simp
+
+private theorem bool_not_beq_eq_false_of_beq_true {b c : Bool} :
+    (b == c) = true -> ((!b) == c) = false := by
+  cases b <;> cases c <;> simp
+
+private theorem length_foldl_clause_step_eq_acc_length_add_countP_bad
+    {m : Nat} (vars : List (Fin m)) (charge : Bool) :
+    forall (rows : List (List Bool)) (acc : List (CNFModel.Clause m)),
+      (rows.foldl
+          (fun acc bs =>
+            if parity bs == charge then acc else acc ++ [clauseForAssignment vars bs])
+          acc).length =
+        acc.length + List.countP (fun bs => (!parity bs) == charge) rows := by
+  intro rows
+  induction rows with
+  | nil =>
+      intro acc
+      simp
+  | cons row rows ih =>
+      intro acc
+      cases hgood : ((parity row) == charge)
+      case false =>
+        have hnot : ((!parity row) == charge) = true :=
+          bool_not_beq_eq_true_of_beq_false hgood
+        have hstep := ih (acc ++ [clauseForAssignment vars row])
+        have hstep' :
+            (List.foldl
+              (fun acc bs =>
+                if parity bs = charge then
+                  acc
+                else
+                  acc ++ [clauseForAssignment vars bs])
+              (acc ++ [clauseForAssignment vars row]) rows).length =
+              (acc ++ [clauseForAssignment vars row]).length +
+                List.countP (fun bs => (!parity bs) == charge) rows := by
+          simpa [beq_iff_eq] using hstep
+        simp [List.foldl, hgood, List.countP_cons, hnot, hstep',
+          List.length_append]
+        omega
+      case true =>
+        have hnot : ((!parity row) == charge) = false :=
+          bool_not_beq_eq_false_of_beq_true hgood
+        simp [List.foldl, hgood, List.countP_cons, hnot]
+        simpa [beq_iff_eq] using ih acc
+
+private theorem countP_parity_bad_eq_countP_parity_not
+    (charge : Bool) (rows : List (List Bool)) :
+    List.countP (fun bs => (!parity bs) == charge) rows =
+      List.countP (fun bs => parity bs == !charge) rows := by
+  induction rows with
+  | nil => simp
+  | cons row rows ih =>
+      simp [List.countP_cons, ih]
+
+/-- The generated clauses are counted by the rows whose parity violates the charge. -/
+theorem clausesForVertex_length_eq_countP_bad
+    {m : Nat} (vars : List (Fin m)) (charge : Bool) :
+    (clausesForVertex vars charge).length =
+      List.countP (fun bs => (!parity bs) == charge) (allAssignments vars.length) := by
+  unfold clausesForVertex
+  simpa using
+    (length_foldl_clause_step_eq_acc_length_add_countP_bad
+      vars charge (allAssignments vars.length) [])
+
+/--
+A generated parity constraint over `k+1` variables expands to `2^k` forbidden
+assignment clauses.
+-/
+theorem clausesForVertex_length_of_length_succ
+    {m : Nat} {vars : List (Fin m)} {charge : Bool} {k : Nat}
+    (hlen : vars.length = Nat.succ k) :
+    (clausesForVertex vars charge).length = 2 ^ k := by
+  rw [clausesForVertex_length_eq_countP_bad]
+  rw [countP_parity_bad_eq_countP_parity_not]
+  rw [hlen]
+  exact allAssignments_countP_parity_eq_succ k (!charge)
+
+/--
+Uniform generated-parity block size: every nonempty support of arity `r`
+expands to `2^(r-1)` CNF clauses.
+-/
+theorem clausesForVertex_length_eq_pow_pred_of_vars_ne_empty
+    {m : Nat} {vars : List (Fin m)} {charge : Bool}
+    (hvars : Not (vars = [])) :
+    (clausesForVertex vars charge).length = 2 ^ (vars.length - 1) := by
+  cases vars with
+  | nil =>
+      exact False.elim (hvars rfl)
+  | cons v vs =>
+      simpa using
+        (clausesForVertex_length_of_length_succ
+          (m := m) (vars := v :: vs) (charge := charge) (k := vs.length) rfl)
 
 theorem clausesForVertex_length_of_length_three
     {m : Nat} {vars : List (Fin m)} {charge : Bool}

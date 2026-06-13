@@ -92,6 +92,14 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.allAssignments_nodup
 
+/-- info: 'CertifiedAffine.TseitinCNFData.allAssignments_length' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.allAssignments_length
+
+/-- info: 'CertifiedAffine.TseitinCNFData.allAssignments_countP_parity_eq_succ' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.allAssignments_countP_parity_eq_succ
+
 /-- info: 'CertifiedAffine.TseitinCNFData.allAssignments_count_replicate_false' depends on axioms: [propext] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.allAssignments_count_replicate_false
@@ -99,6 +107,19 @@ internal trust boundary and is not included in this clean audit surface yet.
 /-- info: 'CertifiedAffine.TseitinCNFData.boolList_eq_replicate_false_of_true_not_mem' does not depend on any axioms -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.boolList_eq_replicate_false_of_true_not_mem
+
+/-- info: 'CertifiedAffine.TseitinCNFData.clausesForVertex_length_eq_countP_bad' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.clausesForVertex_length_eq_countP_bad
+
+/-- info: 'CertifiedAffine.TseitinCNFData.clausesForVertex_length_of_length_succ' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.clausesForVertex_length_of_length_succ
+
+/-- info: 'CertifiedAffine.TseitinCNFData.clausesForVertex_length_eq_pow_pred_of_vars_ne_empty' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.clausesForVertex_length_eq_pow_pred_of_vars_ne_empty
 
 /-- info: 'CertifiedAffine.TseitinCNFData.mem_clausesForVertex_imp_exists_bad_row' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in

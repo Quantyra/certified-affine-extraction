@@ -29,8 +29,13 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.TseitinParityFormulaFromEncoding_length` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.TseitinCycleGF2NormalizationSurface_resourceCounts` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.allAssignments_nodup` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.allAssignments_length` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.allAssignments_countP_parity_eq_succ` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.allAssignments_count_replicate_false` | `propext` |
 | `CertifiedAffine.TseitinCNFData.boolList_eq_replicate_false_of_true_not_mem` | none |
+| `CertifiedAffine.TseitinCNFData.clausesForVertex_length_eq_countP_bad` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.clausesForVertex_length_of_length_succ` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.clausesForVertex_length_eq_pow_pred_of_vars_ne_empty` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.mem_clausesForVertex_imp_exists_bad_row` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.NatListLexLEProp` | none |
 | `CertifiedAffine.TseitinCNFData.natListLexLE_eq_decide_prop` | `propext` |

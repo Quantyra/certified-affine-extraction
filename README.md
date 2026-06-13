@@ -529,13 +529,21 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   a block-size-generic statement: once a caller certifies that every generated
   block in the same-support component has positive CNF length `k`, component
   length and all-false fingerprint count determine a canonical charge
-  representative without exhaustive charge enumeration.  The generated
-  arity-three and arity-four lanes instantiate this generic shape with
+  representative without exhaustive charge enumeration.  The base generator now
+  proves the uniform nonempty block-size formula
+  `clausesForVertex_length_eq_pow_pred_of_vars_ne_empty`, namely
+  `2^(vars.length - 1)` clauses for support arity `vars.length`; the production
+  splitter currently wires the generated arity-three and arity-four instances
   `k = 4` and `k = 8`.
   This pins the open problem to discovering the exact split from CNF; neither
   the residual-free block target nor the compact GF(2) target loses
   multiplicity data once that split is supplied or recovered.
-- `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_eq_mul_of_block_length`,
+- `TseitinCNFData.allAssignments_length`,
+  `TseitinCNFData.allAssignments_countP_parity_eq_succ`,
+  `TseitinCNFData.clausesForVertex_length_eq_countP_bad`,
+  `TseitinCNFData.clausesForVertex_length_of_length_succ`,
+  `TseitinCNFData.clausesForVertex_length_eq_pow_pred_of_vars_ne_empty`,
+  `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_eq_mul_of_block_length`,
   `AtomicClassBridge.target_length_eq_charge_count_mul_block_length_of_perm_generatedParitySpecsForSupportCharges`,
   `AtomicClassBridge.charges_length_eq_target_length_div_block_length_of_perm_generatedParitySpecsForSupportCharges`,
   `AtomicClassBridge.target_length_mod_block_length_eq_zero_of_perm_generatedParitySpecsForSupportCharges`,
@@ -544,12 +552,15 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `AtomicClassBridge.target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges`,
   and
   `AtomicClassBridge.target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges`:
-  give exact same-support generated-component length accounting.  The generic
-  theorem handles any supplied positive block length `k`; the main arity-three
-  and arity-four lanes specialize it to component length `charge_count * 4` and
+  give exact generated-block and same-support generated-component length
+  accounting.  The base `clausesForVertex` theorem derives the per-block length
+  from any nonempty generated support; the component-level generic theorem
+  handles any supplied positive block length `k`.  The main arity-three and
+  arity-four lanes specialize it to component length `charge_count * 4` and
   `charge_count * 8`, with the same transport across clause permutation.  This
-  lets component size determine the total generated charge count once a block
-  size certificate is available.  The quotient/divisibility corollaries
+  lets component size determine the total generated charge count once the
+  generated block size is known or derived.  The quotient/divisibility
+  corollaries
   `AtomicClassBridge.charges_length_eq_target_length_div_block_length_of_perm_generatedParitySpecsForSupportCharges`,
   `AtomicClassBridge.target_length_mod_block_length_eq_zero_of_perm_generatedParitySpecsForSupportCharges`,
   `AtomicClassBridge.charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges`,
@@ -580,15 +591,16 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   build the canonical charge representative directly from
   `target.length / blockSize` and the all-false fingerprint count.  In the
   block-size-generic form, that representative is proved
-  permutation-equivalent to the hidden charge list whenever callers supply the
-  positive per-block length proof; the arity-three and arity-four theorems are
-  concrete instances.  The existing charge-guided recovery then succeeds
-  without `chargeListsUpTo` enumeration.  The new block-size-parameterized
+  permutation-equivalent to the hidden charge list whenever callers supply or
+  derive the positive per-block length proof; the arity-three and arity-four
+  theorems are concrete production-wired instances.  The existing charge-guided
+  recovery then succeeds without `chargeListsUpTo` enumeration.  The
+  block-size-parameterized
   fallback hook packages the same returned-output soundness, syntactic-upgrade,
   and success theorem at the production-shaped same-support interface for any
-  caller-supplied positive block size.  This is still generated-component
-  recovery with a certified block-size premise, not arbitrary CNF or general
-  3-SAT recognition.
+  certified positive block size.  This is still generated-component recovery
+  with a certified block-size premise, not arbitrary CNF or general 3-SAT
+  recognition.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify

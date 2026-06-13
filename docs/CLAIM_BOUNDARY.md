@@ -99,6 +99,10 @@ affine-structure extraction from CNF.
 - A v0.2 generated-block side-condition theorem:
   `clausesForVertex vars charge` satisfies
   `GroupFrame.CNFClausesHaveNonemptySupport` whenever `vars != []`.
+- A v0.2 generated-block size theorem: the Boolean row enumerator has length
+  `2^n`, positive-arity parity rows split exactly in half by charge, and every
+  nonempty generated parity block `clausesForVertex vars charge` has
+  `2^(vars.length - 1)` ordinary CNF clauses.
 - A v0.2 grouping cover theorem: `groupClausesByCanonicalSupport` preserves the
   input CNF clauses up to `List.Perm`.
 - A v0.2 atomic recognizer-to-class bridge: proof-carrying recognized parity
@@ -1000,11 +1004,13 @@ fingerprint is proved to identify exactly that generated clause inside a
 true-charge block.  A true-charge generated block is also now proved to
 contribute exactly one all-false fingerprint, and the merged generated count is
 now proved to equal the hidden true-charge multiplicity.  Together with
-block-size-generic length accounting, this now yields direct count-derived
-recovery for generated same-support components whenever a positive per-block
-length certificate is available; the production splitter currently wires the
-arity-three and arity-four instances.  It is not a general CNF, arbitrary 3-SAT,
-or arbitrary same-support recovery algorithm; the new block-size-parameterized
-hook removes the hard-coded arity from the verified fallback interface, while
-the next production task is deriving or supplying such block-size certificates
-for executable branches beyond generated arity-three/four components.
+block-size-generic length accounting and the new uniform
+`clausesForVertex_length_eq_pow_pred_of_vars_ne_empty` theorem, this now yields
+direct count-derived recovery for generated same-support components whenever
+the relevant positive per-block length is certified from the support arity or
+otherwise supplied; the production splitter currently wires the arity-three and
+arity-four instances.  It is not a general CNF, arbitrary 3-SAT, or arbitrary
+same-support recovery algorithm; the new block-size-parameterized hook removes
+the hard-coded arity from the verified fallback interface, while the next
+production task is using the uniform generated block-size theorem to instantiate
+executable branches beyond generated arity-three/four components.
