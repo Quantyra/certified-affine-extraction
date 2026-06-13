@@ -219,9 +219,15 @@ The merged same-support component exposes a weaker pre-split signal:
 proves that the merged canonical block fingerprint contains the all-false
 fingerprint exactly when the hidden charge list contains `true`, and
 `allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges`
-transports that presence theorem across clause permutation.  This moves the
-charge witness one layer earlier, but it is still only a true-charge presence
-result, not exact multiplicity reconstruction.
+transports that presence theorem across clause permutation.  The merged count
+refinement
+`allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges`
+then proves that the all-false fingerprint count lower-bounds the true-charge
+multiplicity before a split is known, with
+`allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges`
+transporting the bound across clause permutation.  This moves the charge
+witness one layer earlier and makes it quantitative, but it is still only a
+lower bound, not exact multiplicity reconstruction.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`

@@ -137,6 +137,22 @@ theorem mem_canonicalBlockFingerprint_iff
     rcases hmem with ⟨c, hc, hfp⟩
     exact List.mem_map.2 ⟨c, hc, hfp⟩
 
+/-- Canonical clause-fingerprint sorting preserves the count of each fingerprint. -/
+theorem sortClauseFingerprints_count_eq
+    (fingerprint : List Nat) (fingerprints : List (List Nat)) :
+    (sortClauseFingerprints fingerprints).count fingerprint =
+      fingerprints.count fingerprint := by
+  unfold sortClauseFingerprints
+  have hfun :
+      natListLexLE =
+        (fun a b : List Nat => decide (NatListLexLEProp a b)) := by
+    funext a b
+    exact natListLexLE_eq_decide_prop a b
+  rw [hfun, sortByBool_decide_eq_insertionSort (r := NatListLexLEProp)]
+  unfold List.count
+  exact List.Perm.countP_eq (fun x => x == fingerprint)
+    (List.perm_insertionSort NatListLexLEProp fingerprints)
+
 /-- Canonical block-fingerprint membership distributes over CNF append. -/
 theorem mem_canonicalBlockFingerprint_append_iff
     {m : Nat}
@@ -160,6 +176,22 @@ theorem mem_canonicalBlockFingerprint_append_iff
       exact ⟨c, List.mem_append.2 (Or.inl hc), hfp⟩
     · rcases mem_canonicalBlockFingerprint_iff.1 hg with ⟨c, hc, hfp⟩
       exact ⟨c, List.mem_append.2 (Or.inr hc), hfp⟩
+
+/-- Canonical block-fingerprint counts distribute over CNF append. -/
+theorem canonicalBlockFingerprint_count_append
+    {m : Nat}
+    (fingerprint : List Nat)
+    (f g : CNFModel.CNF m) :
+    (canonicalBlockFingerprint (f ++ g)).count fingerprint =
+      (canonicalBlockFingerprint f).count fingerprint +
+        (canonicalBlockFingerprint g).count fingerprint := by
+  unfold canonicalBlockFingerprint
+  rw [sortClauseFingerprints_count_eq]
+  rw [List.map_append, List.count_append]
+  rw [← sortClauseFingerprints_count_eq fingerprint
+    (f.map canonicalClauseFingerprint)]
+  rw [← sortClauseFingerprints_count_eq fingerprint
+    (g.map canonicalClauseFingerprint)]
 
 /-- A clause contributes its canonical fingerprint to the containing block fingerprint. -/
 theorem canonicalClauseFingerprint_mem_canonicalBlockFingerprint_of_mem
@@ -475,6 +507,35 @@ theorem allFalseClauseFingerprint_signal_clausesForVertex_eq_charge
       allFalseClauseFingerprint_mem_canonicalBlockFingerprint_clausesForVertex_true
         vars
     simpa [List.contains] using (List.elem_iff.mpr hmem)
+
+/--
+False-charge generated blocks contribute no all-false clause fingerprints.
+-/
+theorem allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_false
+    {m : Nat}
+    (vars : List (Fin m)) :
+    (canonicalBlockFingerprint (clausesForVertex vars false)).count
+      (canonicalClauseFingerprint
+        (clauseForAssignment vars (List.replicate vars.length false))) = 0 := by
+  exact List.count_eq_zero_of_not_mem
+    (allFalseClauseFingerprint_not_mem_canonicalBlockFingerprint_clausesForVertex_false
+      vars)
+
+/--
+True-charge generated blocks contribute at least one all-false clause
+fingerprint.
+-/
+theorem one_le_allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_true
+    {m : Nat}
+    (vars : List (Fin m)) :
+    1 <=
+      (canonicalBlockFingerprint (clausesForVertex vars true)).count
+        (canonicalClauseFingerprint
+          (clauseForAssignment vars (List.replicate vars.length false))) := by
+  exact Nat.succ_le_of_lt
+    (List.count_pos_iff.2
+      (allFalseClauseFingerprint_mem_canonicalBlockFingerprint_clausesForVertex_true
+        vars))
 
 /-- A canonical parity-block signal is false when the block fingerprints differ. -/
 theorem canonicalParityBlockRecognitionSignal_eq_false_of_fingerprint_ne
@@ -1739,6 +1800,63 @@ theorem allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_sup
   rw [hfingerprint]
   exact
     allFalseClauseFingerprint_mem_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_iff_true_mem
+      vars charges
+
+/--
+On a merged same-support generated CNF, the all-false clause-fingerprint count
+lower-bounds the true-charge multiplicity.  This is intentionally only a lower
+bound: it does not assert exact recovery of every hidden block from the merged
+fingerprint multiset.
+-/
+theorem allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    charges.count true <=
+      (canonicalBlockFingerprint
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))).count
+        (canonicalClauseFingerprint
+          (clauseForAssignment vars (List.replicate vars.length false))) := by
+  induction charges with
+  | nil =>
+      exact Nat.zero_le _
+  | cons charge charges ih =>
+      rw [generatedParitySpecsCNF_forSupportCharges_cons]
+      rw [canonicalBlockFingerprint_count_append]
+      cases charge
+      · have hfalse :=
+          allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_false
+            vars
+        simpa [hfalse] using ih
+      · have htrue :=
+          one_le_allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_true
+            vars
+        simp
+        omega
+
+/--
+The merged-CNF all-false fingerprint count lower bound is invariant under
+clause permutation of the generated same-support component.
+-/
+theorem allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    charges.count true <=
+      (canonicalBlockFingerprint target).count
+        (canonicalClauseFingerprint
+          (clauseForAssignment vars (List.replicate vars.length false))) := by
+  have hfingerprint :
+      canonicalBlockFingerprint target =
+        canonicalBlockFingerprint
+          (generatedParitySpecsCNF
+            (generatedParitySpecsForSupportCharges vars charges)) :=
+    canonicalBlockFingerprint_eq_of_perm hperm
+  rw [hfingerprint]
+  exact
+    allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges
       vars charges
 
 /--

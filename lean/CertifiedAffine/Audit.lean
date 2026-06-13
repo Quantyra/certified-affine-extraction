@@ -676,10 +676,20 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.mem_canonicalBlockFingerprint_iff
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.sortClauseFingerprints_count_eq' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.sortClauseFingerprints_count_eq
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.mem_canonicalBlockFingerprint_append_iff' depends on axioms: [propext,
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.mem_canonicalBlockFingerprint_append_iff
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlockFingerprint_count_append' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlockFingerprint_count_append
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalClauseFingerprint_mem_canonicalBlockFingerprint_of_mem' depends on axioms: [propext,
  Quot.sound] -/
@@ -3131,6 +3141,16 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_signal_clausesForVertex_eq_charge
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_false' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_false
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.one_le_allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_true' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.one_le_allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_true
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsCNF_forSupportCharges_cons' depends on axioms: [propext] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsCNF_forSupportCharges_cons
@@ -3144,6 +3164,16 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_signals_eq' depends on axioms: [propext,
  Quot.sound] -/

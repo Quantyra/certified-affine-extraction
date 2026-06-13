@@ -380,6 +380,11 @@ affine-structure extraction from CNF.
   appears in the charge list.  The theorem also transports across clause
   permutation of the generated component.  This is a CNF-side presence signal,
   not exact charge-multiplicity recovery.
+- A v0.2 merged same-support count lower bound: the all-false fingerprint count
+  in a generated same-support component lower-bounds the number of hidden
+  true-charge blocks, and the bound transports across clause permutation.  This
+  is deliberately a lower bound, not exact split or multiplicity
+  reconstruction.
 - A v0.2 list-level recognizer-to-class bridge: canonical-fingerprint block
   lists with per-block permutation certificates and append-disjoint supports
   instantiate `ParityEncoded.Class` over
@@ -584,8 +589,14 @@ proves that the merged same-support generated CNF contains the all-false
 fingerprint exactly when the charge list contains `true`, and
 `allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges`
 transports the statement across clause permutations of the generated component.
-This proves true-charge presence before a split is known; it does not recover
-true-charge multiplicity.
+The count refinement
+`allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges`
+proves that the all-false fingerprint count in the merged generated component
+lower-bounds the number of true charges, and
+`allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges`
+transports that bound across clause permutations.  This proves a pre-split
+true-charge lower-bound signal; it does not recover exact true-charge
+multiplicity or the hidden split.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`
