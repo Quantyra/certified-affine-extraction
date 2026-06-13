@@ -484,6 +484,10 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   theorem proves that these non-enumerative branches exhaust the production path
   for nonempty generated same-support components; exhaustive component-bound
   charge search remains only the last resort outside those generated hypotheses.
+  `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustiveFallback_of_perm_supportCharges`
+  states the same fact against the executable
+  `AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback?` helper,
+  so generated-lane callers can name the no-search prefix directly.
   A successful production fallback now also lifts to the declarative semantic
   class via
   `AtomicClassBridge.class_of_recoverSameSupportGroupWithChargeSearchFallback`
@@ -494,6 +498,9 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   returns a production fallback result with a `ParityEncoded.Class` witness, and
   `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_semanticPreservation_of_perm_supportCharges_componentBound`
   returns one with assignment-level semantic preservation.
+  `AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges`
+  packages the same returned-object certificate for the non-exhaustive helper
+  itself.
 - `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`,

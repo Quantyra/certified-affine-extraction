@@ -7649,6 +7649,23 @@ theorem recoverSameSupportGroupWithDirectInferredBlockSizeFallback_toSyntacticOk
   exact recoverSameSupportGroupWithDirectBlockSizeFallback_toSyntacticOk hrec
 
 /--
+The non-exhaustive prefix of the production-shaped same-support fallback.  It
+keeps the permutation-insensitive two-charge fast path, then direct
+arity-three/four count-derived recovery, then support-size-inferred direct
+recovery, but deliberately omits the bounded `chargeListsUpTo` search.
+-/
+def recoverSameSupportGroupWithNonexhaustiveFallback? {m : Nat}
+    (groupCNF : CNFModel.CNF m) :
+    Option (CanonicalFingerprintGF2Decomposition m) :=
+  match recoverTwoChargeSameSupportGroupPerm? groupCNF with
+  | some d => some d
+  | none =>
+      match recoverSameSupportGroupWithDirectChargeFallback? groupCNF with
+      | some d => some d
+      | none =>
+          recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF
+
+/--
 Production-shaped same-support recovery branch.  It preserves the existing
 two-charge fast path, then tries direct arity-three/four count-derived
 recovery, then the support-size-derived direct branch, and only then falls back
@@ -8864,6 +8881,38 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm
                   (directSameSupportChargesFromTargetWithBlockSize vars target
                     (generatedParitySupportBlockSize vars)))) := by
   unfold recoverSameSupportGroupWithChargeSearchFallback?
+  cases htwo : recoverTwoChargeSameSupportGroupPerm? target with
+  | some d =>
+      simp [htwo]
+  | none =>
+      cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? target with
+      | some d =>
+          simp [htwo, hdirect]
+      | none =>
+          have hinferred :=
+            recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_of_directTargetCharges_supportSize
+              hvars hnormal hperm hnonempty
+          simp [htwo, hdirect, hinferred]
+
+/--
+For nonempty generated same-support components, the full production fallback
+is exactly its non-exhaustive prefix.  This is the executable form of the
+"bounded charge search is unreachable" statement for the generated lane.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustiveFallback_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : Not (vars = []))
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSameSupportGroupWithChargeSearchFallback? target =
+      recoverSameSupportGroupWithNonexhaustiveFallback? target := by
+  unfold recoverSameSupportGroupWithChargeSearchFallback?
+  unfold recoverSameSupportGroupWithNonexhaustiveFallback?
   cases htwo : recoverTwoChargeSameSupportGroupPerm? target with
   | some d =>
       simp [htwo]
@@ -10538,6 +10587,47 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_exists_certifiedCoreTarg
   rcases recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2 hrec with
     ⟨hcover, hresidual, _htarget'⟩
   exact ⟨d, hrec, hcover, hresidual, htarget, hgf2⟩
+
+/--
+The non-exhaustive prefix alone returns the same generated-lane certificate as
+the full production fallback on nonempty generated same-support components.
+Thus callers that are already inside this generated lane can avoid even the
+possibility of falling through to bounded charge-list search while retaining
+the returned-object certificate.
+-/
+theorem recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : vars ≠ [])
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGroupWithNonexhaustiveFallback? target = some d /\
+        List.Perm d.expandedCNF target /\
+          d.hasEmptyResidual /\
+            ProductionSameSupportFallbackCoreGF2Target target d.coreGF2 /\
+              forall a : CNFModel.Assignment m,
+                ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 <->
+                  ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                    (generatedParitySpecsGF2
+                      (generatedParitySpecsForSupportCharges vars charges)) := by
+  have heq :
+      recoverSameSupportGroupWithChargeSearchFallback? target =
+        recoverSameSupportGroupWithNonexhaustiveFallback? target :=
+    recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustiveFallback_of_perm_supportCharges
+      hvars hnormal hperm hnonempty
+  rcases
+    recoverSameSupportGroupWithChargeSearchFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges_componentBound
+      hvars hnormal hperm hnonempty with
+    ⟨d, hrec, hcover, hresidual, htarget, hgf2⟩
+  refine ⟨d, ?_, hcover, hresidual, htarget, hgf2⟩
+  rw [← heq]
+  exact hrec
 
 /--
 When the support groups for a CNF are all recognized, the emitted canonical

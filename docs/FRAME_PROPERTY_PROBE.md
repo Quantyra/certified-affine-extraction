@@ -230,7 +230,13 @@ bundle production success with those semantic witnesses directly.
 The deterministic
 `recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm_supportCharges`
 theorem now proves that nonempty generated same-support components never need
-that exhaustive branch.  The remaining blocker is deriving charge
+that exhaustive branch.
+`recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustiveFallback_of_perm_supportCharges`
+turns that into equality with the executable
+`recoverSameSupportGroupWithNonexhaustiveFallback?` helper, and
+`recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges`
+packages the same returned-object certificate for the helper itself.  The
+remaining blocker is deriving charge
 multiplicities from arbitrary components; the current last-resort search is
 still exhaustive outside the generated lane, not an efficient reconstruction
 algorithm for arbitrary CNF.

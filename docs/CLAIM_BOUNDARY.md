@@ -575,7 +575,13 @@ theorem proves that, for nonempty generated same-support components, those
 non-enumerative branches exhaust the production path before the exhaustive
 component-bound search is reached.  The exhaustive branch remains the last
 resort outside those generated hypotheses; this is not a polynomial-time
-recovery claim for arbitrary same-support CNF.  The semantic
+recovery claim for arbitrary same-support CNF.
+`recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustiveFallback_of_perm_supportCharges`
+records the same generated-lane fact as equality with the executable
+`recoverSameSupportGroupWithNonexhaustiveFallback?` helper, and
+`recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges`
+packages the same recovery, coverage, empty-residual, target-classification,
+and hidden-source GF(2) certificate for that helper itself.  The semantic
 charge-presence lane now proves that this multiplicity problem is not semantic
 strength:
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem` shows that
