@@ -1569,6 +1569,122 @@ theorem generatedParitySpecsForSupportCharges_sameSupport
   cases hspec_eq
   rfl
 
+/-- The compact GF(2) formula for same-support charges is just the charge map. -/
+theorem generatedParitySpecsGF2_forSupportCharges_eq_map
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    generatedParitySpecsGF2
+        (generatedParitySpecsForSupportCharges vars charges) =
+      charges.map (fun charge => parityClauseForVertex vars charge) := by
+  rw [generatedParitySpecsGF2_eq_map]
+  simp [generatedParitySpecsForSupportCharges, generatedParitySpecGF2]
+
+/--
+Same-support generated GF(2) semantics depends only on which charges appear in
+the charge list.  Multiplicity is therefore a syntactic coverage issue, not a
+semantic one.
+-/
+theorem gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem
+    {m : Nat} (a : CNFModel.Assignment m)
+    (vars : List (Fin m)) (charges : List Bool) :
+    ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges vars charges)) <->
+      forall charge : Bool, List.Mem charge charges ->
+        ResoplusPDT.ClauseSat
+          (F := Basic.CNF.mk m) a
+          (parityClauseForVertex vars charge) := by
+  rw [generatedParitySpecsGF2_forSupportCharges_eq_map]
+  constructor
+  · intro hsat charge hmem
+    exact hsat (parityClauseForVertex vars charge)
+      (List.mem_map.2 ⟨charge, hmem, rfl⟩)
+  · intro hsat c hc
+    rcases List.mem_map.1 hc with ⟨charge, hmem, hc_eq⟩
+    cases hc_eq
+    exact hsat charge hmem
+
+/-- Duplicate same-support charges do not change the generated GF(2) semantics. -/
+theorem gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups
+    {m : Nat} (a : CNFModel.Assignment m)
+    (vars : List (Fin m)) (charges : List Bool) :
+    ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges vars charges)) <->
+      ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges vars charges.eraseDups)) := by
+  rw [gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem,
+    gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem]
+  constructor
+  · intro hsat charge hmem
+    exact hsat charge ((GroupFrame.mem_eraseDups_iff charge charges).1 hmem)
+  · intro hsat charge hmem
+    exact hsat charge ((GroupFrame.mem_eraseDups_iff charge charges).2 hmem)
+
+/--
+Since the only possible charges are `false` and `true`, same-support generated
+GF(2) semantics is exactly the pair of charge-presence obligations.
+-/
+theorem gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence
+    {m : Nat} (a : CNFModel.Assignment m)
+    (vars : List (Fin m)) (charges : List Bool) :
+    ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges vars charges)) <->
+      ((List.Mem false charges ->
+          ResoplusPDT.ClauseSat
+            (F := Basic.CNF.mk m) a
+            (parityClauseForVertex vars false)) /\
+        (List.Mem true charges ->
+          ResoplusPDT.ClauseSat
+            (F := Basic.CNF.mk m) a
+            (parityClauseForVertex vars true))) := by
+  rw [gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem]
+  constructor
+  · intro hsat
+    exact ⟨hsat false, hsat true⟩
+  · intro hsat charge hmem
+    cases charge
+    · exact hsat.1 hmem
+    · exact hsat.2 hmem
+
+/--
+A same-support generated GF(2) formula containing both charges is unsatisfiable.
+This is the semantic boundary behind mixed-charge same-support components.
+-/
+theorem not_gf2Sat_generatedParitySpecsForSupportCharges_of_mem_false_true
+    {m : Nat} (a : CNFModel.Assignment m)
+    (vars : List (Fin m)) {charges : List Bool}
+    (hfalse : List.Mem false charges)
+    (htrue : List.Mem true charges) :
+    Not
+      (ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges vars charges))) := by
+  intro hsat
+  have hpresence :=
+    (gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence
+      a vars charges).1 hsat
+  have hsatFalse :
+      ResoplusPDT.ClauseSat
+        (F := Basic.CNF.mk m) a
+        (parityClauseForVertex vars false) :=
+    hpresence.1 hfalse
+  have hsatTrue :
+      ResoplusPDT.ClauseSat
+        (F := Basic.CNF.mk m) a
+        (parityClauseForVertex vars true) :=
+    hpresence.2 htrue
+  have hparFalse :
+      (parity (assignmentRow a vars) == false) = true :=
+    (clauseSat_parityClauseForVertex_iff_parity_eq
+      (m := m) a (vars := vars) (charge := false)).1 hsatFalse
+  have hparTrue :
+      (parity (assignmentRow a vars) == true) = true :=
+    (clauseSat_parityClauseForVertex_iff_parity_eq
+      (m := m) a (vars := vars) (charge := true)).1 hsatTrue
+  cases hpar : parity (assignmentRow a vars) <;> simp [hpar] at hparFalse hparTrue
+
 /-- Return the first successful optional result from a finite candidate list. -/
 def firstSome? {alpha beta : Type} : List alpha -> (alpha -> Option beta) -> Option beta
   | [], _ => none

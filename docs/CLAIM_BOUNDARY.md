@@ -551,7 +551,19 @@ and
 `recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound`.
 This is still not arbitrary same-support recognition: this generated lane no
 longer needs an external bound, but the next discovery problem is deriving the
-charge multiplicities directly from arbitrary components.  The unguided
+charge multiplicities directly from arbitrary components.  The semantic
+charge-presence lane now proves that this multiplicity problem is not semantic
+strength:
+`gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem` shows that
+same-support generated GF(2) satisfaction is exactly satisfaction of each
+appearing charge,
+`gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups` shows duplicate
+charges are semantically redundant,
+`gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence` reduces the
+Boolean case to false-charge and true-charge presence, and
+`not_gf2Sat_generatedParitySpecsForSupportCharges_of_mem_false_true` proves that
+containing both charges is unsatisfiable.  The remaining multiplicity problem
+is exact CNF coverage, not extra GF(2) semantic content.  The unguided
 two-charge probe
 infers the canonical support from that component, tries both charge orders,
 proves residual-free component coverage for any returned decomposition, proves

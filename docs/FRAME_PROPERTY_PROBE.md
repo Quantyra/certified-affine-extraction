@@ -197,7 +197,15 @@ and
 now instantiates that search with the component's own clause count for
 nonempty-support generated same-support components.  The remaining blocker is
 deriving the charge multiplicities from arbitrary components, not supplying a
-safe bound in this generated lane.
+safe bound in this generated lane.  The semantic charge-presence lemmas
+`gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
+`gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
+`gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`, and
+`not_gf2Sat_generatedParitySpecsForSupportCharges_of_mem_false_true` further
+pin down that blocker: duplicate same-support charges do not change GF(2)
+semantics, while both charges together make the generated same-support GF(2)
+formula unsatisfiable.  What remains is exact component coverage and
+multiplicity reconstruction, not discovering new same-support semantic cases.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

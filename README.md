@@ -453,6 +453,16 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   not arbitrary same-support recognition: the search no longer needs an
   external bound in this generated lane, but it still does not infer the charge
   multiplicities directly from an arbitrary component.
+- `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
+  `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
+  `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`,
+  and
+  `AtomicClassBridge.not_gf2Sat_generatedParitySpecsForSupportCharges_of_mem_false_true`:
+  separate same-support charge semantics from syntactic multiplicity.  The
+  generated GF(2) formula depends only on which Boolean charges appear, duplicate
+  charges are semantically redundant, and a same-support generated GF(2) formula
+  containing both charges is unsatisfiable.  The remaining multiplicity problem
+  is therefore exact CNF coverage, not added GF(2) semantic strength.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify
