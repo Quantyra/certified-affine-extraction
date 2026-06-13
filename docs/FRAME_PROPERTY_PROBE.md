@@ -168,6 +168,10 @@ shape via `ProductionSameSupportFallbackCoreGF2Target` and
 `recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2`: any successful
 fallback return is certified to emit one of the enumerated compact GF(2)
 targets for the branch that accepted it.
+For generated same-support components, the
+`recoverSameSupportGroupWithChargeSearchFallback_exists_coreTarget_gf2Equiv_of_perm_supportCharges_componentBound`
+bridge additionally proves the returned compact core assignment-equivalent to
+the hidden generated GF(2) charge system.
 The same local repair is now factored as the generic
 `enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport`
 theorem for any generated true/false pair over one canonical support, assuming

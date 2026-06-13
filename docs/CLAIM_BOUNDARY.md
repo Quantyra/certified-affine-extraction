@@ -766,7 +766,14 @@ bounded charge-search branches, and
 every successful production fallback lands in that target predicate while still
 covering the source component and leaving no residual.  This is an output-shape
 audit for successful returns, not a completeness or efficiency claim.  The
-enhanced fallback splitter also
+generated same-support lane also has a source-level compact semantic bridge:
+`recoverSameSupportGroupWithChargeSearchFallback_exists_coreTarget_gf2Equiv_of_perm_supportCharges_componentBound`
+returns a successful production fallback whose compact core is
+assignment-equivalent to the hidden generated GF(2) charge system, in addition
+to carrying the exact production target witness.  This theorem assumes the
+ordinary CNF is a permutation of a generated same-support component; it does not
+recognize arbitrary same-support structure from arbitrary CNF.
+The enhanced fallback splitter also
 has the same residual-free group-list append frame shape as the baseline
 splitter: residual-free enhanced support-group splits compose across appended
 support-group lists, and `EnhancedExtractorCompleteOn` /

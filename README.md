@@ -674,6 +674,12 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2` proves every
   successful production fallback lands in that target set while preserving
   coverage and empty residual.
+  For nonempty generated same-support inputs,
+  `recoverSameSupportGroupWithChargeSearchFallback_exists_coreTarget_gf2Equiv_of_perm_supportCharges_componentBound`
+  additionally connects the returned compact core back to the hidden generated
+  GF(2) source: the emitted core is assignment-equivalent to the source
+  same-support charge system, while still carrying the exact production target
+  witness.
   The block-size-parameterized direct hook remains available for callers that
   want to certify a positive generated block size explicitly.
   On the direct two-cycle boundary it covers the CNF exactly, compacts

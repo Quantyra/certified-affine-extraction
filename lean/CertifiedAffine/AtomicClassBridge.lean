@@ -10087,6 +10087,62 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_exists_semanticPreservat
           hrec a⟩
 
 /--
+For nonempty generated same-support components, the production same-support
+fallback returns a compact core that is assignment-equivalent to the hidden
+generated GF(2) source, not only to the expanded CNF presentation.  The same
+witness also records the exact production target family of the emitted core.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_exists_coreTarget_gf2Equiv_of_perm_supportCharges_componentBound
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : vars ≠ [])
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGroupWithChargeSearchFallback? target = some d /\
+        ProductionSameSupportFallbackCoreGF2Target target d.coreGF2 /\
+          forall a : CNFModel.Assignment m,
+            ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 <->
+              ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                (generatedParitySpecsGF2
+                  (generatedParitySpecsForSupportCharges vars charges)) := by
+  rcases
+    recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCharges_componentBound
+      hvars hnormal hperm hnonempty with
+    ⟨d, hrec⟩
+  rcases recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2 hrec with
+    ⟨_hcover, _hresidual, htarget⟩
+  refine ⟨d, hrec, htarget, ?_⟩
+  intro a
+  have hrecovered :
+      CNFModel.cnfSat a target <->
+        ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 :=
+    semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback
+      hrec a
+  have htargetGenerated :
+      CNFModel.cnfSat a target <->
+        CNFModel.cnfSat a
+          (generatedParitySpecsCNF
+            (generatedParitySpecsForSupportCharges vars charges)) :=
+    cnfSat_iff_of_perm (a := a) hperm
+  have hgenerated :
+      CNFModel.cnfSat a
+          (generatedParitySpecsCNF
+            (generatedParitySpecsForSupportCharges vars charges)) <->
+        ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+          (generatedParitySpecsGF2
+            (generatedParitySpecsForSupportCharges vars charges)) :=
+    ParityEncoded.Class.sound
+      (class_of_generatedParitySpecs
+        (generatedParitySpecsForSupportCharges vars charges)) a
+  exact hrecovered.symm.trans (htargetGenerated.trans hgenerated)
+
+/--
 When the support groups for a CNF are all recognized, the emitted canonical
 blocks cover exactly the original CNF up to clause permutation.
 -/
