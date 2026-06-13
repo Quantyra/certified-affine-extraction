@@ -698,7 +698,13 @@ proves the count-derived compact GF(2) target assignment-equivalent to the
 hidden generated charge source, and
 `recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize`
 packages that equivalence with inferred-branch success.  These theorems still
-assume a generated same-support source presentation up to permutation.  Any
+assume a generated same-support source presentation up to permutation.
+`recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectInferred_gf2Equiv_of_perm_supportCharges_of_twoCharge_none_of_directCharge_none`
+then lifts the same evidence to the production fallback when the two-charge path
+and older arity-three/four direct path both miss: the returned inferred
+decomposition carries recovery success, coverage, empty residual, exact target
+classification, and hidden-source GF(2) equivalence.  This is a certificate for
+that generated no-fast-branch production path, not an arbitrary-CNF result.  Any
 successful production fallback result now also
 transports through `class_of_recoverSameSupportGroupWithChargeSearchFallback`
 and

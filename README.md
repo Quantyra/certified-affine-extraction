@@ -555,6 +555,11 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `AtomicClassBridge.recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize`
   packages that hidden-source equivalence with success of the inferred
   support-size direct branch, still before bounded charge-list search.
+  `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectInferred_gf2Equiv_of_perm_supportCharges_of_twoCharge_none_of_directCharge_none`
+  lifts that result to the production fallback in the no-fast-branch case:
+  when the two-charge path and older arity-three/four direct path both miss, the
+  returned inferred decomposition carries coverage, empty residual, exact target
+  classification, and hidden-source GF(2) equivalence.
   This pins the open problem to discovering the exact split from CNF; neither
   the residual-free block target nor the compact GF(2) target loses
   multiplicity data once that split is supplied or recovered.

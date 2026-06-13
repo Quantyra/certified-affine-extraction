@@ -8560,6 +8560,81 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetC
   simp [htwo, hdirect, hinferred]
 
 /--
+When the two-charge fast path and older arity-three/four direct path both miss,
+the production-shaped same-support fallback returns the inferred support-size
+direct decomposition.  The returned object is certified in the production
+surface: it covers the input up to clause permutation, has empty residual, lands
+in the exact production target predicate, and its compact GF(2) core is
+assignment-equivalent to the hidden generated source.  No bounded charge-list
+search is used on this path.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectInferred_gf2Equiv_of_perm_supportCharges_of_twoCharge_none_of_directCharge_none
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : Not (vars = []))
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = []))
+    (htwo : recoverTwoChargeSameSupportGroupPerm? target = none)
+    (hdirect : recoverSameSupportGroupWithDirectChargeFallback? target = none) :
+    recoverSameSupportGroupWithChargeSearchFallback? target =
+        some (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target
+              (generatedParitySupportBlockSize vars)))) /\
+      List.Perm
+        (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target
+              (generatedParitySupportBlockSize vars)))).expandedCNF
+        target /\
+        (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target
+              (generatedParitySupportBlockSize vars)))).hasEmptyResidual /\
+          ProductionSameSupportFallbackCoreGF2Target target
+            (generatedParitySpecsFallbackDecomposition
+              (generatedParitySpecsForSupportCharges vars
+                (directSameSupportChargesFromTargetWithBlockSize vars target
+                  (generatedParitySupportBlockSize vars)))).coreGF2 /\
+            forall a : CNFModel.Assignment m,
+              ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                (generatedParitySpecsFallbackDecomposition
+                  (generatedParitySpecsForSupportCharges vars
+                    (directSameSupportChargesFromTargetWithBlockSize vars target
+                      (generatedParitySupportBlockSize vars)))).coreGF2 <->
+                ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                  (generatedParitySpecsGF2
+                    (generatedParitySpecsForSupportCharges vars charges)) := by
+  let directSpecs :=
+    generatedParitySpecsForSupportCharges vars
+      (directSameSupportChargesFromTargetWithBlockSize vars target
+        (generatedParitySupportBlockSize vars))
+  let d := generatedParitySpecsFallbackDecomposition directSpecs
+  have hrec :
+      recoverSameSupportGroupWithChargeSearchFallback? target = some d := by
+    dsimp [d, directSpecs]
+    exact
+      recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetCharges_supportSize_of_twoCharge_none_of_directCharge_none
+        hvars hnormal hperm hnonempty htwo hdirect
+  rcases recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2 hrec with
+    ⟨hcover, hresidual, htarget⟩
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · simpa [d, directSpecs] using hrec
+  · simpa [d, directSpecs] using hcover
+  · simpa [d, directSpecs] using hresidual
+  · simpa [d, directSpecs] using htarget
+  · intro a
+    have hgf2 :=
+      gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges
+        hvars hperm a
+    simpa [d, directSpecs, generatedParitySpecsFallbackDecomposition_coreGF2_eq]
+      using hgf2
+
+/--
 For any nonempty generated same-support component, the production-shaped
 same-support fallback is exhausted by its non-enumerative branches.  If the
 two-charge fast path accepts, that result is returned; otherwise, if the older

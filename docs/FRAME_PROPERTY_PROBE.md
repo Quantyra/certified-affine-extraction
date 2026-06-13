@@ -362,6 +362,10 @@ hidden generated charge source, and
 packages that semantic bridge with inferred-branch success.  It still does not
 recover charge identity or per-charge multiplicity inside an arbitrary
 same-support component.
+`recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectInferred_gf2Equiv_of_perm_supportCharges_of_twoCharge_none_of_directCharge_none`
+now records the same certificate at the production fallback surface for the
+no-fast-branch case, including coverage, empty residual, exact target
+classification, and hidden-source GF(2) equivalence.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.
