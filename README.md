@@ -488,6 +488,13 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   states the same fact against the executable
   `AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback?` helper,
   so generated-lane callers can name the no-search prefix directly.
+  That helper now has the same successful-return API as the production helper:
+  `AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_sound`,
+  `AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_sound_coreGF2`,
+  `AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_toSyntacticOk`,
+  `AtomicClassBridge.class_of_recoverSameSupportGroupWithNonexhaustiveFallback`,
+  and
+  `AtomicClassBridge.semanticPreservation_of_recoverSameSupportGroupWithNonexhaustiveFallback`.
   A successful production fallback now also lifts to the declarative semantic
   class via
   `AtomicClassBridge.class_of_recoverSameSupportGroupWithChargeSearchFallback`

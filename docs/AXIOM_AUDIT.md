@@ -606,6 +606,11 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_coreTarget_gf2Equiv_of_perm_supportCharges_componentBound` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges_componentBound` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_sound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_sound_coreGF2` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithNonexhaustiveFallback` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticPreservation_of_recoverSameSupportGroupWithNonexhaustiveFallback` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsGF2_forSupportCharges_eq_map` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsGF2_forSupportCharges_perm_of_charges_perm` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges` | `propext`, `Classical.choice`, `Quot.sound` |

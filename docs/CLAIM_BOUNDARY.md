@@ -579,6 +579,14 @@ recovery claim for arbitrary same-support CNF.
 `recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustiveFallback_of_perm_supportCharges`
 records the same generated-lane fact as equality with the executable
 `recoverSameSupportGroupWithNonexhaustiveFallback?` helper, and
+the helper has the same successful-return soundness, exact compact-target,
+syntactic-upgrade, class, and semantic-preservation API as the production
+helper via
+`recoverSameSupportGroupWithNonexhaustiveFallback_sound`,
+`recoverSameSupportGroupWithNonexhaustiveFallback_sound_coreGF2`,
+`recoverSameSupportGroupWithNonexhaustiveFallback_toSyntacticOk`,
+`class_of_recoverSameSupportGroupWithNonexhaustiveFallback`, and
+`semanticPreservation_of_recoverSameSupportGroupWithNonexhaustiveFallback`.
 `recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges`
 packages the same recovery, coverage, empty-residual, target-classification,
 and hidden-source GF(2) certificate for that helper itself.  The semantic

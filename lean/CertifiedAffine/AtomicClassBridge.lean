@@ -7734,6 +7734,127 @@ inductive ProductionSameSupportFallbackCoreGF2Target {m : Nat}
             (parityCandidateCanonicalSupportFromBlock groupCNF) charges))
 
 /--
+Soundness for the non-exhaustive same-support recovery prefix.  A returned
+decomposition covers the input component up to clause permutation and leaves no
+residual clauses.
+-/
+theorem recoverSameSupportGroupWithNonexhaustiveFallback_sound
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithNonexhaustiveFallback? groupCNF = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual := by
+  unfold recoverSameSupportGroupWithNonexhaustiveFallback? at hrec
+  cases htwo : recoverTwoChargeSameSupportGroupPerm? groupCNF with
+  | some dTwo =>
+      simp [htwo] at hrec
+      cases hrec
+      exact recoverTwoChargeSameSupportGroupPerm_sound htwo
+  | none =>
+      cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? groupCNF with
+      | some dDirect =>
+          simp [htwo, hdirect] at hrec
+          cases hrec
+          exact recoverSameSupportGroupWithDirectChargeFallback_sound hdirect
+      | none =>
+          cases hinferred :
+              recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF with
+          | some dInferred =>
+              simp [htwo, hdirect, hinferred] at hrec
+              cases hrec
+              exact
+                recoverSameSupportGroupWithDirectInferredBlockSizeFallback_sound
+                  hinferred
+          | none =>
+              simp [htwo, hdirect, hinferred] at hrec
+
+/--
+Exact-core soundness for the non-exhaustive same-support recovery prefix.  A
+successful return covers the component, leaves no residual clauses, and emits
+one of the non-search compact GF(2) targets for the branch that accepted it.
+-/
+theorem recoverSameSupportGroupWithNonexhaustiveFallback_sound_coreGF2
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithNonexhaustiveFallback? groupCNF = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual /\
+      ProductionSameSupportFallbackCoreGF2Target groupCNF d.coreGF2 := by
+  unfold recoverSameSupportGroupWithNonexhaustiveFallback? at hrec
+  cases htwo : recoverTwoChargeSameSupportGroupPerm? groupCNF with
+  | some dTwo =>
+      simp [htwo] at hrec
+      cases hrec
+      rcases recoverTwoChargeSameSupportGroupPerm_sound_coreGF2 htwo with
+        ⟨hcover, hresidual, hnormal | hflipped⟩
+      · refine ⟨hcover, hresidual, ?_⟩
+        rw [hnormal]
+        exact ProductionSameSupportFallbackCoreGF2Target.twoChargeNormal
+      · refine ⟨hcover, hresidual, ?_⟩
+        rw [hflipped]
+        exact ProductionSameSupportFallbackCoreGF2Target.twoChargeFlipped
+  | none =>
+      cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? groupCNF with
+      | some dDirect =>
+          simp [htwo, hdirect] at hrec
+          cases hrec
+          rcases recoverSameSupportGroupWithDirectChargeFallback_sound_coreGF2
+              hdirect with
+            ⟨hcover, hresidual, harityThree | harityFour⟩
+          · refine ⟨hcover, hresidual, ?_⟩
+            rw [harityThree]
+            exact ProductionSameSupportFallbackCoreGF2Target.directArityThree
+          · refine ⟨hcover, hresidual, ?_⟩
+            rw [harityFour]
+            exact ProductionSameSupportFallbackCoreGF2Target.directArityFour
+      | none =>
+          cases hinferred :
+              recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF with
+          | some dInferred =>
+              simp [htwo, hdirect, hinferred] at hrec
+              cases hrec
+              rcases
+                recoverSameSupportGroupWithDirectInferredBlockSizeFallback_sound_coreGF2
+                  hinferred with
+                ⟨hcover, hresidual, hinferredCore⟩
+              refine ⟨hcover, hresidual, ?_⟩
+              rw [hinferredCore]
+              exact ProductionSameSupportFallbackCoreGF2Target.directInferred
+          | none =>
+              simp [htwo, hdirect, hinferred] at hrec
+
+/--
+The non-exhaustive same-support recovery prefix returns syntactically
+upgradable blocks whenever it succeeds.
+-/
+theorem recoverSameSupportGroupWithNonexhaustiveFallback_toSyntacticOk
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithNonexhaustiveFallback? groupCNF = some d) :
+    CanonicalBlocksToSyntacticOk d.blocks := by
+  unfold recoverSameSupportGroupWithNonexhaustiveFallback? at hrec
+  cases htwo : recoverTwoChargeSameSupportGroupPerm? groupCNF with
+  | some dTwo =>
+      simp [htwo] at hrec
+      cases hrec
+      exact recoverTwoChargeSameSupportGroupPerm_toSyntacticOk htwo
+  | none =>
+      cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? groupCNF with
+      | some dDirect =>
+          simp [htwo, hdirect] at hrec
+          cases hrec
+          exact recoverSameSupportGroupWithDirectChargeFallback_toSyntacticOk hdirect
+      | none =>
+          cases hinferred :
+              recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF with
+          | some dInferred =>
+              simp [htwo, hdirect, hinferred] at hrec
+              cases hrec
+              exact
+                recoverSameSupportGroupWithDirectInferredBlockSizeFallback_toSyntacticOk
+                  hinferred
+          | none =>
+              simp [htwo, hdirect, hinferred] at hrec
+
+/--
 Soundness for the production-shaped same-support recovery branch.  A returned
 decomposition covers the input component up to clause permutation and leaves no
 residual clauses.
@@ -10384,6 +10505,21 @@ theorem class_of_recoverSameSupportGroupWithDirectInferredBlockSizeFallback
         hrec)
 
 /--
+Any successful non-exhaustive same-support fallback is semantically sound as a
+local CNF-to-GF(2) block.
+-/
+theorem class_of_recoverSameSupportGroupWithNonexhaustiveFallback
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithNonexhaustiveFallback? groupCNF = some d) :
+    ParityEncoded.Class m groupCNF d.coreGF2 := by
+  rcases recoverSameSupportGroupWithNonexhaustiveFallback_sound hrec with
+    ⟨hcover, hresidual⟩
+  exact
+    class_of_decomposition_cover_toSyntacticOk hcover hresidual
+      (recoverSameSupportGroupWithNonexhaustiveFallback_toSyntacticOk hrec)
+
+/--
 Any successful production-shaped same-support fallback is semantically sound as
 a local CNF-to-GF(2) block.
 -/
@@ -10422,6 +10558,17 @@ theorem semanticPreservation_of_recoverTwoChargeSameSupportGroupPerm
       ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 :=
   ParityEncoded.Class.sound
     (class_of_recoverTwoChargeSameSupportGroupPerm hrec) a
+
+/-- Per-assignment semantic preservation for a successful non-exhaustive fallback. -/
+theorem semanticPreservation_of_recoverSameSupportGroupWithNonexhaustiveFallback
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithNonexhaustiveFallback? groupCNF = some d)
+    (a : CNFModel.Assignment m) :
+    CNFModel.cnfSat a groupCNF <->
+      ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 :=
+  ParityEncoded.Class.sound
+    (class_of_recoverSameSupportGroupWithNonexhaustiveFallback hrec) a
 
 /--
 Per-assignment semantic preservation for a successful production-shaped

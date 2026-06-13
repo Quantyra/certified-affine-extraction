@@ -3245,6 +3245,36 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_sound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_sound
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_sound_coreGF2' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_sound_coreGF2
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_toSyntacticOk' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_toSyntacticOk
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithNonexhaustiveFallback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.class_of_recoverSameSupportGroupWithNonexhaustiveFallback
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticPreservation_of_recoverSameSupportGroupWithNonexhaustiveFallback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticPreservation_of_recoverSameSupportGroupWithNonexhaustiveFallback
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsGF2_forSupportCharges_eq_map' depends on axioms: [propext,
  Quot.sound] -/
 #guard_msgs in

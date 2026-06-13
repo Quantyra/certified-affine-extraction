@@ -234,6 +234,13 @@ that exhaustive branch.
 `recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustiveFallback_of_perm_supportCharges`
 turns that into equality with the executable
 `recoverSameSupportGroupWithNonexhaustiveFallback?` helper, and
+`recoverSameSupportGroupWithNonexhaustiveFallback_sound`,
+`recoverSameSupportGroupWithNonexhaustiveFallback_sound_coreGF2`,
+`recoverSameSupportGroupWithNonexhaustiveFallback_toSyntacticOk`,
+`class_of_recoverSameSupportGroupWithNonexhaustiveFallback`, and
+`semanticPreservation_of_recoverSameSupportGroupWithNonexhaustiveFallback`
+give the helper the same successful-return proof interface as the production
+fallback without mentioning bounded search.
 `recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges`
 packages the same returned-object certificate for the helper itself.  The
 remaining blocker is deriving charge
