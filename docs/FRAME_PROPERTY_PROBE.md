@@ -183,6 +183,15 @@ component, and
 accepts the component when the supplied charge list is correct.  The blocker is
 therefore now charge-list and multiplicity discovery, not support inference for
 this generated same-support lane.
+The bounded charge-search lane now searches all Boolean charge lists up to a
+supplied maximum:
+`recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges`
+and
+`recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges`
+prove success whenever the true charge list is inside that bound, while the
+corresponding soundness and class bridges keep any returned decomposition on
+the audited semantic path.  The remaining blocker is deriving the bound or the
+charge multiplicities from the component itself.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

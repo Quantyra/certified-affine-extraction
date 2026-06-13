@@ -533,11 +533,22 @@ permutation.  The corresponding class bridge,
 `class_of_recoverSingleMergedSupportGroupFromChargesPerm`, packages a
 successful return as a local `ParityEncoded.Class` witness.  This is still not
 arbitrary same-support recognition: the remaining discovery problem is the
-charge list and multiplicities.  The unguided two-charge probe infers the canonical
-support from that component, tries both charge orders, proves residual-free
-component coverage for any returned decomposition, proves that returned blocks
-pass the executable syntactic upgrade, and succeeds on the same actual
-one-group two-cycle component.  The exact-list unguided recovery is now
+charge list and multiplicities.  A bounded charge-search lane now removes the
+exact charge-list premise as well:
+`chargeListsUpTo` enumerates every Boolean charge list up to a supplied bound,
+`recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges`
+and
+`recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges`
+prove success whenever the true charge list is within that bound, and
+`class_of_recoverSingleMergedSupportGroupFromChargeSearchPerm` packages any
+successful one-group return as a local `ParityEncoded.Class` witness.  This is
+still not arbitrary same-support recognition: the remaining guidance is the
+charge-count bound, and the next discovery problem is deriving that bound or
+the charge multiplicities from the component.  The unguided two-charge probe
+infers the canonical support from that component, tries both charge orders,
+proves residual-free component coverage for any returned decomposition, proves
+that returned blocks pass the executable syntactic upgrade, and succeeds on the
+same actual one-group two-cycle component.  The exact-list unguided recovery is now
 explicitly documented as order-sensitive: it fails on the reversed direct
 two-cycle CNF.
 The permutation-insensitive recovery proves coverage up to `List.Perm`,

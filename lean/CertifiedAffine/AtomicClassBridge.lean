@@ -1569,6 +1569,72 @@ theorem generatedParitySpecsForSupportCharges_sameSupport
   cases hspec_eq
   rfl
 
+/-- Return the first successful optional result from a finite candidate list. -/
+def firstSome? {alpha beta : Type} : List alpha -> (alpha -> Option beta) -> Option beta
+  | [], _ => none
+  | x :: xs, f =>
+      match f x with
+      | some y => some y
+      | none => firstSome? xs f
+
+/-- A successful `firstSome?` result comes from one of the searched candidates. -/
+theorem firstSome?_eq_some_imp_exists_mem
+    {alpha beta : Type} {xs : List alpha} {f : alpha -> Option beta} {y : beta}
+    (h : firstSome? xs f = some y) :
+    exists x : alpha, List.Mem x xs /\ f x = some y := by
+  induction xs with
+  | nil =>
+      simp [firstSome?] at h
+  | cons x xs ih =>
+      unfold firstSome? at h
+      cases hx : f x with
+      | none =>
+          have htail : firstSome? xs f = some y := by
+            simpa [hx] using h
+          rcases ih htail with ⟨x', hxmem, hfx⟩
+          exact ⟨x', List.Mem.tail x hxmem, hfx⟩
+      | some y' =>
+          have hy : y' = y := by
+            simpa [hx] using h
+          exact ⟨x, List.Mem.head xs, by simpa [hy] using hx⟩
+
+/-- If a searched candidate succeeds, then `firstSome?` returns some result. -/
+theorem firstSome?_exists_some_of_mem_eq_some
+    {alpha beta : Type} {xs : List alpha} {f : alpha -> Option beta}
+    {x : alpha} {y : beta}
+    (hmem : List.Mem x xs) (hfx : f x = some y) :
+    exists y' : beta, firstSome? xs f = some y' := by
+  induction xs with
+  | nil =>
+      cases hmem
+  | cons z zs ih =>
+      unfold firstSome?
+      cases hz : f z with
+      | none =>
+          cases hmem with
+          | head =>
+              rw [hfx] at hz
+              cases hz
+          | tail _ htail =>
+              exact ih htail
+      | some zval =>
+          exact ⟨zval, rfl⟩
+
+/-- All Boolean charge lists up to a supplied length bound. -/
+def chargeListsUpTo (maxCharges : Nat) : List (List Bool) :=
+  (List.range (maxCharges + 1)).bind allAssignments
+
+/-- Every Boolean charge list within the bound is in `chargeListsUpTo`. -/
+theorem mem_chargeListsUpTo_of_length_le
+    {charges : List Bool} {maxCharges : Nat}
+    (hle : charges.length <= maxCharges) :
+    List.Mem charges (chargeListsUpTo maxCharges) := by
+  unfold chargeListsUpTo
+  exact List.mem_bind.2
+    ⟨charges.length,
+      List.mem_range.2 (Nat.lt_succ_of_le hle),
+      mem_allAssignments_of_length rfl⟩
+
 /--
 Two generated parity expansions over the same canonical support have
 support-variable-homogeneous ordinary clauses.
@@ -5395,6 +5461,123 @@ theorem recoverSingleMergedSupportGroupFromChargesPerm_toSyntacticOk
           unfold recoverSingleMergedSupportGroupFromChargesPerm? at hrec
           cases hrec
 
+/--
+Bounded charge-search recovery for one same-support component.  The support is
+inferred from the component and the charge list is searched up to `maxCharges`.
+-/
+def recoverSameSupportGeneratedParityChargeSearchPerm? {m : Nat}
+    (groupCNF : CNFModel.CNF m)
+    (maxCharges : Nat) :
+    Option (CanonicalFingerprintGF2Decomposition m) :=
+  firstSome? (chargeListsUpTo maxCharges)
+    (fun charges => recoverSameSupportGeneratedParityChargesPerm? groupCNF charges)
+
+/--
+Soundness for bounded charge-search recovery: any returned decomposition came
+from one of the searched charge lists and is sound for the input component.
+-/
+theorem recoverSameSupportGeneratedParityChargeSearchPerm_sound
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {maxCharges : Nat}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGeneratedParityChargeSearchPerm? groupCNF maxCharges =
+        some d) :
+    exists charges : List Bool,
+      List.Mem charges (chargeListsUpTo maxCharges) /\
+        List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual /\
+          d.coreGF2 =
+            generatedParitySpecsGF2
+              (generatedParitySpecsForSupportCharges
+                (parityCandidateCanonicalSupportFromBlock groupCNF) charges) := by
+  unfold recoverSameSupportGeneratedParityChargeSearchPerm? at hrec
+  rcases firstSome?_eq_some_imp_exists_mem hrec with
+    ⟨charges, hmem, hchargeRec⟩
+  rcases recoverSameSupportGeneratedParityChargesPerm_sound hchargeRec with
+    ⟨hcover, hresidual, hgf2⟩
+  exact ⟨charges, hmem, hcover, hresidual, hgf2⟩
+
+/-- Bounded charge-search recovery returns syntactically upgradable blocks. -/
+theorem recoverSameSupportGeneratedParityChargeSearchPerm_toSyntacticOk
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {maxCharges : Nat}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGeneratedParityChargeSearchPerm? groupCNF maxCharges =
+        some d) :
+    CanonicalBlocksToSyntacticOk d.blocks := by
+  unfold recoverSameSupportGeneratedParityChargeSearchPerm? at hrec
+  rcases firstSome?_eq_some_imp_exists_mem hrec with
+    ⟨charges, _hmem, hchargeRec⟩
+  exact recoverSameSupportGeneratedParityChargesPerm_toSyntacticOk hchargeRec
+
+/--
+Bounded charge-search recovery for one merged canonical support group.  Other
+group shapes remain outside this local pass.
+-/
+def recoverSingleMergedSupportGroupFromChargeSearchPerm? {m : Nat}
+    (groups : List (CanonicalSupportClauseGroup m))
+    (maxCharges : Nat) :
+    Option (CanonicalFingerprintGF2Decomposition m) :=
+  match groups with
+  | [g] => recoverSameSupportGeneratedParityChargeSearchPerm? g.2 maxCharges
+  | _ => none
+
+/-- Soundness for bounded charge-search recovery from one merged support group. -/
+theorem recoverSingleMergedSupportGroupFromChargeSearchPerm_sound
+    {m : Nat}
+    {groups : List (CanonicalSupportClauseGroup m)}
+    {maxCharges : Nat}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSingleMergedSupportGroupFromChargeSearchPerm? groups maxCharges =
+        some d) :
+    exists g : CanonicalSupportClauseGroup m,
+      exists charges : List Bool,
+        groups = [g] /\ List.Mem charges (chargeListsUpTo maxCharges) /\
+          List.Perm d.expandedCNF g.2 /\ d.hasEmptyResidual /\
+            d.coreGF2 =
+              generatedParitySpecsGF2
+                (generatedParitySpecsForSupportCharges
+                  (parityCandidateCanonicalSupportFromBlock g.2) charges) := by
+  cases groups with
+  | nil =>
+      unfold recoverSingleMergedSupportGroupFromChargeSearchPerm? at hrec
+      cases hrec
+  | cons g groups =>
+      cases groups with
+      | nil =>
+          unfold recoverSingleMergedSupportGroupFromChargeSearchPerm? at hrec
+          rcases recoverSameSupportGeneratedParityChargeSearchPerm_sound hrec with
+            ⟨charges, hmem, hcover, hresidual, hgf2⟩
+          exact ⟨g, charges, rfl, hmem, hcover, hresidual, hgf2⟩
+      | cons _g2 _groups =>
+          unfold recoverSingleMergedSupportGroupFromChargeSearchPerm? at hrec
+          cases hrec
+
+/-- Bounded single-group charge-search recovery returns syntactically upgradable blocks. -/
+theorem recoverSingleMergedSupportGroupFromChargeSearchPerm_toSyntacticOk
+    {m : Nat}
+    {groups : List (CanonicalSupportClauseGroup m)}
+    {maxCharges : Nat}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSingleMergedSupportGroupFromChargeSearchPerm? groups maxCharges =
+        some d) :
+    CanonicalBlocksToSyntacticOk d.blocks := by
+  cases groups with
+  | nil =>
+      unfold recoverSingleMergedSupportGroupFromChargeSearchPerm? at hrec
+      cases hrec
+  | cons g groups =>
+      cases groups with
+      | nil =>
+          unfold recoverSingleMergedSupportGroupFromChargeSearchPerm? at hrec
+          exact recoverSameSupportGeneratedParityChargeSearchPerm_toSyntacticOk hrec
+      | cons _g2 _groups =>
+          unfold recoverSingleMergedSupportGroupFromChargeSearchPerm? at hrec
+          cases hrec
+
 /-- Direct-CNF guided recovery at the two-cycle same-support boundary. -/
 def twoCycleSameSupportDirectRecovery? :
     Option (CanonicalFingerprintGF2Decomposition
@@ -5872,6 +6055,72 @@ theorem recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_perm_supportCh
   exact
     recoverSameSupportGeneratedParityChargesPerm_eq_some_of_perm_supportCharges
       hnormal hperm hnonempty
+
+/--
+Bounded charge-search recovery succeeds whenever the component is a
+same-support generated parity expansion whose true charge list is within the
+search bound.
+-/
+theorem recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    {maxCharges : Nat}
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ [])
+    (hle : charges.length <= maxCharges) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGeneratedParityChargeSearchPerm? target maxCharges =
+        some d := by
+  unfold recoverSameSupportGeneratedParityChargeSearchPerm?
+  have hmem : List.Mem charges (chargeListsUpTo maxCharges) :=
+    mem_chargeListsUpTo_of_length_le hle
+  have hchargeRec :
+      recoverSameSupportGeneratedParityChargesPerm? target charges =
+        some (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars charges)) :=
+    recoverSameSupportGeneratedParityChargesPerm_eq_some_of_perm_supportCharges
+      hnormal hperm hnonempty
+  exact firstSome?_exists_some_of_mem_eq_some hmem hchargeRec
+
+/--
+Bounded charge-search recovery succeeds on the canonical support grouping
+whenever the correct charge list is within the search bound.
+-/
+theorem recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    {maxCharges : Nat}
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ [])
+    (hle : charges.length <= maxCharges) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSingleMergedSupportGroupFromChargeSearchPerm?
+          (groupClausesByCanonicalSupport target) maxCharges =
+        some d := by
+  have hsame :
+      GeneratedParitySpecsSameSupportVars
+        (generatedParitySpecsForSupportCharges vars charges) vars :=
+    generatedParitySpecsForSupportCharges_sameSupport vars charges
+  have hgroups :
+      groupClausesByCanonicalSupport target =
+        [(GroupFrame.canonicalSupportKeyForVars vars, target)] :=
+    groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_sameSupport
+      hsame hnormal hperm hnonempty
+  rw [hgroups]
+  unfold recoverSingleMergedSupportGroupFromChargeSearchPerm?
+  exact
+    recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges
+      hnormal hperm hnonempty hle
 
 /--
 Unguided recovery for the one-merged-support-group boundary shape.  Other group
@@ -6959,6 +7208,44 @@ theorem class_of_recoverSingleMergedSupportGroupFromChargesPerm
     (by
       subst groups
       simpa [recoverSingleMergedSupportGroupFromChargesPerm?] using hrec)
+
+/--
+Any successful bounded charge-search recovery is semantically sound as a local
+CNF-to-GF(2) block.
+-/
+theorem class_of_recoverSameSupportGeneratedParityChargeSearchPerm
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {maxCharges : Nat}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGeneratedParityChargeSearchPerm? groupCNF maxCharges =
+        some d) :
+    ParityEncoded.Class m groupCNF d.coreGF2 := by
+  unfold recoverSameSupportGeneratedParityChargeSearchPerm? at hrec
+  rcases firstSome?_eq_some_imp_exists_mem hrec with
+    ⟨charges, _hmem, hchargeRec⟩
+  exact class_of_recoverSameSupportGeneratedParityChargesPerm hchargeRec
+
+/--
+Successful bounded charge-search recovery from one merged support group returns
+a local semantic class witness for that group's CNF component.
+-/
+theorem class_of_recoverSingleMergedSupportGroupFromChargeSearchPerm
+    {m : Nat} {groups : List (CanonicalSupportClauseGroup m)}
+    {maxCharges : Nat}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSingleMergedSupportGroupFromChargeSearchPerm? groups maxCharges =
+        some d) :
+    exists g : CanonicalSupportClauseGroup m,
+      groups = [g] /\ ParityEncoded.Class m g.2 d.coreGF2 := by
+  rcases recoverSingleMergedSupportGroupFromChargeSearchPerm_sound hrec with
+    ⟨g, _charges, hgroups, _hmem, _hcover, _hresidual, _hgf2⟩
+  refine ⟨g, hgroups, ?_⟩
+  exact class_of_recoverSameSupportGeneratedParityChargeSearchPerm
+    (by
+      subst groups
+      simpa [recoverSingleMergedSupportGroupFromChargeSearchPerm?] using hrec)
 
 /-- Per-assignment semantic preservation for a successful two-charge recovery. -/
 theorem semanticPreservation_of_recoverTwoChargeSameSupportGroup
