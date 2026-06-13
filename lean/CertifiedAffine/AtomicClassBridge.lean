@@ -5231,6 +5231,53 @@ def canonicalBlocksFromGeneratedParitySpecs {m : Nat}
     List (CanonicalFingerprintRecognizedParityBlock m) :=
   specs.map canonicalBlockFromGeneratedParitySpec
 
+/--
+Canonical fallback blocks remember the exact charge sequence from their
+generated parity specs.  This is a block-level multiplicity invariant, before
+the blocks are compacted to GF(2).
+-/
+theorem canonicalBlocksFromGeneratedParitySpecs_spec_charges_eq
+    {m : Nat} (specs : List (GeneratedParitySpec m)) :
+    ((canonicalBlocksFromGeneratedParitySpecs specs).map
+        (fun b => b.spec.charge)) =
+      specs.map (fun spec => spec.2) := by
+  induction specs with
+  | nil =>
+      simp [canonicalBlocksFromGeneratedParitySpecs]
+  | cons spec specs ih =>
+      cases spec with
+      | mk vars charge =>
+          simp [canonicalBlocksFromGeneratedParitySpecs,
+            canonicalBlockFromGeneratedParitySpec, ih]
+
+/--
+For generated same-support charges, canonical fallback blocks project back to
+the exact input charge sequence.
+-/
+theorem canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_eq
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((canonicalBlocksFromGeneratedParitySpecs
+      (generatedParitySpecsForSupportCharges vars charges)).map
+        (fun b => b.spec.charge)) = charges := by
+  rw [canonicalBlocksFromGeneratedParitySpecs_spec_charges_eq]
+  simp [generatedParitySpecsForSupportCharges]
+
+/-- Canonical fallback blocks preserve true-charge multiplicity. -/
+theorem canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_count_true
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((canonicalBlocksFromGeneratedParitySpecs
+      (generatedParitySpecsForSupportCharges vars charges)).map
+        (fun b => b.spec.charge)).count true = charges.count true := by
+  rw [canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_eq]
+
+/-- Canonical fallback blocks preserve false-charge multiplicity. -/
+theorem canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_count_false
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((canonicalBlocksFromGeneratedParitySpecs
+      (generatedParitySpecsForSupportCharges vars charges)).map
+        (fun b => b.spec.charge)).count false = charges.count false := by
+  rw [canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_eq]
+
 /-- Fallback canonical blocks cover exactly the generated ordinary CNF fold. -/
 theorem canonicalBlocksFromGeneratedParitySpecs_CNF_eq
     {m : Nat} (specs : List (GeneratedParitySpec m)) :
@@ -5452,6 +5499,41 @@ theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_rhs_
       (generatedParitySpecsForSupportCharges vars charges)).coreGF2.map
         (fun c => c.rhs)).count false = charges.count false := by
   rw [generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_rhs_eq]
+
+/--
+For generated same-support charges, the fallback decomposition block list
+preserves the exact recognized-block charge sequence.
+-/
+theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_eq
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsFallbackDecomposition
+      (generatedParitySpecsForSupportCharges vars charges)).blocks.map
+        (fun b => b.spec.charge)) = charges := by
+  exact
+    canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_eq
+      vars charges
+
+/--
+For generated same-support charges, the fallback decomposition block list
+preserves true-charge multiplicity.
+-/
+theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_count_true
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsFallbackDecomposition
+      (generatedParitySpecsForSupportCharges vars charges)).blocks.map
+        (fun b => b.spec.charge)).count true = charges.count true := by
+  rw [generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_eq]
+
+/--
+For generated same-support charges, the fallback decomposition block list
+preserves false-charge multiplicity.
+-/
+theorem generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_count_false
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    ((generatedParitySpecsFallbackDecomposition
+      (generatedParitySpecsForSupportCharges vars charges)).blocks.map
+        (fun b => b.spec.charge)).count false = charges.count false := by
+  rw [generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_eq]
 
 /-- The fallback decomposition blocks pass the executable syntactic upgrade. -/
 theorem generatedParitySpecsFallbackDecomposition_toSyntacticOk

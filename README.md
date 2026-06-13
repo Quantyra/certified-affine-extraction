@@ -466,12 +466,18 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
 - `AtomicClassBridge.generatedParitySpecsGF2_forSupportCharges_rhs_eq`,
   `AtomicClassBridge.generatedParitySpecsGF2_forSupportCharges_rhs_count_true`,
   `AtomicClassBridge.generatedParitySpecsGF2_forSupportCharges_rhs_count_false`,
+  `AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_eq`,
+  `AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_count_true`,
+  `AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_count_false`,
   and the matching
   `AtomicClassBridge.generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`
-  theorems: the compact generated GF(2) core preserves the exact RHS charge list
-  and its true/false multiplicities once a same-support split has been supplied
-  or recovered.  This pins the open problem to discovering the split from CNF;
-  the compact residual-free target itself does not lose multiplicity data.
+  and
+  `AtomicClassBridge.generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`
+  theorems: both the canonical recognized-block list and the compact generated
+  GF(2) core preserve the exact charge list and its true/false multiplicities
+  once a same-support split has been supplied or recovered.  This pins the open
+  problem to discovering the split from CNF; neither the residual-free block
+  target nor the compact GF(2) target loses multiplicity data.
 - `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,
   `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four`,
   `AtomicClassBridge.target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges`,

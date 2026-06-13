@@ -209,9 +209,12 @@ multiplicity reconstruction, not discovering new same-support semantic cases.
 The compact target itself preserves exact multiplicity once a generated split is
 available: `generatedParitySpecsGF2_forSupportCharges_rhs_eq` recovers the RHS
 charge list from the generated GF(2) core, its true/false count corollaries
-preserve per-charge multiplicities, and the matching
-`generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*` theorems
-lift that fact to the residual-free decomposition interface.
+preserve per-charge multiplicities,
+`canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_eq`
+recovers the same charge list from the canonical recognized-block layer, and
+the matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`
+and `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`
+theorems lift both facts to the residual-free decomposition interface.
 The exact length lane now proves arity-three and arity-four generated
 same-support component accounting:
 `generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,

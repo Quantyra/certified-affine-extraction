@@ -567,10 +567,13 @@ is exact CNF coverage, not extra GF(2) semantic content.  The compact target
 keeps exact multiplicity when a generated split is present:
 `generatedParitySpecsGF2_forSupportCharges_rhs_eq` projects the generated GF(2)
 RHS list back to the input charge list, the true/false count corollaries preserve
-per-charge multiplicity, and the matching
-`generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*` theorems
-lift that invariant to the residual-free decomposition target.  Thus the
-remaining problem is discovering the charge split from arbitrary CNF, not
+per-charge multiplicity,
+`canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_spec_charges_eq`
+does the same at the canonical recognized-block layer, and the matching
+`generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*` plus
+`generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`
+theorems lift both invariants to the residual-free decomposition target.  Thus
+the remaining problem is discovering the charge split from arbitrary CNF, not
 representing it after recovery.  The exact length lane now proves the
 corresponding generated-component accounting for the main
 arity-three and arity-four surfaces:
