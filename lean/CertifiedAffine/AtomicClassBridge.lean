@@ -2625,6 +2625,72 @@ theorem gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_support
         vars hdirectPerm)
 
 /--
+For arity-three same-support generated components, the arity-three direct
+charge reconstruction emits a compact GF(2) formula assignment-equivalent to
+the hidden generated charge source.
+-/
+theorem gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_arityThree_iff_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    forall a : CNFModel.Assignment m,
+      ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 4))) <->
+        ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+          (generatedParitySpecsGF2
+            (generatedParitySpecsForSupportCharges vars charges)) := by
+  intro a
+  have hdirectPerm :
+      List.Perm
+        (directSameSupportChargesFromTargetWithBlockSize vars target 4)
+        charges :=
+    directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree
+      hlen hperm
+  exact
+    ParityEncoded.gf2Sat_iff_of_perm (a := a)
+      (generatedParitySpecsGF2_forSupportCharges_perm_of_charges_perm
+        vars hdirectPerm)
+
+/--
+For arity-four same-support generated components, the arity-four direct charge
+reconstruction emits a compact GF(2) formula assignment-equivalent to the
+hidden generated charge source.
+-/
+theorem gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_arityFour_iff_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    forall a : CNFModel.Assignment m,
+      ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 8))) <->
+        ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+          (generatedParitySpecsGF2
+            (generatedParitySpecsForSupportCharges vars charges)) := by
+  intro a
+  have hdirectPerm :
+      List.Perm
+        (directSameSupportChargesFromTargetWithBlockSize vars target 8)
+        charges :=
+    directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour
+      hlen hperm
+  exact
+    ParityEncoded.gf2Sat_iff_of_perm (a := a)
+      (generatedParitySpecsGF2_forSupportCharges_perm_of_charges_perm
+        vars hdirectPerm)
+
+/--
 The compact GF(2) RHS projection for generated same-support charges is exactly
 the input charge list.  Thus the compact generated core preserves charge
 multiplicity even though its satisfaction semantics only observes charge
@@ -8529,6 +8595,140 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetC
     recoverSameSupportGroupWithDirectChargeFallback_eq_some_of_directTargetCharges_arityFour
       hlen hnormal hperm hnonempty
   simp [htwo, hdirect]
+
+/--
+When the two-charge fast path misses, the production-shaped same-support
+fallback returns the arity-three direct decomposition.  The returned object is
+certified in the production surface: it covers the input up to clause
+permutation, has empty residual, lands in the exact production target
+predicate, and its compact GF(2) core is assignment-equivalent to the hidden
+generated source.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectArityThree_gf2Equiv_of_perm_supportCharges_of_twoCharge_none
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = []))
+    (htwo : recoverTwoChargeSameSupportGroupPerm? target = none) :
+    recoverSameSupportGroupWithChargeSearchFallback? target =
+        some (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 4))) /\
+      List.Perm
+        (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 4))).expandedCNF
+        target /\
+        (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 4))).hasEmptyResidual /\
+          ProductionSameSupportFallbackCoreGF2Target target
+            (generatedParitySpecsFallbackDecomposition
+              (generatedParitySpecsForSupportCharges vars
+                (directSameSupportChargesFromTargetWithBlockSize vars target 4))).coreGF2 /\
+            forall a : CNFModel.Assignment m,
+              ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                (generatedParitySpecsFallbackDecomposition
+                  (generatedParitySpecsForSupportCharges vars
+                    (directSameSupportChargesFromTargetWithBlockSize vars target 4))).coreGF2 <->
+                ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                  (generatedParitySpecsGF2
+                    (generatedParitySpecsForSupportCharges vars charges)) := by
+  let directSpecs :=
+    generatedParitySpecsForSupportCharges vars
+      (directSameSupportChargesFromTargetWithBlockSize vars target 4)
+  let d := generatedParitySpecsFallbackDecomposition directSpecs
+  have hrec :
+      recoverSameSupportGroupWithChargeSearchFallback? target = some d := by
+    dsimp [d, directSpecs]
+    exact
+      recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetCharges_arityThree_of_twoCharge_none
+        hlen hnormal hperm hnonempty htwo
+  rcases recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2 hrec with
+    ⟨hcover, hresidual, htarget⟩
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · simpa [d, directSpecs] using hrec
+  · simpa [d, directSpecs] using hcover
+  · simpa [d, directSpecs] using hresidual
+  · simpa [d, directSpecs] using htarget
+  · intro a
+    have hgf2 :=
+      gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_arityThree_iff_of_perm_supportCharges
+        hlen hperm a
+    simpa [d, directSpecs, generatedParitySpecsFallbackDecomposition_coreGF2_eq]
+      using hgf2
+
+/--
+When the two-charge fast path misses, the production-shaped same-support
+fallback returns the arity-four direct decomposition.  The returned object is
+certified in the production surface: it covers the input up to clause
+permutation, has empty residual, lands in the exact production target
+predicate, and its compact GF(2) core is assignment-equivalent to the hidden
+generated source.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectArityFour_gf2Equiv_of_perm_supportCharges_of_twoCharge_none
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = []))
+    (htwo : recoverTwoChargeSameSupportGroupPerm? target = none) :
+    recoverSameSupportGroupWithChargeSearchFallback? target =
+        some (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 8))) /\
+      List.Perm
+        (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 8))).expandedCNF
+        target /\
+        (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 8))).hasEmptyResidual /\
+          ProductionSameSupportFallbackCoreGF2Target target
+            (generatedParitySpecsFallbackDecomposition
+              (generatedParitySpecsForSupportCharges vars
+                (directSameSupportChargesFromTargetWithBlockSize vars target 8))).coreGF2 /\
+            forall a : CNFModel.Assignment m,
+              ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                (generatedParitySpecsFallbackDecomposition
+                  (generatedParitySpecsForSupportCharges vars
+                    (directSameSupportChargesFromTargetWithBlockSize vars target 8))).coreGF2 <->
+                ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                  (generatedParitySpecsGF2
+                    (generatedParitySpecsForSupportCharges vars charges)) := by
+  let directSpecs :=
+    generatedParitySpecsForSupportCharges vars
+      (directSameSupportChargesFromTargetWithBlockSize vars target 8)
+  let d := generatedParitySpecsFallbackDecomposition directSpecs
+  have hrec :
+      recoverSameSupportGroupWithChargeSearchFallback? target = some d := by
+    dsimp [d, directSpecs]
+    exact
+      recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetCharges_arityFour_of_twoCharge_none
+        hlen hnormal hperm hnonempty htwo
+  rcases recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2 hrec with
+    ⟨hcover, hresidual, htarget⟩
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · simpa [d, directSpecs] using hrec
+  · simpa [d, directSpecs] using hcover
+  · simpa [d, directSpecs] using hresidual
+  · simpa [d, directSpecs] using htarget
+  · intro a
+    have hgf2 :=
+      gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_arityFour_iff_of_perm_supportCharges
+        hlen hperm a
+    simpa [d, directSpecs, generatedParitySpecsFallbackDecomposition_coreGF2_eq]
+      using hgf2
 
 /--
 The production-shaped same-support fallback uses the inferred support-size

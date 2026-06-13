@@ -696,9 +696,20 @@ hidden-source GF(2) corollary:
 `gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges`
 proves the count-derived compact GF(2) target assignment-equivalent to the
 hidden generated charge source, and
+`gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_arityThree_iff_of_perm_supportCharges`
+plus
+`gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_arityFour_iff_of_perm_supportCharges`
+specialize the same bridge to the older arity-three and arity-four direct
+branches.
 `recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize`
 packages that equivalence with inferred-branch success.  These theorems still
 assume a generated same-support source presentation up to permutation.
+`recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectArityThree_gf2Equiv_of_perm_supportCharges_of_twoCharge_none`
+and
+`recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectArityFour_gf2Equiv_of_perm_supportCharges_of_twoCharge_none`
+now package the arity-specific production fallback returns with recovery
+success, coverage, empty residual, exact target classification, and
+hidden-source GF(2) equivalence when the two-charge fast path misses.
 `recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectInferred_gf2Equiv_of_perm_supportCharges_of_twoCharge_none_of_directCharge_none`
 then lifts the same evidence to the production fallback when the two-charge path
 and older arity-three/four direct path both miss: the returned inferred

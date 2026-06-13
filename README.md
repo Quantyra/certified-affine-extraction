@@ -552,9 +552,19 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges`
   records the semantic consequence: the count-derived compact GF(2) target is
   assignment-equivalent to the hidden generated charge source.
+  The arity-specific direct targets now carry the same hidden-source semantic
+  bridge through
+  `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_arityThree_iff_of_perm_supportCharges`
+  and
+  `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_arityFour_iff_of_perm_supportCharges`.
   `AtomicClassBridge.recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize`
   packages that hidden-source equivalence with success of the inferred
   support-size direct branch, still before bounded charge-list search.
+  The older arity-three/four production direct branches now also have exact
+  returned-object certificates:
+  `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectArityThree_gf2Equiv_of_perm_supportCharges_of_twoCharge_none`
+  and
+  `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectArityFour_gf2Equiv_of_perm_supportCharges_of_twoCharge_none`.
   `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectInferred_gf2Equiv_of_perm_supportCharges_of_twoCharge_none_of_directCharge_none`
   lifts that result to the production fallback in the no-fast-branch case:
   when the two-charge path and older arity-three/four direct path both miss, the

@@ -358,10 +358,19 @@ production path for generated same-support components.
 `gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges`
 now records the branch's compact GF(2) target as assignment-equivalent to the
 hidden generated charge source, and
+`gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_arityThree_iff_of_perm_supportCharges`
+plus
+`gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_arityFour_iff_of_perm_supportCharges`
+record the same semantic bridge for the older arity-three/four direct branches.
 `recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize`
 packages that semantic bridge with inferred-branch success.  It still does not
 recover charge identity or per-charge multiplicity inside an arbitrary
 same-support component.
+`recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectArityThree_gf2Equiv_of_perm_supportCharges_of_twoCharge_none`
+and
+`recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectArityFour_gf2Equiv_of_perm_supportCharges_of_twoCharge_none`
+now record the same returned-object certificate for the arity-specific
+production branches after the two-charge fast path misses.
 `recoverSameSupportGroupWithChargeSearchFallback_certifiedDirectInferred_gf2Equiv_of_perm_supportCharges_of_twoCharge_none_of_directCharge_none`
 now records the same certificate at the production fallback surface for the
 no-fast-branch case, including coverage, empty residual, exact target
