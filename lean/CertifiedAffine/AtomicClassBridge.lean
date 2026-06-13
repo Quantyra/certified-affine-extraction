@@ -2074,6 +2074,73 @@ theorem allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_
     allFalseClauseFingerprint_count_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_eq_true_count
       vars charges
 
+/-- Canonical charge-list representative from total and true-charge counts. -/
+def canonicalSupportChargesFromCounts (totalCharges trueCharges : Nat) : List Bool :=
+  List.replicate (totalCharges - trueCharges) false ++
+    List.replicate trueCharges true
+
+/-- The canonical charge-list representative has the requested true count. -/
+theorem canonicalSupportChargesFromCounts_count_true
+    (totalCharges trueCharges : Nat) :
+    (canonicalSupportChargesFromCounts totalCharges trueCharges).count true =
+      trueCharges := by
+  simp [canonicalSupportChargesFromCounts, List.count_append,
+    List.count_replicate]
+
+/-- The canonical charge-list representative has the requested false count. -/
+theorem canonicalSupportChargesFromCounts_count_false
+    (totalCharges trueCharges : Nat) :
+    (canonicalSupportChargesFromCounts totalCharges trueCharges).count false =
+      totalCharges - trueCharges := by
+  simp [canonicalSupportChargesFromCounts, List.count_append,
+    List.count_replicate]
+
+/-- In a Boolean list, false-count is length minus true-count. -/
+theorem bool_count_false_eq_length_sub_count_true (charges : List Bool) :
+    charges.count false = charges.length - charges.count true := by
+  induction charges with
+  | nil => simp
+  | cons charge charges ih =>
+      have hle : charges.count true <= charges.length :=
+        List.count_le_length true charges
+      cases charge
+      case false =>
+        simp [List.count_cons, ih]
+        omega
+      case true =>
+        simp [List.count_cons, ih]
+
+/--
+The canonical representative built from a Boolean charge list's length and
+true-count is permutation-equivalent to the original charge list.
+-/
+theorem canonicalSupportChargesFromCounts_perm (charges : List Bool) :
+    List.Perm
+      (canonicalSupportChargesFromCounts charges.length (charges.count true))
+      charges := by
+  rw [List.perm_iff_count]
+  intro charge
+  cases charge
+  case false =>
+    rw [canonicalSupportChargesFromCounts_count_false]
+    exact (bool_count_false_eq_length_sub_count_true charges).symm
+  case true =>
+    exact canonicalSupportChargesFromCounts_count_true
+      charges.length (charges.count true)
+
+/-- Same-support generated CNFs are invariant under charge-list permutation. -/
+theorem generatedParitySpecsCNF_forSupportCharges_perm_of_charges_perm
+    {m : Nat} (vars : List (Fin m)) {charges1 charges2 : List Bool}
+    (hperm : List.Perm charges1 charges2) :
+    List.Perm
+      (generatedParitySpecsCNF
+        (generatedParitySpecsForSupportCharges vars charges1))
+      (generatedParitySpecsCNF
+        (generatedParitySpecsForSupportCharges vars charges2)) := by
+  rw [generatedParitySpecsCNF_eq_bind, generatedParitySpecsCNF_eq_bind]
+  exact List.Perm.bind_right generatedParitySpecCNF
+    (List.Perm.map (fun charge => (vars, charge)) hperm)
+
 /--
 If every generated block over the support has the same ordinary CNF length,
 then the generated same-support component length is exactly charge-count times
@@ -2266,6 +2333,76 @@ theorem target_length_mod_eight_eq_zero_of_perm_generatedParitySpecsForSupportCh
       (vars := vars) (charges := charges) (target := target) hlen hperm
   rw [htarget]
   exact Nat.mod_eq_zero_of_dvd (Nat.dvd_mul_left 8 charges.length)
+
+/-- The all-false clause-fingerprint multiplicity in a target component. -/
+def allFalseFingerprintCount {m : Nat}
+    (vars : List (Fin m)) (target : CNFModel.CNF m) : Nat :=
+  (canonicalBlockFingerprint target).count
+    (canonicalClauseFingerprint
+      (clauseForAssignment vars (List.replicate vars.length false)))
+
+/--
+Direct charge-list reconstruction from target length and all-false fingerprint
+count, parameterized by the ordinary CNF block size for one parity equation.
+-/
+def directSameSupportChargesFromTargetWithBlockSize {m : Nat}
+    (vars : List (Fin m)) (target : CNFModel.CNF m) (blockSize : Nat) :
+    List Bool :=
+  canonicalSupportChargesFromCounts
+    (target.length / blockSize)
+    (allFalseFingerprintCount vars target)
+
+/--
+For arity-three generated same-support components, the direct count-derived
+charge list is permutation-equivalent to the hidden charge list.
+-/
+theorem directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    List.Perm
+      (directSameSupportChargesFromTargetWithBlockSize vars target 4)
+      charges := by
+  unfold directSameSupportChargesFromTargetWithBlockSize
+  unfold allFalseFingerprintCount
+  have hlenCharges :=
+    charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges
+      (vars := vars) (charges := charges) (target := target) hlen hperm
+  have htrueCount :=
+    allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_supportCharges
+      (vars := vars) (charges := charges) (target := target) hperm
+  rw [hlenCharges.symm, htrueCount]
+  exact canonicalSupportChargesFromCounts_perm charges
+
+/--
+For arity-four generated same-support components, the direct count-derived
+charge list is permutation-equivalent to the hidden charge list.
+-/
+theorem directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    List.Perm
+      (directSameSupportChargesFromTargetWithBlockSize vars target 8)
+      charges := by
+  unfold directSameSupportChargesFromTargetWithBlockSize
+  unfold allFalseFingerprintCount
+  have hlenCharges :=
+    charges_length_eq_target_length_div_eight_of_perm_generatedParitySpecsForSupportCharges
+      (vars := vars) (charges := charges) (target := target) hlen hperm
+  have htrueCount :=
+    allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_supportCharges
+      (vars := vars) (charges := charges) (target := target) hperm
+  rw [hlenCharges.symm, htrueCount]
+  exact canonicalSupportChargesFromCounts_perm charges
 
 /-- The compact GF(2) formula for same-support charges is just the charge map. -/
 theorem generatedParitySpecsGF2_forSupportCharges_eq_map
@@ -7287,6 +7424,150 @@ theorem recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_perm_supportCh
   exact
     recoverSameSupportGeneratedParityChargesPerm_eq_some_of_perm_supportCharges
       hnormal hperm hnonempty
+
+/--
+Arity-three direct same-support recovery succeeds using the charge list computed
+from target length and all-false fingerprint count.  No bounded charge-list
+enumeration is used in this theorem.
+-/
+theorem recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityThree
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSameSupportGeneratedParityChargesPerm? target
+        (directSameSupportChargesFromTargetWithBlockSize vars target 4) =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target 4))) := by
+  have hdirectPerm :=
+    directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree
+      (vars := vars) (charges := charges) (target := target) hlen hperm
+  have hcnfDirectHidden :=
+    generatedParitySpecsCNF_forSupportCharges_perm_of_charges_perm
+      vars hdirectPerm
+  have hpermDirect :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 4))) :=
+    hperm.trans hcnfDirectHidden.symm
+  exact
+    recoverSameSupportGeneratedParityChargesPerm_eq_some_of_perm_supportCharges
+      hnormal hpermDirect hnonempty
+
+/--
+Arity-four direct same-support recovery succeeds using the charge list computed
+from target length and all-false fingerprint count.  No bounded charge-list
+enumeration is used in this theorem.
+-/
+theorem recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityFour
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSameSupportGeneratedParityChargesPerm? target
+        (directSameSupportChargesFromTargetWithBlockSize vars target 8) =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target 8))) := by
+  have hdirectPerm :=
+    directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour
+      (vars := vars) (charges := charges) (target := target) hlen hperm
+  have hcnfDirectHidden :=
+    generatedParitySpecsCNF_forSupportCharges_perm_of_charges_perm
+      vars hdirectPerm
+  have hpermDirect :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 8))) :=
+    hperm.trans hcnfDirectHidden.symm
+  exact
+    recoverSameSupportGeneratedParityChargesPerm_eq_some_of_perm_supportCharges
+      hnormal hpermDirect hnonempty
+
+/--
+Arity-three direct one-group recovery succeeds using the charge list computed
+from target length and all-false fingerprint count.
+-/
+theorem recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityThree
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSingleMergedSupportGroupFromChargesPerm?
+        (groupClausesByCanonicalSupport target)
+        (directSameSupportChargesFromTargetWithBlockSize vars target 4) =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target 4))) := by
+  have hdirectPerm :=
+    directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree
+      (vars := vars) (charges := charges) (target := target) hlen hperm
+  have hcnfDirectHidden :=
+    generatedParitySpecsCNF_forSupportCharges_perm_of_charges_perm
+      vars hdirectPerm
+  have hpermDirect :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 4))) :=
+    hperm.trans hcnfDirectHidden.symm
+  exact
+    recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_perm_supportCharges
+      hnormal hpermDirect hnonempty
+
+/--
+Arity-four direct one-group recovery succeeds using the charge list computed
+from target length and all-false fingerprint count.
+-/
+theorem recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityFour
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSingleMergedSupportGroupFromChargesPerm?
+        (groupClausesByCanonicalSupport target)
+        (directSameSupportChargesFromTargetWithBlockSize vars target 8) =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target 8))) := by
+  have hdirectPerm :=
+    directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour
+      (vars := vars) (charges := charges) (target := target) hlen hperm
+  have hcnfDirectHidden :=
+    generatedParitySpecsCNF_forSupportCharges_perm_of_charges_perm
+      vars hdirectPerm
+  have hpermDirect :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target 8))) :=
+    hperm.trans hcnfDirectHidden.symm
+  exact
+    recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_perm_supportCharges
+      hnormal hpermDirect hnonempty
 
 /--
 Bounded charge-search recovery succeeds whenever the component is a

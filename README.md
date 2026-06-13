@@ -523,8 +523,9 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   proves that each true-charge block contributes exactly one such fingerprint,
   and the merged-count theorem sums those contributions across the component.
   This removes the local counting ambiguity needed for direct count
-  reconstruction, but it does not yet replace exhaustive charge search with an
-  efficient recovery algorithm.
+  reconstruction.  In the generated arity-three and arity-four lanes, the
+  direct recovery theorems below now use this count together with exact
+  component length to replace exhaustive charge enumeration.
   This pins the open problem to discovering the exact split from CNF; neither
   the residual-free block target nor the compact GF(2) target loses
   multiplicity data once that split is supplied or recovered.
@@ -550,6 +551,21 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `target.length / 4` or `target.length / 8` as certified search bounds.  This
   still does not identify the charge values or per-charge multiplicities inside
   an arbitrary component.
+- `AtomicClassBridge.canonicalSupportChargesFromCounts_perm`,
+  `AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree`,
+  `AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour`,
+  `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityThree`,
+  `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityFour`,
+  `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityThree`,
+  and
+  `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityFour`:
+  build the canonical charge representative directly from
+  `target.length / blockSize` and the all-false fingerprint count.  For
+  generated arity-three and arity-four same-support components, that
+  representative is proved permutation-equivalent to the hidden charge list, so
+  the existing charge-guided recovery succeeds without `chargeListsUpTo`
+  enumeration.  This is still generated-component recovery, not arbitrary CNF
+  or general 3-SAT recognition.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify

@@ -604,8 +604,10 @@ proves that the merged generated count is exactly the true-charge
 multiplicity, and
 `allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_supportCharges`
 transports that exact count across clause permutations.  This proves exact
-multiplicity for generated same-support components; it does not recover the
-hidden split for arbitrary CNF or replace exhaustive charge search.
+multiplicity for generated same-support components.  Paired with the
+arity-three and arity-four length accounting below, it now supports a direct
+count-derived charge representative for those generated lanes; it does not
+recover the hidden split for arbitrary CNF.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`
@@ -636,9 +638,21 @@ the arity-specific exact-bound recovery wrappers
 `recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound`,
 and
 `recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound`
-use those quotients as certified charge-search bounds.  This still does not
-recover charge identity or the per-charge multiplicity split inside an
-arbitrary component.  The unguided
+use those quotients as certified charge-search bounds.  The direct reconstruction
+lane then combines these quotient counts with the all-false fingerprint count:
+`canonicalSupportChargesFromCounts_perm` proves the canonical false-then-true
+representative has the same Boolean multiplicities as the hidden charge list,
+`directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree`
+and
+`directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour`
+derive that representative directly from the target component, and the
+`recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_*`
+plus
+`recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_*`
+wrappers prove recovery success from that direct list.  This avoids exhaustive
+charge-list enumeration for generated arity-three and arity-four same-support
+components, but it still does not recover charge identity or the per-charge
+multiplicity split inside an arbitrary component.  The unguided
 two-charge probe
 infers the canonical support from that component, tries both charge orders,
 proves residual-free component coverage for any returned decomposition, proves
@@ -658,7 +672,10 @@ true/false parity expansions over that support, and an ordinary one-block
 recognizer miss, the production enhanced fallback splitter emits the generated
 two-equation GF(2) target with no residual clauses.
 This is still a returned-output soundness result, not a success/completeness
-theorem for arbitrary same-support components.
+theorem for arbitrary same-support components.  The direct count-derived lane
+is also not yet wired as the production same-support fallback; the production
+branch below still uses the two-charge fast path followed by bounded charge
+search.
 The enhanced fallback splitter covers the direct two-cycle CNF exactly,
 compacts to the direct two-equation GF(2) target, emits two compact equations,
 and leaves zero residual ordinary clauses.  The production enhanced fallback
@@ -951,6 +968,9 @@ now proved unique in the generated Boolean rows, and the all-false canonical
 fingerprint is proved to identify exactly that generated clause inside a
 true-charge block.  A true-charge generated block is also now proved to
 contribute exactly one all-false fingerprint, and the merged generated count is
-now proved to equal the hidden true-charge multiplicity.  This is a foundation
-for direct multiplicity reconstruction, but it is not yet an efficient
-same-support recovery algorithm.
+now proved to equal the hidden true-charge multiplicity.  Together with
+arity-three and arity-four length accounting, this now yields direct
+count-derived recovery for generated same-support components in those arities.
+It is not a general CNF, arbitrary 3-SAT, or arbitrary same-support recovery
+algorithm, and the next production task is to wire that direct lane into the
+enhanced splitter.

@@ -242,8 +242,8 @@ bridge proves that a true-charge block clause with the all-false canonical
 fingerprint is exactly the generated all-false clause, and the exact
 single-block count theorem proves that each true-charge block contributes
 exactly one all-false fingerprint.  What remains open is using this exact
-merged count to replace exhaustive charge search with an efficient recovery
-path.
+merged count in the production fallback, and extending the direct recovery lane
+beyond generated arity-three and arity-four components.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`
@@ -271,8 +271,22 @@ then justify arity-specific exact recovery bounds, and the
 and
 `recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound`
 wrappers use `target.length / 4` or `target.length / 8` as the executable
-search bound.  This still does not recover charge identity or per-charge
-multiplicity inside an arbitrary same-support component.
+search bound.  The direct count-derived lane now combines those quotient counts
+with the all-false fingerprint count:
+`canonicalSupportChargesFromCounts_perm` builds a canonical charge
+representative with matching Boolean multiplicities,
+`directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree`
+and
+`directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour`
+recover that representative directly from the target component, and the
+`recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_*`
+plus
+`recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_*`
+wrappers prove that existing charge-guided recovery succeeds from it.  This
+replaces exhaustive `chargeListsUpTo` enumeration for generated arity-three and
+arity-four same-support components.  It still does not recover charge identity
+or per-charge multiplicity inside an arbitrary same-support component, and it
+is not yet wired as the production fallback branch.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.
