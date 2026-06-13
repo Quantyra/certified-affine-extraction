@@ -773,6 +773,11 @@ assignment-equivalent to the hidden generated GF(2) charge system, in addition
 to carrying the exact production target witness.  This theorem assumes the
 ordinary CNF is a permutation of a generated same-support component; it does not
 recognize arbitrary same-support structure from arbitrary CNF.
+`recoverSameSupportGroupWithChargeSearchFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges_componentBound`
+packages that same generated-source bridge with clause coverage, empty residual,
+recovery success, and the exact production target witness in one returned local
+certificate.  This is claim packaging for the generated lane, not broader
+completeness or an efficiency theorem.
 The enhanced fallback splitter also
 has the same residual-free group-list append frame shape as the baseline
 splitter: residual-free enhanced support-group splits compose across appended

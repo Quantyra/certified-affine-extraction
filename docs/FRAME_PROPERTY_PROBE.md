@@ -172,6 +172,10 @@ For generated same-support components, the
 `recoverSameSupportGroupWithChargeSearchFallback_exists_coreTarget_gf2Equiv_of_perm_supportCharges_componentBound`
 bridge additionally proves the returned compact core assignment-equivalent to
 the hidden generated GF(2) charge system.
+`recoverSameSupportGroupWithChargeSearchFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges_componentBound`
+packages that bridge with successful recovery, coverage up to clause
+permutation, empty residual, and the exact production target witness in one
+local certificate.
 The same local repair is now factored as the generic
 `enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport`
 theorem for any generated true/false pair over one canonical support, assuming

@@ -680,6 +680,10 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   GF(2) source: the emitted core is assignment-equivalent to the source
   same-support charge system, while still carrying the exact production target
   witness.
+  `recoverSameSupportGroupWithChargeSearchFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges_componentBound`
+  packages the same generated-source bridge with recovery success, coverage up
+  to clause permutation, empty residual, and the exact production target witness
+  in one returned certificate.
   The block-size-parameterized direct hook remains available for callers that
   want to certify a positive generated block size explicitly.
   On the direct two-cycle boundary it covers the CNF exactly, compacts
