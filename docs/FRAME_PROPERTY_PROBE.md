@@ -156,7 +156,7 @@ with matching enhanced same-support fallback wrappers.
 The enhanced same-support fallback branch now uses permutation-insensitive
 two-charge recovery, then direct arity-three/four count-derived recovery, then
 inferred support-size direct recovery, before falling through to exhaustive
-bounded charge search:
+bounded charge search outside the generated lane:
 the exact-list recovery is certified to fail on the reversed direct two-cycle
 CNF, while the permutation-insensitive two-charge recovery is certified to
 accept every nonempty clause permutation of the direct two-cycle component.
@@ -203,9 +203,13 @@ same-support fallback helper now tries the direct arity-three/four
 count-derived branch behind the legacy two-charge fast path, then an inferred
 support-size direct branch, with guarded soundness and syntactic-upgrade
 theorems for every successful return, before falling back to exhaustive search.
-The remaining blocker is deriving charge multiplicities from arbitrary
-components; the current last-resort search is still exhaustive, not an
-efficient reconstruction algorithm for arbitrary CNF.
+The deterministic
+`recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm_supportCharges`
+theorem now proves that nonempty generated same-support components never need
+that exhaustive branch.  The remaining blocker is deriving charge
+multiplicities from arbitrary components; the current last-resort search is
+still exhaustive outside the generated lane, not an efficient reconstruction
+algorithm for arbitrary CNF.
 The semantic charge-presence lemmas
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
@@ -325,7 +329,8 @@ same-support components in the production path after the two-charge fast path
 and older arity-three/four direct branch, while the generic theorem records the
 reusable proof obligation and the inferred support-size hook records the
 executable interface that consumes the uniform generated block-size theorem.
-It still does not recover charge
+The non-exhaustive production theorem records that this branch exhausts the
+production path for generated same-support components.  It still does not recover charge
 identity or per-charge multiplicity inside an arbitrary same-support component.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized

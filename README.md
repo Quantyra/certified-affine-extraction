@@ -479,9 +479,11 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   multiplicities directly from an arbitrary component.  The production-shaped
   fallback branch now keeps the legacy two-charge fast path, then tries direct
   arity-three/four count-derived recovery, then tries the inferred support-size
-  direct branch for any nonempty generated support, leaving exhaustive
-  component-bound charge search as the last resort when those earlier branches
-  miss.
+  direct branch for any nonempty generated support.  The deterministic
+  `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm_supportCharges`
+  theorem proves that these non-enumerative branches exhaust the production path
+  for nonempty generated same-support components; exhaustive component-bound
+  charge search remains only the last resort outside those generated hypotheses.
 - `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`,
@@ -648,8 +650,10 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   package local same-support recovery as a production-shaped fallback splitter.
   The same-support branch first tries the legacy two-charge recovery, then the
   direct arity-three/four count-derived branch, then an inferred support-size
-  direct branch for nonempty generated supports, and only then falls through to
-  exhaustive bounded charge search using the component length as the bound.
+  direct branch for nonempty generated supports.  For nonempty generated
+  same-support components, the new non-exhaustive production theorem proves the
+  bounded charge-search branch is unreachable; for arbitrary components, the
+  exhaustive component-length search remains the final fallback.
   The block-size-parameterized direct hook remains available for callers that
   want to certify a positive generated block size explicitly.
   On the direct two-cycle boundary it covers the CNF exactly, compacts
@@ -1212,9 +1216,9 @@ component as the concrete regression theorem.  A production-shaped fallback
 splitter now wires that permutation-insensitive local probe after the existing
 one-block recognizer, followed by direct arity-three/four count-derived
 recovery, inferred support-size direct recovery, and then bounded exhaustive
-search; on the direct two-cycle boundary it covers the CNF exactly, compacts to
-the direct two-equation GF(2) target, emits two equations, and leaves no
-residual clauses.  It also closes the reversed direct two-cycle
+search outside the generated lane.  On the direct two-cycle boundary it covers
+the CNF exactly, compacts to the direct two-equation GF(2) target, emits two
+equations, and leaves no residual clauses.  It also closes the reversed direct two-cycle
 boundary with the same compact target and a combined
 `EnhancedSemanticExtractorCompleteOn` theorem; this is now subsumed by a
 production-path theorem for every nonempty clause permutation of that direct

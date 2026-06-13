@@ -8217,6 +8217,49 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetC
   simp [htwo, hdirect, hinferred]
 
 /--
+For any nonempty generated same-support component, the production-shaped
+same-support fallback is exhausted by its non-enumerative branches.  If the
+two-charge fast path accepts, that result is returned; otherwise, if the older
+arity-three/four direct branch accepts, that result is returned; otherwise the
+inferred support-size direct branch returns the generated direct decomposition.
+The exhaustive `chargeListsUpTo` branch is unreachable under these hypotheses.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : Not (vars = []))
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSameSupportGroupWithChargeSearchFallback? target =
+      match recoverTwoChargeSameSupportGroupPerm? target with
+      | some d => some d
+      | none =>
+          match recoverSameSupportGroupWithDirectChargeFallback? target with
+          | some d => some d
+          | none =>
+              some (generatedParitySpecsFallbackDecomposition
+                (generatedParitySpecsForSupportCharges vars
+                  (directSameSupportChargesFromTargetWithBlockSize vars target
+                    (generatedParitySupportBlockSize vars)))) := by
+  unfold recoverSameSupportGroupWithChargeSearchFallback?
+  cases htwo : recoverTwoChargeSameSupportGroupPerm? target with
+  | some d =>
+      simp [htwo]
+  | none =>
+      cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? target with
+      | some d =>
+          simp [htwo, hdirect]
+      | none =>
+          have hinferred :=
+            recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_of_directTargetCharges_supportSize
+              hvars hnormal hperm hnonempty
+          simp [htwo, hdirect, hinferred]
+
+/--
 Bounded charge-search recovery succeeds whenever the component is a
 same-support generated parity expansion whose true charge list is within the
 search bound.
@@ -8310,8 +8353,8 @@ theorem recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_support
 For nonempty generated same-support components, the production-shaped
 same-support branch succeeds: either the legacy two-charge fast path accepts,
 the direct arity-three/four branch accepts, the inferred block-size branch
-accepts, or the exhaustive charge-search fallback finds the generated charge
-list within the component-length bound.
+accepts, or the inferred support-size branch accepts.  Under these generated
+component hypotheses, the exhaustive charge-search fallback is not needed.
 -/
 theorem recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCharges_componentBound
     {m : Nat} {vars : List (Fin m)}
@@ -8326,24 +8369,24 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCh
     (hnonempty : target ≠ []) :
     exists d : CanonicalFingerprintGF2Decomposition m,
       recoverSameSupportGroupWithChargeSearchFallback? target = some d := by
-  unfold recoverSameSupportGroupWithChargeSearchFallback?
+  have hprod :=
+    recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm_supportCharges
+      hvars hnormal hperm hnonempty
   cases htwo : recoverTwoChargeSameSupportGroupPerm? target with
   | some d =>
-      exact ⟨d, by simp [htwo]⟩
+      exact ⟨d, by simpa [htwo] using hprod⟩
   | none =>
       cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? target with
       | some d =>
-          exact ⟨d, by simp [htwo, hdirect]⟩
+          exact ⟨d, by simpa [htwo, hdirect] using hprod⟩
       | none =>
-          cases hinferred :
-              recoverSameSupportGroupWithDirectInferredBlockSizeFallback? target with
-          | some d =>
-              exact ⟨d, by simp [htwo, hdirect, hinferred]⟩
-          | none =>
-              have hsearch :=
-                recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound
-                  hvars hnormal hperm hnonempty
-              simpa [htwo, hdirect, hinferred, hnonempty] using hsearch
+          exact
+            ⟨generatedParitySpecsFallbackDecomposition
+              (generatedParitySpecsForSupportCharges vars
+                (directSameSupportChargesFromTargetWithBlockSize vars target
+                  (generatedParitySupportBlockSize vars))),
+              by
+                simpa [htwo, hdirect] using hprod⟩
 
 /--
 The same component-derived bound lifts through the canonical support grouping

@@ -645,6 +645,7 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetCharges_arityThree_of_twoCharge_none` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetCharges_arityFour_of_twoCharge_none` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetCharges_supportSize_of_twoCharge_none_of_directCharge_none` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm_supportCharges` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_signals_eq` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_count_true` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_count_false` | `propext`, `Quot.sound` |

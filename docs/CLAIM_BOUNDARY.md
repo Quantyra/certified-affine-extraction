@@ -569,11 +569,13 @@ longer needs an external bound, but the next discovery problem is deriving the
 charge multiplicities directly from arbitrary components.  The production-shaped
 same-support fallback branch now preserves the legacy two-charge fast path and,
 when that misses, tries direct arity-three/four count-derived recovery and then
-an inferred support-size direct branch before falling back to exhaustive
-component-bound charge search.  This wires the non-enumerative generated lane
-into the enhanced splitter path while retaining bounded exhaustive search as a
-last resort; it is not a polynomial-time recovery claim for arbitrary
-same-support CNF.  The semantic
+an inferred support-size direct branch.  The deterministic
+`recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm_supportCharges`
+theorem proves that, for nonempty generated same-support components, those
+non-enumerative branches exhaust the production path before the exhaustive
+component-bound search is reached.  The exhaustive branch remains the last
+resort outside those generated hypotheses; this is not a polynomial-time
+recovery claim for arbitrary same-support CNF.  The semantic
 charge-presence lane now proves that this multiplicity problem is not semantic
 strength:
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem` shows that
@@ -684,8 +686,11 @@ derives the positive generated block size from the recovered support arity; and
 after the two-charge fast path and direct arity-three/four branch, before
 exhaustive `chargeListsUpTo` search.  This avoids exhaustive charge-list
 enumeration for nonempty generated same-support components when the inferred
-support-size branch validates exact generated coverage, but it still does not
-recover charge identity or the per-charge multiplicity split inside an
+support-size branch validates exact generated coverage.  The stronger
+`recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm_supportCharges`
+theorem records the whole production result as the first successful
+non-exhaustive branch under the generated same-support hypotheses.  It still
+does not recover charge identity or the per-charge multiplicity split inside an
 arbitrary component.  The unguided
 two-charge probe
 infers the canonical support from that component, tries both charge orders,
@@ -795,14 +800,17 @@ same-support recovery now satisfies
 `EnhancedSemanticExtractorCompleteOn` for the recovered compact GF(2) core.
 The production same-support branch additionally tries direct arity-three/four
 count-derived recovery, then an inferred support-size direct branch, and then
-falls through to exhaustive bounded charge search when earlier branches miss.
-The underlying direct theorem surface is block-size-generic once a caller
-supplies a positive per-block length proof, and the production path now derives
-that proof from the uniform generated block-size theorem for nonempty generated
-supports.  The separate block-size-parameterized direct hook still exposes
-returned-output soundness, syntactic upgrade, and success for callers that want
-to certify that block size explicitly.  This is a conditional single-group
-fallback theorem, not
+falls through to exhaustive bounded charge search when earlier branches miss
+outside the generated lane.  For nonempty generated same-support components,
+the non-exhaustive production theorem proves the inferred support-size direct
+branch is reached whenever the earlier branches miss.  The underlying direct
+theorem surface is block-size-generic once a caller supplies a positive
+per-block length proof, and the production path now derives that proof from the
+uniform generated block-size theorem for nonempty generated supports.  The
+separate block-size-parameterized direct hook still exposes returned-output
+soundness, syntactic upgrade, and success for callers that want to certify that
+block size explicitly.  This is a conditional single-group fallback theorem,
+not
 arbitrary same-support completeness or efficient arbitrary-CNF recovery.  The
 direct two-cycle boundary now has a combined
 `EnhancedSemanticExtractorCompleteOn` theorem: the semantic half comes from the
