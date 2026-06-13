@@ -758,6 +758,15 @@ the output now packages as `EnhancedExtractorCompleteOn` and
 `EnhancedSemanticExtractorCompleteOn` for the compact core.  This enhanced
 package is kept separate from the older `ExtractorCompleteOn` API because that
 API is tied to the baseline splitter.  The enhanced fallback splitter now also
+has exact compact-core output accounting at the local same-support branch:
+`ProductionSameSupportFallbackCoreGF2Target` enumerates the possible emitted
+GF(2) targets for the two-charge, direct count-derived, inferred-size, and
+bounded charge-search branches, and
+`recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2` proves that
+every successful production fallback lands in that target predicate while still
+covering the source component and leaving no residual.  This is an output-shape
+audit for successful returns, not a completeness or efficiency claim.  The
+enhanced fallback splitter also
 has the same residual-free group-list append frame shape as the baseline
 splitter: residual-free enhanced support-group splits compose across appended
 support-group lists, and `EnhancedExtractorCompleteOn` /

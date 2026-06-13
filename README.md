@@ -668,6 +668,12 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   same-support components, the new non-exhaustive production theorem proves the
   bounded charge-search branch is unreachable; for arbitrary components, the
   exhaustive component-length search remains the final fallback.
+  The production branch now also has an exact-core target audit:
+  `ProductionSameSupportFallbackCoreGF2Target` enumerates the compact GF(2)
+  targets that can be emitted, and
+  `recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2` proves every
+  successful production fallback lands in that target set while preserving
+  coverage and empty residual.
   The block-size-parameterized direct hook remains available for callers that
   want to certify a positive generated block size explicitly.
   On the direct two-cycle boundary it covers the CNF exactly, compacts

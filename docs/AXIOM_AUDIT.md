@@ -383,12 +383,17 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_sound` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_sound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.ProductionSameSupportFallbackCoreGF2Target` | none |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectChargeFallback_sound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectChargeFallback_sound_coreGF2` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectChargeFallback_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectBlockSizeFallback_sound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectBlockSizeFallback_sound_coreGF2` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectBlockSizeFallback_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectInferredBlockSizeFallback_sound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectInferredBlockSizeFallback_sound_coreGF2` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectInferredBlockSizeFallback_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoCycleCanonicalSupportGroups_length` | `propext`, `Classical.choice`, `Quot.sound` |

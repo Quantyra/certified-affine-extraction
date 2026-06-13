@@ -7343,6 +7343,43 @@ theorem recoverSameSupportGroupWithDirectChargeFallback_sound
     · simp [hthree, hfour] at hrec
 
 /--
+Exact-core soundness for the direct arity-three/four same-support recovery
+branch.  A successful return covers the component, leaves no residual clauses,
+and emits the count-derived compact GF(2) target for arity three or arity four.
+-/
+theorem recoverSameSupportGroupWithDirectChargeFallback_sound_coreGF2
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithDirectChargeFallback? groupCNF = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual /\
+      (d.coreGF2 =
+          generatedParitySpecsGF2
+            (generatedParitySpecsForSupportCharges
+              (parityCandidateCanonicalSupportFromBlock groupCNF)
+              (directSameSupportChargesFromTargetWithBlockSize
+                (parityCandidateCanonicalSupportFromBlock groupCNF) groupCNF 4)) \/
+        d.coreGF2 =
+          generatedParitySpecsGF2
+            (generatedParitySpecsForSupportCharges
+              (parityCandidateCanonicalSupportFromBlock groupCNF)
+              (directSameSupportChargesFromTargetWithBlockSize
+                (parityCandidateCanonicalSupportFromBlock groupCNF) groupCNF 8))) := by
+  unfold recoverSameSupportGroupWithDirectChargeFallback? at hrec
+  by_cases hthree :
+      (parityCandidateCanonicalSupportFromBlock groupCNF).length = 3
+  · simp [hthree] at hrec
+    rcases recoverSameSupportGeneratedParityChargesPerm_sound hrec with
+      ⟨hcover, hresidual, hgf2⟩
+    exact ⟨hcover, hresidual, Or.inl hgf2⟩
+  · by_cases hfour :
+        (parityCandidateCanonicalSupportFromBlock groupCNF).length = 4
+    · simp [hthree, hfour] at hrec
+      rcases recoverSameSupportGeneratedParityChargesPerm_sound hrec with
+        ⟨hcover, hresidual, hgf2⟩
+      exact ⟨hcover, hresidual, Or.inr hgf2⟩
+    · simp [hthree, hfour] at hrec
+
+/--
 The direct same-support recovery branch returns syntactically upgradable blocks
 whenever it succeeds.
 -/
@@ -7396,6 +7433,30 @@ theorem recoverSameSupportGroupWithDirectBlockSizeFallback_sound
     exact ⟨hcover, hresidual⟩
 
 /--
+Exact-core soundness for the block-size-parameterized direct branch.  A
+successful return emits the compact GF(2) target derived from the supplied
+block size and inferred support.
+-/
+theorem recoverSameSupportGroupWithDirectBlockSizeFallback_sound_coreGF2
+    {m : Nat} {groupCNF : CNFModel.CNF m} {blockSize : Nat}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGroupWithDirectBlockSizeFallback? groupCNF blockSize = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual /\
+      d.coreGF2 =
+        generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges
+            (parityCandidateCanonicalSupportFromBlock groupCNF)
+            (directSameSupportChargesFromTargetWithBlockSize
+              (parityCandidateCanonicalSupportFromBlock groupCNF)
+              groupCNF blockSize)) := by
+  unfold recoverSameSupportGroupWithDirectBlockSizeFallback? at hrec
+  by_cases hzero : blockSize = 0
+  · simp [hzero] at hrec
+  · simp [hzero] at hrec
+    exact recoverSameSupportGeneratedParityChargesPerm_sound hrec
+
+/--
 The block-size-parameterized direct branch returns syntactically upgradable
 blocks whenever it succeeds.
 -/
@@ -7435,6 +7496,30 @@ theorem recoverSameSupportGroupWithDirectInferredBlockSizeFallback_sound
   exact recoverSameSupportGroupWithDirectBlockSizeFallback_sound hrec
 
 /--
+Exact-core soundness for the support-size-inferred direct branch.  A successful
+return emits the compact GF(2) target derived from the inferred support's
+generated parity-block size.
+-/
+theorem recoverSameSupportGroupWithDirectInferredBlockSizeFallback_sound_coreGF2
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual /\
+      d.coreGF2 =
+        generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges
+            (parityCandidateCanonicalSupportFromBlock groupCNF)
+            (directSameSupportChargesFromTargetWithBlockSize
+              (parityCandidateCanonicalSupportFromBlock groupCNF)
+              groupCNF
+              (generatedParitySupportBlockSize
+                (parityCandidateCanonicalSupportFromBlock groupCNF)))) := by
+  unfold recoverSameSupportGroupWithDirectInferredBlockSizeFallback? at hrec
+  exact
+    recoverSameSupportGroupWithDirectBlockSizeFallback_sound_coreGF2 hrec
+
+/--
 The inferred-block-size direct branch returns syntactically upgradable blocks
 whenever it succeeds.
 -/
@@ -7468,6 +7553,52 @@ def recoverSameSupportGroupWithChargeSearchFallback? {m : Nat}
           | none =>
               if groupCNF = [] then none
               else recoverSameSupportGeneratedParityChargeSearchPerm? groupCNF groupCNF.length
+
+/--
+Exact compact-core target predicate for the production-shaped same-support
+fallback.  Successful recovery must emit one of these branch targets: the
+two-charge normal/flipped target, the direct count-derived arity-three/four
+target, the support-size-inferred target, or a bounded charge-search target.
+-/
+inductive ProductionSameSupportFallbackCoreGF2Target {m : Nat}
+    (groupCNF : CNFModel.CNF m) : ParityEncoded.GF2Formula m -> Prop where
+  | twoChargeNormal :
+      ProductionSameSupportFallbackCoreGF2Target groupCNF
+        (generatedParitySpecsGF2 (sameSupportTwoChargeCandidateSpecs groupCNF))
+  | twoChargeFlipped :
+      ProductionSameSupportFallbackCoreGF2Target groupCNF
+        (generatedParitySpecsGF2
+          (sameSupportTwoChargeCandidateSpecsFlipped groupCNF))
+  | directArityThree :
+      ProductionSameSupportFallbackCoreGF2Target groupCNF
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges
+            (parityCandidateCanonicalSupportFromBlock groupCNF)
+            (directSameSupportChargesFromTargetWithBlockSize
+              (parityCandidateCanonicalSupportFromBlock groupCNF) groupCNF 4)))
+  | directArityFour :
+      ProductionSameSupportFallbackCoreGF2Target groupCNF
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges
+            (parityCandidateCanonicalSupportFromBlock groupCNF)
+            (directSameSupportChargesFromTargetWithBlockSize
+              (parityCandidateCanonicalSupportFromBlock groupCNF) groupCNF 8)))
+  | directInferred :
+      ProductionSameSupportFallbackCoreGF2Target groupCNF
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges
+            (parityCandidateCanonicalSupportFromBlock groupCNF)
+            (directSameSupportChargesFromTargetWithBlockSize
+              (parityCandidateCanonicalSupportFromBlock groupCNF)
+              groupCNF
+              (generatedParitySupportBlockSize
+                (parityCandidateCanonicalSupportFromBlock groupCNF)))))
+  | chargeSearch (charges : List Bool)
+      (hmem : List.Mem charges (chargeListsUpTo groupCNF.length)) :
+      ProductionSameSupportFallbackCoreGF2Target groupCNF
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges
+            (parityCandidateCanonicalSupportFromBlock groupCNF) charges))
 
 /--
 Soundness for the production-shaped same-support recovery branch.  A returned
@@ -7508,6 +7639,70 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_sound
                 rcases recoverSameSupportGeneratedParityChargeSearchPerm_sound hrec with
                   ⟨_charges, _hmem, hcover, hresidual, _hgf2⟩
                 exact ⟨hcover, hresidual⟩
+
+/--
+Exact-core soundness for the production-shaped same-support recovery branch.
+A successful return covers the component, leaves no residual clauses, and
+emits one of the explicitly enumerated compact GF(2) targets for the branch
+that accepted it.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithChargeSearchFallback? groupCNF = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual /\
+      ProductionSameSupportFallbackCoreGF2Target groupCNF d.coreGF2 := by
+  unfold recoverSameSupportGroupWithChargeSearchFallback? at hrec
+  cases htwo : recoverTwoChargeSameSupportGroupPerm? groupCNF with
+  | some dTwo =>
+      simp [htwo] at hrec
+      cases hrec
+      rcases recoverTwoChargeSameSupportGroupPerm_sound_coreGF2 htwo with
+        ⟨hcover, hresidual, hnormal | hflipped⟩
+      · refine ⟨hcover, hresidual, ?_⟩
+        rw [hnormal]
+        exact ProductionSameSupportFallbackCoreGF2Target.twoChargeNormal
+      · refine ⟨hcover, hresidual, ?_⟩
+        rw [hflipped]
+        exact ProductionSameSupportFallbackCoreGF2Target.twoChargeFlipped
+  | none =>
+      cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? groupCNF with
+      | some dDirect =>
+          simp [htwo, hdirect] at hrec
+          cases hrec
+          rcases recoverSameSupportGroupWithDirectChargeFallback_sound_coreGF2
+              hdirect with
+            ⟨hcover, hresidual, harityThree | harityFour⟩
+          · refine ⟨hcover, hresidual, ?_⟩
+            rw [harityThree]
+            exact ProductionSameSupportFallbackCoreGF2Target.directArityThree
+          · refine ⟨hcover, hresidual, ?_⟩
+            rw [harityFour]
+            exact ProductionSameSupportFallbackCoreGF2Target.directArityFour
+      | none =>
+          cases hinferred :
+              recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF with
+          | some dInferred =>
+              simp [htwo, hdirect, hinferred] at hrec
+              cases hrec
+              rcases
+                recoverSameSupportGroupWithDirectInferredBlockSizeFallback_sound_coreGF2
+                  hinferred with
+                ⟨hcover, hresidual, hinferredCore⟩
+              refine ⟨hcover, hresidual, ?_⟩
+              rw [hinferredCore]
+              exact ProductionSameSupportFallbackCoreGF2Target.directInferred
+          | none =>
+              by_cases hempty : groupCNF = []
+              · subst groupCNF
+                simp [htwo, hdirect, hinferred] at hrec
+              · simp [htwo, hdirect, hinferred, hempty] at hrec
+                rcases recoverSameSupportGeneratedParityChargeSearchPerm_sound hrec with
+                  ⟨charges, hmem, hcover, hresidual, hgf2⟩
+                refine ⟨hcover, hresidual, ?_⟩
+                rw [hgf2]
+                exact
+                  ProductionSameSupportFallbackCoreGF2Target.chargeSearch charges hmem
 
 /--
 The production-shaped same-support recovery branch returns syntactically

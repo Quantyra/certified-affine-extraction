@@ -163,6 +163,11 @@ accept every nonempty clause permutation of the direct two-cycle component.
 The strengthened `recoverTwoChargeSameSupportGroupPerm_sound_coreGF2` theorem
 now keeps the exact generated compact-core target for successful two-charge
 recovery, in addition to coverage and empty residual.
+The broader production same-support branch now has the same output-accounting
+shape via `ProductionSameSupportFallbackCoreGF2Target` and
+`recoverSameSupportGroupWithChargeSearchFallback_sound_coreGF2`: any successful
+fallback return is certified to emit one of the enumerated compact GF(2)
+targets for the branch that accepted it.
 The same local repair is now factored as the generic
 `enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport`
 theorem for any generated true/false pair over one canonical support, assuming
