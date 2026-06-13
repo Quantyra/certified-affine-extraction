@@ -166,6 +166,14 @@ reversed boundary and preserves the input up to `List.Perm`; the stronger
 `enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle_of_perm`
 theorem lifts that production result to every nonempty clause permutation of
 the direct two-cycle CNF with the same compact GF(2) target.
+The guided same-support lane now has a broader support-grouping fact:
+`groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_sameSupport`
+and
+`recoverSingleMergedSupportGroupFromGeneratedSpecsPerm_eq_some_of_perm_generatedParitySpecs_sameSupport`
+cover any supplied generated-spec list whose specs share one canonical
+support, up to clause permutation.  This narrows the remaining blocker to
+unguided discovery of that split, rather than verification of a supplied
+same-support split.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

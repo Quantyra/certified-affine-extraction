@@ -1547,6 +1547,11 @@ theorem generatedParitySpecsGF2_eq_map
       specs.map generatedParitySpecGF2 := by
   simp [generatedParitySpecsGF2, foldl_append_singleton_eq_append_map]
 
+/-- All generated parity specifications in a list use the same support vars. -/
+def GeneratedParitySpecsSameSupportVars {m : Nat}
+    (specs : List (GeneratedParitySpec m)) (vars : List (Fin m)) : Prop :=
+  forall spec : GeneratedParitySpec m, List.Mem spec specs -> spec.1 = vars
+
 /--
 Two generated parity expansions over the same canonical support have
 support-variable-homogeneous ordinary clauses.
@@ -1579,6 +1584,34 @@ theorem cnfClausesHaveCanonicalSupportVars_generatedParitySpecs_two_sameSupport
       exact
         (GroupFrame.cnfClausesHaveCanonicalSupportVars_clausesForVertex
           (m := m) vars charge2 c hright').trans hnormal
+
+/--
+Any generated parity-spec list whose specs all use the same canonical support
+has support-variable-homogeneous ordinary clauses, regardless of length or
+charge pattern.
+-/
+theorem cnfClausesHaveCanonicalSupportVars_generatedParitySpecs_sameSupport
+    {m : Nat}
+    {specs : List (GeneratedParitySpec m)}
+    {vars : List (Fin m)}
+    (hsame : GeneratedParitySpecsSameSupportVars specs vars)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars) :
+    GroupFrame.CNFClausesHaveCanonicalSupportVars
+      (generatedParitySpecsCNF specs)
+      vars := by
+  intro c hc
+  rw [generatedParitySpecsCNF_eq_bind] at hc
+  rcases List.mem_bind.1 hc with ⟨spec, hspec, hmemSpec⟩
+  cases spec with
+  | mk specVars charge =>
+      have hvars : specVars = vars := hsame (specVars, charge) hspec
+      have hmemClauses :
+          List.Mem c (clausesForVertex specVars charge) := by
+        simpa [generatedParitySpecCNF] using hmemSpec
+      subst specVars
+      exact
+        (GroupFrame.cnfClausesHaveCanonicalSupportVars_clausesForVertex
+          (m := m) vars charge c hmemClauses).trans hnormal
 
 /--
 Every folded generated parity-spec list is semantically a parity-encoded class.
@@ -5171,6 +5204,73 @@ theorem recoverSingleMergedSupportGroupFromGeneratedSpecs_toSyntacticOk
           unfold recoverSingleMergedSupportGroupFromGeneratedSpecs? at hrec
           cases hrec
 
+/--
+Permutation-insensitive guided recovery for one merged canonical support group.
+The spec list is still caller supplied; this only removes clause-order
+sensitivity from the guided single-group path.
+-/
+def recoverSingleMergedSupportGroupFromGeneratedSpecsPerm? {m : Nat}
+    (groups : List (CanonicalSupportClauseGroup m))
+    (specs : List (GeneratedParitySpec m)) :
+    Option (CanonicalFingerprintGF2Decomposition m) :=
+  match groups with
+  | [g] => recoverSameSupportGeneratedParitySpecsPerm? g.2 specs
+  | _ => none
+
+/--
+Soundness for permutation-insensitive guided recovery from one merged support
+group.
+-/
+theorem recoverSingleMergedSupportGroupFromGeneratedSpecsPerm_sound
+    {m : Nat}
+    {groups : List (CanonicalSupportClauseGroup m)}
+    {specs : List (GeneratedParitySpec m)}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSingleMergedSupportGroupFromGeneratedSpecsPerm? groups specs = some d) :
+    exists g : CanonicalSupportClauseGroup m,
+      groups = [g] /\ List.Perm d.expandedCNF g.2 /\ d.hasEmptyResidual /\
+        d.coreGF2 = generatedParitySpecsGF2 specs := by
+  cases groups with
+  | nil =>
+      unfold recoverSingleMergedSupportGroupFromGeneratedSpecsPerm? at hrec
+      cases hrec
+  | cons g groups =>
+      cases groups with
+      | nil =>
+          unfold recoverSingleMergedSupportGroupFromGeneratedSpecsPerm? at hrec
+          exact Exists.intro g
+            (And.intro rfl
+              (recoverSameSupportGeneratedParitySpecsPerm_sound hrec))
+      | cons _g2 _groups =>
+          unfold recoverSingleMergedSupportGroupFromGeneratedSpecsPerm? at hrec
+          cases hrec
+
+/--
+Permutation-insensitive guided single-group recovery returns syntactically
+upgradable blocks.
+-/
+theorem recoverSingleMergedSupportGroupFromGeneratedSpecsPerm_toSyntacticOk
+    {m : Nat}
+    {groups : List (CanonicalSupportClauseGroup m)}
+    {specs : List (GeneratedParitySpec m)}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSingleMergedSupportGroupFromGeneratedSpecsPerm? groups specs = some d) :
+    CanonicalBlocksToSyntacticOk d.blocks := by
+  cases groups with
+  | nil =>
+      unfold recoverSingleMergedSupportGroupFromGeneratedSpecsPerm? at hrec
+      cases hrec
+  | cons g groups =>
+      cases groups with
+      | nil =>
+          unfold recoverSingleMergedSupportGroupFromGeneratedSpecsPerm? at hrec
+          exact recoverSameSupportGeneratedParitySpecsPerm_toSyntacticOk hrec
+      | cons _g2 _groups =>
+          unfold recoverSingleMergedSupportGroupFromGeneratedSpecsPerm? at hrec
+          cases hrec
+
 /-- Direct-CNF guided recovery at the two-cycle same-support boundary. -/
 def twoCycleSameSupportDirectRecovery? :
     Option (CanonicalFingerprintGF2Decomposition
@@ -5477,6 +5577,80 @@ theorem recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_generatedParitySpec
     exact hperm.symm
   rw [recoverSameSupportGeneratedParitySpecsPerm_eq_some_of_perm hcover]
   simp [hcand]
+
+/--
+Any nonempty clause permutation of a generated parity-spec list whose specs
+all use the same canonical support forms one executable canonical support
+group.  This is the grouping half of arbitrary same-support guided recovery;
+finding the spec list remains a separate recognizer problem.
+-/
+theorem groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_sameSupport
+    {m : Nat} {vars : List (Fin m)}
+    {specs : List (GeneratedParitySpec m)}
+    {target : CNFModel.CNF m}
+    (hsame : GeneratedParitySpecsSameSupportVars specs vars)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm : List.Perm target (generatedParitySpecsCNF specs))
+    (hnonempty : target ≠ []) :
+    groupClausesByCanonicalSupport target =
+      [(GroupFrame.canonicalSupportKeyForVars vars, target)] := by
+  cases htarget : target with
+  | nil =>
+      exact False.elim (hnonempty htarget)
+  | cons c tail =>
+      have hpermCons :
+          List.Perm (c :: tail) (generatedParitySpecsCNF specs) := by
+        simpa [htarget] using hperm
+      have htargetVars :
+          GroupFrame.CNFClausesHaveCanonicalSupportVars
+            (c :: tail) vars := by
+        exact
+          GroupFrame.cnfClausesHaveCanonicalSupportVars_of_perm
+            hpermCons
+            (cnfClausesHaveCanonicalSupportVars_generatedParitySpecs_sameSupport
+              hsame hnormal)
+      change
+        groupClausesByCanonicalSupport (c :: tail) =
+          [(GroupFrame.canonicalSupportKeyForVars vars, c :: tail)]
+      apply GroupFrame.groupClausesByCanonicalSupport_cons_eq_single_of_same_key
+      ·
+        have hcvars :
+            canonicalClauseSupportVars c = vars :=
+          htargetVars c (List.Mem.head tail)
+        rw [canonicalClauseSupportKey, GroupFrame.canonicalSupportKeyForVars,
+          hcvars, hnormal]
+      ·
+        intro d hd
+        have hdvars :
+            canonicalClauseSupportVars d = vars :=
+          htargetVars d (List.Mem.tail c hd)
+        rw [canonicalClauseSupportKey, GroupFrame.canonicalSupportKeyForVars,
+          hdvars, hnormal]
+
+/--
+Permutation-insensitive guided single-group recovery succeeds for any nonempty
+clause permutation of a supplied generated parity-spec list whose specs all use
+one canonical support.
+-/
+theorem recoverSingleMergedSupportGroupFromGeneratedSpecsPerm_eq_some_of_perm_generatedParitySpecs_sameSupport
+    {m : Nat} {vars : List (Fin m)}
+    {specs : List (GeneratedParitySpec m)}
+    {target : CNFModel.CNF m}
+    (hsame : GeneratedParitySpecsSameSupportVars specs vars)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm : List.Perm target (generatedParitySpecsCNF specs))
+    (hnonempty : target ≠ []) :
+    recoverSingleMergedSupportGroupFromGeneratedSpecsPerm?
+        (groupClausesByCanonicalSupport target) specs =
+      some (generatedParitySpecsFallbackDecomposition specs) := by
+  have hgroups :
+      groupClausesByCanonicalSupport target =
+        [(GroupFrame.canonicalSupportKeyForVars vars, target)] :=
+    groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_sameSupport
+      hsame hnormal hperm hnonempty
+  rw [hgroups]
+  unfold recoverSingleMergedSupportGroupFromGeneratedSpecsPerm?
+  exact recoverSameSupportGeneratedParitySpecsPerm_eq_some_of_perm hperm.symm
 
 /--
 Unguided recovery for the one-merged-support-group boundary shape.  Other group
@@ -6417,6 +6591,30 @@ theorem class_of_recoverSameSupportGeneratedParitySpecs
   simpa [hcore] using hclassCore
 
 /--
+Any successful permutation-insensitive guided generated-spec same-support
+recovery is semantically sound as a local CNF-to-GF(2) block.
+-/
+theorem class_of_recoverSameSupportGeneratedParitySpecsPerm
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {specs : List (GeneratedParitySpec m)}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGeneratedParitySpecsPerm? groupCNF specs = some d) :
+    ParityEncoded.Class m groupCNF d.coreGF2 := by
+  have hsyntactic :
+      CanonicalBlocksToSyntacticOk d.blocks :=
+    recoverSameSupportGeneratedParitySpecsPerm_toSyntacticOk hrec
+  have hclassCore :
+      ParityEncoded.Class m d.coreCNF d.coreGF2 :=
+    class_of_canonicalFingerprintRecognizedBlocks_syntacticSignals_append
+      (CanonicalBlocksSyntacticSignals.of_toSyntacticOk hsyntactic)
+  have hsound := recoverSameSupportGeneratedParitySpecsPerm_sound hrec
+  have hres : d.residualCNF = [] := hsound.2.1
+  have hcorePerm : List.Perm d.coreCNF groupCNF := by
+    simpa [CanonicalFingerprintGF2Decomposition.expandedCNF, hres] using
+      hsound.1
+  exact ParityEncoded.Class.cnf_perm hcorePerm hclassCore
+
+/--
 Any successful unguided two-charge same-support recovery is semantically sound
 as a local CNF-to-GF(2) block.
 -/
@@ -6486,6 +6684,27 @@ theorem class_of_recoverSingleMergedSupportGroupTwoCharge
   have hcore : d.coreCNF = g.2 := by
     simpa [CanonicalFingerprintGF2Decomposition.expandedCNF, hres] using hcover
   simpa [hcore] using hclassCore
+
+/--
+Successful permutation-insensitive guided recovery from a supplied generated
+same-support split returns a local semantic class witness for that group's CNF
+component.
+-/
+theorem class_of_recoverSingleMergedSupportGroupFromGeneratedSpecsPerm
+    {m : Nat} {groups : List (CanonicalSupportClauseGroup m)}
+    {specs : List (GeneratedParitySpec m)}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSingleMergedSupportGroupFromGeneratedSpecsPerm? groups specs = some d) :
+    exists g : CanonicalSupportClauseGroup m,
+      groups = [g] /\ ParityEncoded.Class m g.2 d.coreGF2 := by
+  rcases recoverSingleMergedSupportGroupFromGeneratedSpecsPerm_sound hrec with
+    ⟨g, hgroups, _hcover, _hresidual, _hgf2⟩
+  refine ⟨g, hgroups, ?_⟩
+  exact class_of_recoverSameSupportGeneratedParitySpecsPerm
+    (by
+      subst groups
+      simpa [recoverSingleMergedSupportGroupFromGeneratedSpecsPerm?] using hrec)
 
 /-- Per-assignment semantic preservation for a successful two-charge recovery. -/
 theorem semanticPreservation_of_recoverTwoChargeSameSupportGroup

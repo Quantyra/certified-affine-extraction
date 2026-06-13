@@ -509,12 +509,25 @@ decomposition facts: two equations, zero residual clauses, and sixteen covered
 expanded clauses.  The guided recovery pass validates exact CNF coverage for a
 supplied generated-spec split, returns that fallback decomposition on the
 direct two-cycle CNF, and succeeds on the actual one-group canonical support
-component.  The unguided two-charge probe infers the canonical support from
-that component, tries both charge orders, proves residual-free component
-coverage for any returned decomposition, proves that returned blocks pass the
-executable syntactic upgrade, and succeeds on the same actual one-group
-two-cycle component.  The exact-list unguided recovery is now explicitly
-documented as order-sensitive: it fails on the reversed direct two-cycle CNF.
+component.  The permutation-insensitive guided lane now generalizes this
+verification side beyond the two-charge boundary:
+`groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_sameSupport`
+and
+`recoverSingleMergedSupportGroupFromGeneratedSpecsPerm_eq_some_of_perm_generatedParitySpecs_sameSupport`
+show that any nonempty clause permutation of a supplied generated-spec list
+whose specs all use one canonical support groups as one canonical support
+component and is accepted by the guided recovery for that supplied split.  The
+corresponding class bridge,
+`class_of_recoverSingleMergedSupportGroupFromGeneratedSpecsPerm`, gives a
+local `ParityEncoded.Class` witness for any successful return.  This is still
+not unguided recognition: the spec list is supplied as a premise, not inferred
+from an arbitrary CNF.  The unguided two-charge probe infers the canonical
+support from that component, tries both charge orders, proves residual-free
+component coverage for any returned decomposition, proves that returned blocks
+pass the executable syntactic upgrade, and succeeds on the same actual
+one-group two-cycle component.  The exact-list unguided recovery is now
+explicitly documented as order-sensitive: it fails on the reversed direct
+two-cycle CNF.
 The permutation-insensitive recovery proves coverage up to `List.Perm`,
 accepts every nonempty clause permutation of the direct two-cycle component
 with the same generated two-spec target, and carries the local

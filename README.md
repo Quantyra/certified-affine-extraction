@@ -407,6 +407,20 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   decomposition is proved to cover the input component, have empty residual,
   compact to the generated GF(2) fold, and emit blocks that pass the executable
   syntactic-upgrade check.
+- `AtomicClassBridge.cnfClausesHaveCanonicalSupportVars_generatedParitySpecs_sameSupport`,
+  `AtomicClassBridge.groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_sameSupport`,
+  `AtomicClassBridge.recoverSingleMergedSupportGroupFromGeneratedSpecsPerm?`,
+  `AtomicClassBridge.recoverSingleMergedSupportGroupFromGeneratedSpecsPerm_eq_some_of_perm_generatedParitySpecs_sameSupport`,
+  and
+  `AtomicClassBridge.class_of_recoverSingleMergedSupportGroupFromGeneratedSpecsPerm`:
+  generalize the guided same-support lane beyond the two-charge boundary.  For
+  any supplied generated-spec list whose specs all use one canonical support,
+  every nonempty clause permutation of its generated CNF groups as one
+  canonical support component, the permutation-insensitive guided recovery
+  succeeds on that grouped component, and any successful return carries a local
+  `ParityEncoded.Class` witness.  This proves the verification/grouping half
+  for arbitrary supplied same-support decompositions; it still does not infer
+  the spec list from an arbitrary CNF.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify
