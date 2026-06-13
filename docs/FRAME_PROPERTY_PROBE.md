@@ -260,7 +260,14 @@ splitter surface:
 ordinary one-block recognizer plus the non-exhaustive same-support fallback
 without calling the bounded `chargeListsUpTo` branch.  Their
 `*_expandedCNF_perm` theorems prove that this executable no-enumeration
-splitter still preserves the input CNF up to permutation.  The
+splitter still preserves the input CNF up to permutation.  The no-search
+surface now also has direct semantic packaging:
+`NonexhaustiveSemanticExtractorCompleteOn`,
+`nonexhaustiveSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback`,
+and
+`nonexhaustiveSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport`
+record generated same-support extraction against the non-exhaustive splitter
+itself.  The
 remaining blocker is deriving charge
 multiplicities from arbitrary components; the current last-resort search is
 still exhaustive outside the generated lane, not an efficient reconstruction

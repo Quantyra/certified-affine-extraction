@@ -612,8 +612,16 @@ do not call the bounded `chargeListsUpTo` branch.  The preservation theorems
 and
 `splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_expandedCNF_perm`
 prove that this no-search splitter still accounts for the input CNF up to
-permutation.  This is a sound no-enumeration executable surface, not a general
-same-support completeness theorem.
+permutation.  The no-search surface also has a separate semantic/executable
+package:
+`NonexhaustiveSemanticExtractorCompleteOn`,
+`nonexhaustiveSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback`,
+and
+`nonexhaustiveSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport`
+state successful generated same-support recovery directly against the
+non-exhaustive splitter, not through the bounded-search fallback.  This is a
+sound no-enumeration generated-lane surface, not a general same-support
+completeness theorem.
 The semantic
 charge-presence lane now proves that this multiplicity problem is not semantic
 strength:

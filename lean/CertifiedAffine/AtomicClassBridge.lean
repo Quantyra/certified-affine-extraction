@@ -11191,6 +11191,77 @@ theorem semanticPreservation_of_splitArityFourParityCanonicalSupportGroupsWithTw
       hsplit hsyntactic) a
 
 /--
+A residual-free no-search fallback split yields a declarative
+`ParityEncoded.Class` witness through semantic append/gluing.  This is the
+soundness-facing bridge for the splitter that deliberately excludes bounded
+`chargeListsUpTo` search.
+-/
+theorem class_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_syntacticSignals_append
+    {m : Nat} {f : CNFModel.CNF m}
+    {blocks : List (CanonicalFingerprintRecognizedParityBlock m)}
+    (hsplit :
+      splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback f =
+        { blocks := blocks, residualCNF := [] })
+    (hsyntactic : CanonicalBlocksSyntacticSignals blocks) :
+    ParityEncoded.Class m f
+      (canonicalFingerprintRecognizedBlocksGF2 blocks) := by
+  have hblocksClass :
+      ParityEncoded.Class m
+        (canonicalFingerprintRecognizedBlocksCNF blocks)
+        (canonicalFingerprintRecognizedBlocksGF2 blocks) :=
+    class_of_canonicalFingerprintRecognizedBlocks_syntacticSignals_append
+      hsyntactic
+  have hsplitCover :
+      List.Perm
+        (splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback f).expandedCNF
+        f :=
+    splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_expandedCNF_perm
+      f
+  have hcovered :
+      List.Perm (canonicalFingerprintRecognizedBlocksCNF blocks) f := by
+    simpa [hsplit, CanonicalFingerprintGF2Decomposition.expandedCNF,
+      CanonicalFingerprintGF2Decomposition.coreCNF,
+      canonicalFingerprintRecognizedBlocksCNF] using hsplitCover
+  exact ParityEncoded.Class.cnf_perm hcovered hblocksClass
+
+/--
+The no-search fallback split-to-class bridge with syntactic recognition signals
+discharged by successful executable `toSyntactic?` checks.
+-/
+theorem class_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_toSyntacticOk_append
+    {m : Nat} {f : CNFModel.CNF m}
+    {blocks : List (CanonicalFingerprintRecognizedParityBlock m)}
+    (hsplit :
+      splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback f =
+        { blocks := blocks, residualCNF := [] })
+    (hsyntactic : CanonicalBlocksToSyntacticOk blocks) :
+    ParityEncoded.Class m f
+      (canonicalFingerprintRecognizedBlocksGF2 blocks) := by
+  exact
+    class_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_syntacticSignals_append
+      hsplit
+      (CanonicalBlocksSyntacticSignals.of_toSyntacticOk hsyntactic)
+
+/--
+Residual-free no-search fallback splits preserve CNF/GF(2) semantics when every
+emitted block passes the executable syntactic check.
+-/
+theorem semanticPreservation_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_toSyntacticOk_append
+    {m : Nat} {f : CNFModel.CNF m}
+    {blocks : List (CanonicalFingerprintRecognizedParityBlock m)}
+    (hsplit :
+      splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback f =
+        { blocks := blocks, residualCNF := [] })
+    (hsyntactic : CanonicalBlocksToSyntacticOk blocks)
+    (a : CNFModel.Assignment m) :
+    CNFModel.cnfSat a f <->
+      ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+        (canonicalFingerprintRecognizedBlocksGF2 blocks) :=
+  ParityEncoded.Class.sound
+    (class_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_toSyntacticOk_append
+      hsplit hsyntactic) a
+
+/--
 Enhanced fallback extractor-completeness package.  This mirrors the baseline
 `ExtractorCompleteness.ExtractorCompleteOn` shape, but it is intentionally tied
 to `splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback`.
@@ -11214,6 +11285,29 @@ def EnhancedSemanticExtractorCompleteOn {m : Nat}
       ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a s) /\
     EnhancedExtractorCompleteOn f s
 
+/--
+No-search fallback extractor-completeness package.  This mirrors
+`EnhancedExtractorCompleteOn`, but is tied to the non-exhaustive splitter
+surface that never calls bounded `chargeListsUpTo` search.
+-/
+def NonexhaustiveExtractorCompleteOn {m : Nat}
+    (f : CNFModel.CNF m) (s : ParityEncoded.GF2Formula m) : Prop :=
+  exists blocks : List (CanonicalFingerprintRecognizedParityBlock m),
+    splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback f =
+      { blocks := blocks, residualCNF := [] } /\
+    List.Perm (canonicalFingerprintRecognizedBlocksGF2 blocks) s
+
+/--
+Combined semantic/no-search executable extraction claim for the non-exhaustive
+splitter.
+-/
+def NonexhaustiveSemanticExtractorCompleteOn {m : Nat}
+    (f : CNFModel.CNF m) (s : ParityEncoded.GF2Formula m) : Prop :=
+  (forall a : CNFModel.Assignment m,
+    CNFModel.cnfSat a f <->
+      ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a s) /\
+    NonexhaustiveExtractorCompleteOn f s
+
 /-- A residual-free enhanced fallback split gives enhanced extractor completeness. -/
 theorem enhancedExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback
     {m : Nat} {f : CNFModel.CNF m}
@@ -11224,6 +11318,18 @@ theorem enhancedExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroup
         { blocks := blocks, residualCNF := [] })
     (hgf2 : List.Perm (canonicalFingerprintRecognizedBlocksGF2 blocks) s) :
     EnhancedExtractorCompleteOn f s := by
+  exact Exists.intro blocks (And.intro hsplit hgf2)
+
+/-- A residual-free no-search fallback split gives no-search extractor completeness. -/
+theorem nonexhaustiveExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+    {m : Nat} {f : CNFModel.CNF m}
+    {blocks : List (CanonicalFingerprintRecognizedParityBlock m)}
+    {s : ParityEncoded.GF2Formula m}
+    (hsplit :
+      splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback f =
+        { blocks := blocks, residualCNF := [] })
+    (hgf2 : List.Perm (canonicalFingerprintRecognizedBlocksGF2 blocks) s) :
+    NonexhaustiveExtractorCompleteOn f s := by
   exact Exists.intro blocks (And.intro hsplit hgf2)
 
 /--
@@ -11328,6 +11434,17 @@ theorem enhancedSemanticExtractorCompleteOn_of_class
     (hclass : ParityEncoded.Class m f s)
     (hextract : EnhancedExtractorCompleteOn f s) :
     EnhancedSemanticExtractorCompleteOn f s :=
+  And.intro (ParityEncoded.Class.sound hclass) hextract
+
+/--
+A declarative class witness plus no-search extractor completeness gives the
+combined semantic/no-search executable claim.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_of_class
+    {m : Nat} {f : CNFModel.CNF m} {s : ParityEncoded.GF2Formula m}
+    (hclass : ParityEncoded.Class m f s)
+    (hextract : NonexhaustiveExtractorCompleteOn f s) :
+    NonexhaustiveSemanticExtractorCompleteOn f s :=
   And.intro (ParityEncoded.Class.sound hclass) hextract
 
 /--
@@ -11683,6 +11800,48 @@ theorem enhancedSemanticExtractorCompleteOn_of_splitArityFourParityCanonicalSupp
       hsplit hgf2)
 
 /--
+Residual-free no-search fallback splits with syntactically checked blocks
+satisfy the combined semantic/no-search executable package for their emitted
+GF(2) core.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_toSyntacticOk_append
+    {m : Nat} {f : CNFModel.CNF m}
+    {blocks : List (CanonicalFingerprintRecognizedParityBlock m)}
+    (hsplit :
+      splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback f =
+        { blocks := blocks, residualCNF := [] })
+    (hsyntactic : CanonicalBlocksToSyntacticOk blocks) :
+    NonexhaustiveSemanticExtractorCompleteOn f
+      (canonicalFingerprintRecognizedBlocksGF2 blocks) :=
+  nonexhaustiveSemanticExtractorCompleteOn_of_class
+    (class_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_toSyntacticOk_append
+      hsplit hsyntactic)
+    (nonexhaustiveExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+      hsplit (List.Perm.refl _))
+
+/--
+Residual-free no-search fallback splits with syntactically checked blocks
+satisfy the combined semantic/no-search executable package for any permutation
+of their emitted GF(2) core.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_toSyntacticOk
+    {m : Nat} {f : CNFModel.CNF m}
+    {blocks : List (CanonicalFingerprintRecognizedParityBlock m)}
+    {s : ParityEncoded.GF2Formula m}
+    (hsplit :
+      splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback f =
+        { blocks := blocks, residualCNF := [] })
+    (hsyntactic : CanonicalBlocksToSyntacticOk blocks)
+    (hgf2 : List.Perm (canonicalFingerprintRecognizedBlocksGF2 blocks) s) :
+    NonexhaustiveSemanticExtractorCompleteOn f s :=
+  nonexhaustiveSemanticExtractorCompleteOn_of_class
+    (ParityEncoded.Class.gf2_perm hgf2
+      (class_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_toSyntacticOk_append
+        hsplit hsyntactic))
+    (nonexhaustiveExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+      hsplit hgf2)
+
+/--
 If a CNF groups as one merged support component, the ordinary one-block
 recognizer fails, and the two-charge same-support fallback succeeds on that
 component, then the enhanced splitter satisfies the combined semantic/executable
@@ -11769,6 +11928,42 @@ theorem enhancedSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback
     hgroups hinfer
     (recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_nonexhaustive
       hrec)
+
+/--
+If a CNF groups as one merged support component, the ordinary one-block
+recognizer fails, and the no-search same-support fallback succeeds on that
+component, then the no-search splitter satisfies the combined semantic/executable
+package for the recovered compact GF(2) core.  Unlike the enhanced production
+version above, this theorem never routes through the bounded charge-search
+fallback.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback
+    {m : Nat} {f : CNFModel.CNF m} {key : CanonicalClauseSupportKey}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hgroups : groupClausesByCanonicalSupport f = [(key, f)])
+    (hinfer : inferCanonicalParityBlock f = none)
+    (hrec : recoverSameSupportGroupWithNonexhaustiveFallback? f = some d) :
+    NonexhaustiveSemanticExtractorCompleteOn f d.coreGF2 := by
+  have hres : d.residualCNF = [] :=
+    (recoverSameSupportGroupWithNonexhaustiveFallback_sound hrec).2
+  have hsplit :
+      splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback f =
+        { blocks := d.blocks, residualCNF := [] } := by
+    unfold splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+    rw [hgroups]
+    change
+      splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback [(key, f)] =
+        { blocks := d.blocks, residualCNF := [] }
+    simp [splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback,
+      hinfer, hrec, hres]
+  have hgf2 :
+      List.Perm (canonicalFingerprintRecognizedBlocksGF2 d.blocks) d.coreGF2 := by
+    simp [CanonicalFingerprintGF2Decomposition.coreGF2]
+  exact
+    nonexhaustiveSemanticExtractorCompleteOn_of_class
+      (class_of_recoverSameSupportGroupWithNonexhaustiveFallback hrec)
+      (nonexhaustiveExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+        hsplit hgf2)
 
 /--
 Generic production-path theorem for the two-charge same-support fallback.  If a
@@ -11866,6 +12061,59 @@ theorem enhancedSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_
   exact
     ⟨d, hrec,
       enhancedSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback
+        (f := target)
+        (key := GroupFrame.canonicalSupportKeyForVars vars)
+        (d := d)
+        hgroups hinfer hrec,
+      htarget,
+      hgf2⟩
+
+/--
+Arbitrary generated same-support components have a no-search splitter
+certificate once the ordinary one-block recognizer misses them.  This is the
+same generated lane as
+`enhancedSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport`,
+but the executable package is tied directly to
+`splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback`, so the
+statement does not route through bounded `chargeListsUpTo` search.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : vars ≠ [])
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ [])
+    (hinfer : inferCanonicalParityBlock target = none) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGroupWithNonexhaustiveFallback? target = some d /\
+        NonexhaustiveSemanticExtractorCompleteOn target d.coreGF2 /\
+          ProductionSameSupportFallbackCoreGF2Target target d.coreGF2 /\
+            forall a : CNFModel.Assignment m,
+              ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 <->
+                ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                  (generatedParitySpecsGF2
+                    (generatedParitySpecsForSupportCharges vars charges)) := by
+  rcases
+    recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges
+      hvars hnormal hperm hnonempty with
+    ⟨d, hrec, _hcover, _hresidual, htarget, hgf2⟩
+  have hsame :
+      GeneratedParitySpecsSameSupportVars
+        (generatedParitySpecsForSupportCharges vars charges) vars :=
+    generatedParitySpecsForSupportCharges_sameSupport vars charges
+  have hgroups :
+      groupClausesByCanonicalSupport target =
+        [(GroupFrame.canonicalSupportKeyForVars vars, target)] :=
+    groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_sameSupport
+      hsame hnormal hperm hnonempty
+  exact
+    ⟨d, hrec,
+      nonexhaustiveSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback
         (f := target)
         (key := GroupFrame.canonicalSupportKeyForVars vars)
         (d := d)

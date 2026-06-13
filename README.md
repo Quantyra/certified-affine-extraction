@@ -528,7 +528,15 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   and
   `AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback_expandedCNF_perm`
   prove that this no-search splitter still represents the input CNF up to
-  clause permutation.
+  clause permutation.  The same no-search surface now has its own semantic
+  package:
+  `AtomicClassBridge.NonexhaustiveSemanticExtractorCompleteOn`,
+  `AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback`,
+  and
+  `AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport`
+  state the generated same-support lane directly against the no-search splitter,
+  rather than routing through the bounded-search production fallback.  This is
+  still a generated-lane theorem, not arbitrary same-support CNF recovery.
 - `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`,
