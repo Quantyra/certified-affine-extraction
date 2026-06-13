@@ -3123,6 +3123,18 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_eq_charge_count_mul_block_length_of_perm_generatedParitySpecsForSupportCharges' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_eq_charge_count_mul_block_length_of_perm_generatedParitySpecsForSupportCharges
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.charges_length_eq_target_length_div_block_length_of_perm_generatedParitySpecsForSupportCharges' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.charges_length_eq_target_length_div_block_length_of_perm_generatedParitySpecsForSupportCharges
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_mod_block_length_eq_zero_of_perm_generatedParitySpecsForSupportCharges' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_mod_block_length_eq_zero_of_perm_generatedParitySpecsForSupportCharges
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges' depends on axioms: [propext,
  Quot.sound] -/
 #guard_msgs in
@@ -3268,6 +3280,12 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsCNF_forSupportCharges_perm_of_charges_perm
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_of_block_length' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_of_block_length
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree' depends on axioms: [propext,
  Classical.choice,
  Quot.sound] -/
@@ -3303,6 +3321,18 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityFour
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_of_block_length' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_of_block_length
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_of_block_length' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_of_block_length
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectChargeFallback_eq_some_of_directTargetCharges_arityThree' depends on axioms: [propext,
  Classical.choice,

@@ -525,23 +525,33 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   proves that each true-charge block contributes exactly one such fingerprint,
   and the merged-count theorem sums those contributions across the component.
   This removes the local counting ambiguity needed for direct count
-  reconstruction.  In the generated arity-three and arity-four lanes, the
-  direct recovery theorems below now use this count together with exact
-  component length to replace exhaustive charge enumeration.
+  reconstruction.  The direct recovery theorem surface is now factored through
+  a block-size-generic statement: once a caller certifies that every generated
+  block in the same-support component has positive CNF length `k`, component
+  length and all-false fingerprint count determine a canonical charge
+  representative without exhaustive charge enumeration.  The generated
+  arity-three and arity-four lanes instantiate this generic shape with
+  `k = 4` and `k = 8`.
   This pins the open problem to discovering the exact split from CNF; neither
   the residual-free block target nor the compact GF(2) target loses
   multiplicity data once that split is supplied or recovered.
-- `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,
+- `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_eq_mul_of_block_length`,
+  `AtomicClassBridge.target_length_eq_charge_count_mul_block_length_of_perm_generatedParitySpecsForSupportCharges`,
+  `AtomicClassBridge.charges_length_eq_target_length_div_block_length_of_perm_generatedParitySpecsForSupportCharges`,
+  `AtomicClassBridge.target_length_mod_block_length_eq_zero_of_perm_generatedParitySpecsForSupportCharges`,
+  `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,
   `AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four`,
   `AtomicClassBridge.target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges`,
   and
   `AtomicClassBridge.target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges`:
-  give exact same-support generated-component length accounting for the main
-  arity-three and arity-four lanes.  For arity three, component length is
-  `charge_count * 4`; for arity four, it is `charge_count * 8`; both facts
-  transport across clause permutation.  This lets component size determine the
-  total generated charge count in those lanes.  The quotient/divisibility
-  corollaries
+  give exact same-support generated-component length accounting.  The generic
+  theorem handles any supplied positive block length `k`; the main arity-three
+  and arity-four lanes specialize it to component length `charge_count * 4` and
+  `charge_count * 8`, with the same transport across clause permutation.  This
+  lets component size determine the total generated charge count once a block
+  size certificate is available.  The quotient/divisibility corollaries
+  `AtomicClassBridge.charges_length_eq_target_length_div_block_length_of_perm_generatedParitySpecsForSupportCharges`,
+  `AtomicClassBridge.target_length_mod_block_length_eq_zero_of_perm_generatedParitySpecsForSupportCharges`,
   `AtomicClassBridge.charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges`,
   `AtomicClassBridge.charges_length_eq_target_length_div_eight_of_perm_generatedParitySpecsForSupportCharges`,
   `AtomicClassBridge.target_length_mod_four_eq_zero_of_perm_generatedParitySpecsForSupportCharges`,
@@ -554,20 +564,24 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   still does not identify the charge values or per-charge multiplicities inside
   an arbitrary component.
 - `AtomicClassBridge.canonicalSupportChargesFromCounts_perm`,
+  `AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_of_block_length`,
   `AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree`,
   `AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour`,
+  `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_of_block_length`,
+  `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_of_block_length`,
   `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityThree`,
   `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityFour`,
   `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityThree`,
   and
   `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityFour`:
   build the canonical charge representative directly from
-  `target.length / blockSize` and the all-false fingerprint count.  For
-  generated arity-three and arity-four same-support components, that
-  representative is proved permutation-equivalent to the hidden charge list, so
-  the existing charge-guided recovery succeeds without `chargeListsUpTo`
-  enumeration.  This is still generated-component recovery, not arbitrary CNF
-  or general 3-SAT recognition.
+  `target.length / blockSize` and the all-false fingerprint count.  In the
+  block-size-generic form, that representative is proved
+  permutation-equivalent to the hidden charge list whenever callers supply the
+  positive per-block length proof; the arity-three and arity-four theorems are
+  concrete instances.  The existing charge-guided recovery then succeeds
+  without `chargeListsUpTo` enumeration.  This is still generated-component
+  recovery, not arbitrary CNF or general 3-SAT recognition.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify

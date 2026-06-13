@@ -640,18 +640,31 @@ the arity-specific exact-bound recovery wrappers
 `recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound`,
 and
 `recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound`
-use those quotients as certified charge-search bounds.  The direct reconstruction
-lane then combines these quotient counts with the all-false fingerprint count:
+use those quotients as certified charge-search bounds.  The generic length
+accounting is now exposed directly as
+`target_length_eq_charge_count_mul_block_length_of_perm_generatedParitySpecsForSupportCharges`,
+with quotient/divisibility corollaries for any caller-supplied positive block
+length `k`; the arity-three and arity-four results are instances of that
+block-size-generic surface.  The direct reconstruction lane then combines these
+quotient counts with the all-false fingerprint count:
 `canonicalSupportChargesFromCounts_perm` proves the canonical false-then-true
 representative has the same Boolean multiplicities as the hidden charge list,
+`directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_of_block_length`
+derives that representative directly from the target component once the
+positive block-size certificate is supplied,
 `directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree`
 and
 `directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour`
 derive that representative directly from the target component, and the
+block-size-generic
+`recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_of_block_length`
+and
+`recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_of_block_length`
+wrappers, together with the arity-specific
 `recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_*`
 plus
 `recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_*`
-wrappers prove recovery success from that direct list.  The production helper
+wrappers, prove recovery success from that direct list.  The production helper
 `recoverSameSupportGroupWithDirectChargeFallback?` now packages this direct
 branch, its soundness and syntactic-upgrade theorems, and its arity-three/four
 success wrappers; `recoverSameSupportGroupWithChargeSearchFallback?` tries that
@@ -767,9 +780,12 @@ same-support recovery now satisfies
 `EnhancedSemanticExtractorCompleteOn` for the recovered compact GF(2) core.
 The production same-support branch additionally tries direct arity-three/four
 count-derived recovery and then falls through to exhaustive bounded charge
-search when earlier branches miss, but this is a conditional single-group
-fallback theorem, not arbitrary same-support completeness or efficient
-arbitrary-CNF recovery.  The direct two-cycle boundary now has a combined
+search when earlier branches miss.  The underlying direct theorem surface is now
+block-size-generic once a caller supplies a positive per-block length proof, but
+the production branch still instantiates only the arity-three/four cases.  This
+is a conditional single-group fallback theorem, not arbitrary same-support
+completeness or efficient arbitrary-CNF recovery.  The direct two-cycle boundary
+now has a combined
 `EnhancedSemanticExtractorCompleteOn` theorem: the semantic half comes from the
 declarative cycle class, while the executable half comes from the enhanced
 splitter's residual-free output and compact GF(2) core.  Combined with the
@@ -978,8 +994,9 @@ fingerprint is proved to identify exactly that generated clause inside a
 true-charge block.  A true-charge generated block is also now proved to
 contribute exactly one all-false fingerprint, and the merged generated count is
 now proved to equal the hidden true-charge multiplicity.  Together with
-arity-three and arity-four length accounting, this now yields direct
-count-derived recovery for generated same-support components in those arities.
-It is not a general CNF, arbitrary 3-SAT, or arbitrary same-support recovery
-algorithm; the direct lane is now wired into the enhanced splitter, and the
-next production task is extending beyond generated arity-three/four components.
+block-size-generic length accounting, this now yields direct count-derived
+recovery for generated same-support components whenever a positive per-block
+length certificate is available; the production splitter currently wires the
+arity-three and arity-four instances.  It is not a general CNF, arbitrary 3-SAT,
+or arbitrary same-support recovery algorithm; the next production task is
+extending the executable branch beyond generated arity-three/four components.

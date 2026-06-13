@@ -245,14 +245,26 @@ fingerprint is exactly the generated all-false clause, and the exact
 single-block count theorem proves that each true-charge block contributes
 exactly one all-false fingerprint.  This exact merged count is now used in the
 production direct branch for generated arity-three and arity-four components.
-What remains open is extending the direct recovery lane beyond generated
-arity-three and arity-four components.
+The proof surface has also been factored through a block-size-generic direct
+recovery theorem: once a caller certifies a positive per-block generated CNF
+length `k`, the same quotient count and all-false fingerprint count recover a
+canonical charge representative without enumerating `chargeListsUpTo`.  The
+production branch still instantiates this only for the generated arity-three
+and arity-four cases.
+What remains open is extending the executable direct recovery lane beyond
+generated arity-three and arity-four components.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`
 theorems lift these facts to the residual-free decomposition interface.
-The exact length lane now proves arity-three and arity-four generated
-same-support component accounting:
+The exact length lane now proves block-size-generic generated same-support
+component accounting through
+`generatedParitySpecsForSupportCharges_cnf_length_eq_mul_of_block_length`,
+`target_length_eq_charge_count_mul_block_length_of_perm_generatedParitySpecsForSupportCharges`,
+`charges_length_eq_target_length_div_block_length_of_perm_generatedParitySpecsForSupportCharges`,
+and
+`target_length_mod_block_length_eq_zero_of_perm_generatedParitySpecsForSupportCharges`,
+then specializes it to the arity-three and arity-four generated lanes:
 `generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three`,
 `generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four`,
 `target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges`,
@@ -278,17 +290,26 @@ search bound.  The direct count-derived lane now combines those quotient counts
 with the all-false fingerprint count:
 `canonicalSupportChargesFromCounts_perm` builds a canonical charge
 representative with matching Boolean multiplicities,
+`directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_of_block_length`
+proves the direct representative is permutation-equivalent to the hidden charge
+list under any positive block-size certificate,
 `directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree`
 and
 `directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour`
 recover that representative directly from the target component, and the
+block-size-generic
+`recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_of_block_length`
+and
+`recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_of_block_length`
+wrappers, together with the arity-specific
 `recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_*`
 plus
 `recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_*`
-wrappers prove that existing charge-guided recovery succeeds from it.  This
+wrappers, prove that existing charge-guided recovery succeeds from it.  This
 replaces exhaustive `chargeListsUpTo` enumeration for generated arity-three and
 arity-four same-support components in the production path after the two-charge
-fast path.  It still does not recover charge identity or per-charge
+fast path, while the generic theorem records the reusable proof obligation for
+future block-size instances.  It still does not recover charge identity or per-charge
 multiplicity inside an arbitrary same-support component.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized

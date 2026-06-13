@@ -584,6 +584,9 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_eq_mul_of_block_length` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_three` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_eq_charge_count_mul_block_length_of_perm_generatedParitySpecsForSupportCharges` | `propext` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.charges_length_eq_target_length_div_block_length_of_perm_generatedParitySpecsForSupportCharges` | `propext` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_mod_block_length_eq_zero_of_perm_generatedParitySpecsForSupportCharges` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges` | `propext`, `Quot.sound` |
@@ -613,8 +616,11 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.bool_count_false_eq_length_sub_count_true` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalSupportChargesFromCounts_perm` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsCNF_forSupportCharges_perm_of_charges_perm` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_of_block_length` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityThree` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_of_block_length` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_of_block_length` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityThree` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityFour` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityThree` | `propext`, `Classical.choice`, `Quot.sound` |
