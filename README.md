@@ -448,13 +448,16 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
 - `AtomicClassBridge.generatedParitySpecsForSupportCharges_length_le_cnf_length_of_vars_ne_empty`,
   `AtomicClassBridge.charges_length_le_of_perm_generatedParitySpecsForSupportCharges`,
   `AtomicClassBridge.recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound`,
+  `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound`,
   and
-  `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound`:
+  `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCharges_componentBound`:
   prove that, for a nonempty support generated same-support component, the
   component's own clause count is a safe charge-search bound.  This still is
   not arbitrary same-support recognition: the search no longer needs an
   external bound in this generated lane, but it still does not infer the charge
-  multiplicities directly from an arbitrary component.
+  multiplicities directly from an arbitrary component.  The production-shaped
+  fallback branch now keeps the legacy two-charge fast path and then invokes
+  this exhaustive component-bound charge search when the fast path misses.
 - `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`,
@@ -560,24 +563,27 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
 - `AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback`,
   `AtomicClassBridge.splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback`,
   and `AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitter_*`:
-  package that local recovery as a production-shaped fallback splitter.  On the
-  direct two-cycle boundary it covers the CNF exactly, compacts to the direct
-  two-equation GF(2) target, emits two compact equations, and leaves zero
-  residual clauses.  The exact-list unguided recovery is proved to fail on the
-  reversed direct two-cycle CNF, while the permutation-insensitive recovery and
-  production enhanced splitter are proved to accept that reversed boundary with
-  zero residual clauses and the same compact GF(2) target.  Generically, the
-  enhanced group-level and full-CNF
-  splitters preserve every ordinary clause up to permutation: recognized
-  one-block groups move into the core, successful two-charge fallback groups
-  move into the core as residual-free local decompositions, and all other
-  groups remain residual.  A residual-free enhanced fallback split whose
+  package local same-support recovery as a production-shaped fallback splitter.
+  The same-support branch first tries the legacy two-charge recovery, then falls
+  through to exhaustive bounded charge search using the component length as the
+  bound.  On the direct two-cycle boundary it covers the CNF exactly, compacts
+  to the direct two-equation GF(2) target, emits two compact equations, and
+  leaves zero residual clauses.  The exact-list unguided recovery is proved to
+  fail on the reversed direct two-cycle CNF, while the permutation-insensitive
+  recovery and production enhanced splitter are proved to accept that reversed
+  boundary with zero residual clauses and the same compact GF(2) target.
+  Generically, the enhanced group-level and full-CNF splitters preserve every
+  ordinary clause up to permutation: recognized one-block groups move into the
+  core, successful same-support fallback groups move into the core as
+  residual-free local decompositions, and all other groups remain residual.  A
+  residual-free enhanced fallback split whose
   emitted blocks pass the executable syntactic check now yields a
   dedicated `EnhancedExtractorCompleteOn` / `EnhancedSemanticExtractorCompleteOn`
   package for its compact core.  The wrapper is intentionally scoped to the
-  existing one-block recognizer plus the narrow two-charge same-support
-  fallback; it remains separate from the baseline `ExtractorCompleteOn` API and
-  is not a completeness theorem for arbitrary same-support components.
+  existing one-block recognizer plus the same-support fallback branch; it
+  remains separate from the baseline `ExtractorCompleteOn` API and is not a
+  completeness theorem for arbitrary same-support components or an efficiency
+  claim.
 - `AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback_append_of_residual_free`:
   residual-free enhanced fallback support-group splits compose across appended
   support-group lists, so the fallback splitter now has the same group-list
@@ -629,7 +635,9 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   CNF that groups as one support component, fails the ordinary one-block
   recognizer, and succeeds under the two-charge same-support recovery.  This is
   the generic form of the direct two-cycle boundary repair, still conditional
-  on fallback success.
+  on fallback success.  The production splitter now also has the broader
+  same-support charge-search branch after this two-charge path; the theorem name
+  is retained for the two-charge success condition it packages.
 - `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle`:
   packages the direct two-cycle boundary as a combined
   `EnhancedSemanticExtractorCompleteOn` theorem.  The proof deliberately pairs

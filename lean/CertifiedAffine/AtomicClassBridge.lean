@@ -6726,6 +6726,68 @@ theorem recoverTwoChargeSameSupportGroupPerm_toSyntacticOk
       exact recoverSameSupportGeneratedParitySpecsPerm_toSyntacticOk hrec
 
 /--
+Production-shaped same-support recovery branch.  It preserves the existing
+two-charge fast path, then falls back to exhaustive bounded charge search using
+the component length as the search bound.  This is certified discovery, not an
+efficiency claim.
+-/
+def recoverSameSupportGroupWithChargeSearchFallback? {m : Nat}
+    (groupCNF : CNFModel.CNF m) :
+    Option (CanonicalFingerprintGF2Decomposition m) :=
+  match recoverTwoChargeSameSupportGroupPerm? groupCNF with
+  | some d => some d
+  | none =>
+      if groupCNF = [] then none
+      else recoverSameSupportGeneratedParityChargeSearchPerm? groupCNF groupCNF.length
+
+/--
+Soundness for the production-shaped same-support recovery branch.  A returned
+decomposition covers the input component up to clause permutation and leaves no
+residual clauses.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_sound
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithChargeSearchFallback? groupCNF = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual := by
+  unfold recoverSameSupportGroupWithChargeSearchFallback? at hrec
+  cases htwo : recoverTwoChargeSameSupportGroupPerm? groupCNF with
+  | some dTwo =>
+      simp [htwo] at hrec
+      cases hrec
+      exact recoverTwoChargeSameSupportGroupPerm_sound htwo
+  | none =>
+      by_cases hempty : groupCNF = []
+      · subst groupCNF
+        simp [htwo] at hrec
+      · simp [htwo, hempty] at hrec
+        rcases recoverSameSupportGeneratedParityChargeSearchPerm_sound hrec with
+          ⟨_charges, _hmem, hcover, hresidual, _hgf2⟩
+        exact ⟨hcover, hresidual⟩
+
+/--
+The production-shaped same-support recovery branch returns syntactically
+upgradable blocks whenever it succeeds.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_toSyntacticOk
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithChargeSearchFallback? groupCNF = some d) :
+    CanonicalBlocksToSyntacticOk d.blocks := by
+  unfold recoverSameSupportGroupWithChargeSearchFallback? at hrec
+  cases htwo : recoverTwoChargeSameSupportGroupPerm? groupCNF with
+  | some dTwo =>
+      simp [htwo] at hrec
+      cases hrec
+      exact recoverTwoChargeSameSupportGroupPerm_toSyntacticOk htwo
+  | none =>
+      by_cases hempty : groupCNF = []
+      · subst groupCNF
+        simp [htwo] at hrec
+      · simp [htwo, hempty] at hrec
+        exact recoverSameSupportGeneratedParityChargeSearchPerm_toSyntacticOk hrec
+
+/--
 For a nonempty clause permutation of two generated parity specs over the same
 canonical support, the two-charge same-support candidate generator recovers the
 original support and canonical charge order.
@@ -7100,6 +7162,35 @@ theorem recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_support
       hnormal hperm hnonempty
       (charges_length_le_of_perm_generatedParitySpecsForSupportCharges
         hvars hperm)
+
+/--
+For nonempty generated same-support components, the production-shaped
+same-support branch succeeds: either the legacy two-charge fast path accepts,
+or the exhaustive charge-search fallback finds the generated charge list within
+the component-length bound.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCharges_componentBound
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : vars ≠ [])
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGroupWithChargeSearchFallback? target = some d := by
+  unfold recoverSameSupportGroupWithChargeSearchFallback?
+  cases htwo : recoverTwoChargeSameSupportGroupPerm? target with
+  | some d =>
+      exact ⟨d, by simp [htwo]⟩
+  | none =>
+      have hsearch :=
+        recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound
+          hvars hnormal hperm hnonempty
+      simpa [htwo, hnonempty] using hsearch
 
 /--
 The same component-derived bound lifts through the canonical support grouping
@@ -7619,8 +7710,8 @@ theorem twoCycleSameSupportUnguidedMergedSupportRecovery_isSome :
 /--
 Canonical support splitter with a narrow same-support fallback.  It first uses
 the existing one-block canonical recognizer.  If that fails, it tries the
-two-charge same-support recovery on the same group before residualizing the
-group.
+same-support fallback branch on the same group before residualizing the group:
+first the legacy two-charge path, then exhaustive bounded charge search.
 -/
 def splitCanonicalSupportClauseGroupsWithTwoChargeFallback {m : Nat} :
     List (CanonicalSupportClauseGroup m) ->
@@ -7635,7 +7726,7 @@ def splitCanonicalSupportClauseGroupsWithTwoChargeFallback {m : Nat} :
           { blocks := b :: rest.blocks
             residualCNF := rest.residualCNF }
       | none =>
-          match recoverTwoChargeSameSupportGroupPerm? g.2 with
+          match recoverSameSupportGroupWithChargeSearchFallback? g.2 with
           | some d =>
               { blocks := d.blocks ++ rest.blocks
                 residualCNF := d.residualCNF ++ rest.residualCNF }
@@ -7644,9 +7735,10 @@ def splitCanonicalSupportClauseGroupsWithTwoChargeFallback {m : Nat} :
                 residualCNF := g.2 ++ rest.residualCNF }
 
 /--
-Full-CNF canonical splitter with the two-charge same-support fallback enabled.
-This is a boundary-repair wrapper around the current production splitter, not a
-claim that arbitrary same-support components are now complete.
+Full-CNF canonical splitter with the same-support fallback enabled.  The
+fallback is production-shaped but still bounded exhaustive search after the
+legacy two-charge fast path; this is not an efficiency claim or a completeness
+claim for arbitrary same-support components.
 -/
 def splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback {m : Nat}
     (f : CNFModel.CNF m) : CanonicalFingerprintGF2Decomposition m :=
@@ -7656,7 +7748,7 @@ def splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback {m : Nat}
 /--
 The enhanced fallback splitter preserves all ordinary clauses up to
 permutation.  Recognized one-block groups move into the core, successful
-two-charge fallback groups move into the core as a residual-free local
+same-support fallback groups move into the core as a residual-free local
 decomposition, and all other groups remain residual.
 -/
 theorem splitCanonicalSupportClauseGroupsWithTwoChargeFallback_expandedCNF_perm
@@ -7684,9 +7776,9 @@ theorem splitCanonicalSupportClauseGroupsWithTwoChargeFallback_expandedCNF_perm
             ExtractorCompleteness.canonicalSupportClauseGroupsCNF, hb]
           exact List.Perm.append_left g.2 ih
       | none =>
-          cases hrec : recoverTwoChargeSameSupportGroupPerm? g.2 with
+          cases hrec : recoverSameSupportGroupWithChargeSearchFallback? g.2 with
           | some d =>
-              have hsound := recoverTwoChargeSameSupportGroupPerm_sound hrec
+              have hsound := recoverSameSupportGroupWithChargeSearchFallback_sound hrec
               have hres : d.residualCNF = [] := by
                 simpa [CanonicalFingerprintGF2Decomposition.hasEmptyResidual] using
                   hsound.2
@@ -7814,7 +7906,7 @@ theorem splitCanonicalSupportClauseGroupsWithTwoChargeFallback_append_of_residua
                       unfold splitCanonicalSupportClauseGroupsWithTwoChargeFallback
                       simp [hinfer, hih]
       | none =>
-          cases hrec : recoverTwoChargeSameSupportGroupPerm? g.2 with
+          cases hrec : recoverSameSupportGroupWithChargeSearchFallback? g.2 with
           | some d =>
               cases htail :
                   splitCanonicalSupportClauseGroupsWithTwoChargeFallback groups with
@@ -7858,7 +7950,7 @@ theorem splitCanonicalSupportClauseGroupsWithTwoChargeFallback_append_of_residua
                                 ([] : CNFModel.CNF m) = none := by
                             simpa [hgempty] using hinfer
                           have hrecEmpty :
-                              recoverTwoChargeSameSupportGroupPerm?
+                              recoverSameSupportGroupWithChargeSearchFallback?
                                 ([] : CNFModel.CNF m) = none := by
                             simpa [hgempty] using hrec
                           unfold splitCanonicalSupportClauseGroupsWithTwoChargeFallback
@@ -9120,6 +9212,9 @@ theorem enhancedSemanticExtractorCompleteOn_of_singleGroupTwoChargeFallback
     EnhancedSemanticExtractorCompleteOn f d.coreGF2 := by
   have hres : d.residualCNF = [] :=
     (recoverTwoChargeSameSupportGroupPerm_sound hrec).2
+  have hfallback :
+      recoverSameSupportGroupWithChargeSearchFallback? f = some d := by
+    simp [recoverSameSupportGroupWithChargeSearchFallback?, hrec]
   have hsplit :
       splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback f =
         { blocks := d.blocks, residualCNF := [] } := by
@@ -9129,7 +9224,7 @@ theorem enhancedSemanticExtractorCompleteOn_of_singleGroupTwoChargeFallback
       splitCanonicalSupportClauseGroupsWithTwoChargeFallback [(key, f)] =
         { blocks := d.blocks, residualCNF := [] }
     simp [splitCanonicalSupportClauseGroupsWithTwoChargeFallback,
-      hinfer, hrec, hres]
+      hinfer, hfallback, hres]
   have hgf2 :
       List.Perm (canonicalFingerprintRecognizedBlocksGF2 d.blocks) d.coreGF2 := by
     simp [CanonicalFingerprintGF2Decomposition.coreGF2]

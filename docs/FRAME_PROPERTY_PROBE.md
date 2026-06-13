@@ -152,12 +152,13 @@ It is also exposed through the induction-shaped
 `AtomicClassBridge.extractorCompleteOn_of_clausePermutedRecognizedClass_perm`,
 and
 `AtomicClassBridge.semanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm`,
-with matching enhanced two-charge fallback wrappers.
-The enhanced two-charge fallback itself now uses permutation-insensitive
-same-support recovery: the exact-list recovery is certified to fail on the
-reversed direct two-cycle CNF, while the permutation-insensitive recovery is
-certified to accept every nonempty clause permutation of the direct two-cycle
-component.  The same local repair is now factored as the generic
+with matching enhanced same-support fallback wrappers.
+The enhanced same-support fallback branch now uses permutation-insensitive
+two-charge recovery before falling through to exhaustive bounded charge search:
+the exact-list recovery is certified to fail on the reversed direct two-cycle
+CNF, while the permutation-insensitive two-charge recovery is certified to
+accept every nonempty clause permutation of the direct two-cycle component.
+The same local repair is now factored as the generic
 `enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sameSupport`
 theorem for any generated true/false pair over one canonical support, assuming
 the ordinary one-block recognizer misses.  The production enhanced splitter is
@@ -195,9 +196,13 @@ the audited semantic path.  The component-bound theorem pair
 and
 `recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound`
 now instantiates that search with the component's own clause count for
-nonempty-support generated same-support components.  The remaining blocker is
+nonempty-support generated same-support components.  The production-shaped
+same-support fallback helper now wires that branch behind the legacy two-charge
+fast path, with guarded soundness and syntactic-upgrade theorems for every
+successful return.  The remaining blocker is
 deriving the charge multiplicities from arbitrary components, not supplying a
-safe bound in this generated lane.  The semantic charge-presence lemmas
+safe bound in this generated lane; the current search is still exhaustive, not
+an efficient reconstruction algorithm.  The semantic charge-presence lemmas
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`, and

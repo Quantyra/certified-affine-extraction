@@ -562,7 +562,11 @@ and
 `recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_componentBound`.
 This is still not arbitrary same-support recognition: this generated lane no
 longer needs an external bound, but the next discovery problem is deriving the
-charge multiplicities directly from arbitrary components.  The semantic
+charge multiplicities directly from arbitrary components.  The production-shaped
+same-support fallback branch now preserves the legacy two-charge fast path and,
+when that misses, invokes this exhaustive component-bound charge search.  This
+wires bounded unguided recovery into the enhanced splitter path; it is not a
+polynomial-time recovery claim.  The semantic
 charge-presence lane now proves that this multiplicity problem is not semantic
 strength:
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem` shows that
@@ -653,7 +657,8 @@ theorem for arbitrary same-support components.
 The enhanced fallback splitter covers the direct two-cycle CNF exactly,
 compacts to the direct two-equation GF(2) target, emits two compact equations,
 and leaves zero residual ordinary clauses.  The production enhanced fallback
-splitter now uses the permutation-insensitive two-charge recovery, so the
+splitter now uses a same-support branch that tries permutation-insensitive
+two-charge recovery first and then exhaustive bounded charge search, so the
 reversed direct two-cycle CNF is also certified residual-free as a concrete
 regression instance, with two compact equations, the same compact GF(2) target,
 expanded coverage up to `List.Perm`, and a combined
@@ -664,7 +669,9 @@ which proves the same production-path combined theorem for every nonempty
 clause permutation of the direct two-cycle CNF by showing that the permuted CNF
 still groups as one support component, the ordinary one-block recognizer still
 misses, and the permutation-insensitive fallback recovers the certified
-two-charge split.  It also has a
+two-charge split.  The broader branch also has soundness and syntactic-upgrade
+theorems for any successful return, but its charge-search fallback is still
+exhaustive.  It also has a
 generic clause-preservation theorem: at both the grouped and full-CNF splitter
 interfaces, the enhanced splitter's expanded CNF is a permutation of the input
 ordinary CNF.  This is a coverage invariant, not a residual-free completeness
@@ -728,8 +735,10 @@ groups as one support component,
 fails the ordinary one-block recognizer, and succeeds under the two-charge
 same-support recovery now satisfies
 `EnhancedSemanticExtractorCompleteOn` for the recovered compact GF(2) core.
-This is a conditional single-group fallback theorem, not arbitrary
-same-support completeness.  The direct two-cycle boundary now has a combined
+The production same-support branch additionally falls through to exhaustive
+bounded charge search when the two-charge path misses, but this is a
+conditional single-group fallback theorem, not arbitrary same-support
+completeness or efficient recovery.  The direct two-cycle boundary now has a combined
 `EnhancedSemanticExtractorCompleteOn` theorem: the semantic half comes from the
 declarative cycle class, while the executable half comes from the enhanced
 splitter's residual-free output and compact GF(2) core.  Combined with the
