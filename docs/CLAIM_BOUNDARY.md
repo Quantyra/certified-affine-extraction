@@ -589,7 +589,21 @@ helper via
 `semanticPreservation_of_recoverSameSupportGroupWithNonexhaustiveFallback`.
 `recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges`
 packages the same recovery, coverage, empty-residual, target-classification,
-and hidden-source GF(2) certificate for that helper itself.  The semantic
+and hidden-source GF(2) certificate for that helper itself.
+`recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_nonexhaustive`
+connects that no-search helper back to the public production fallback:
+whenever the helper succeeds, the production fallback returns the same object.
+`enhancedSemanticExtractorCompleteOn_of_singleGroupChargeSearchFallback` and
+`enhancedSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback`
+then lift successful single-group fallback recovery through the enhanced
+production splitter.  Finally,
+`enhancedSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport`
+packages the generated same-support case as a production-path enhanced
+extraction result, together with assignment-equivalence between the emitted
+compact core and the hidden generated GF(2) source.  This theorem still assumes
+a generated same-support presentation up to clause permutation and an ordinary
+one-block recognizer miss; it does not recognize arbitrary same-support CNF.
+The semantic
 charge-presence lane now proves that this multiplicity problem is not semantic
 strength:
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem` shows that

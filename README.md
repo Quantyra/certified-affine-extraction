@@ -507,7 +507,17 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   returns one with assignment-level semantic preservation.
   `AtomicClassBridge.recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges`
   packages the same returned-object certificate for the non-exhaustive helper
-  itself.
+  itself.  The production splitter now has the matching public-surface lift:
+  `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_nonexhaustive`
+  proves that any successful no-search helper result is exactly the production
+  fallback result,
+  `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback`
+  routes such a result through the enhanced splitter, and
+  `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport`
+  packages the generated same-support case as a production-path enhanced
+  extraction result whose emitted compact core is assignment-equivalent to the
+  hidden generated GF(2) source.  This still assumes a generated same-support
+  source up to clause permutation and an ordinary one-block recognizer miss.
 - `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`,

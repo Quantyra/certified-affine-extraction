@@ -7855,6 +7855,36 @@ theorem recoverSameSupportGroupWithNonexhaustiveFallback_toSyntacticOk
               simp [htwo, hdirect, hinferred] at hrec
 
 /--
+Any successful non-exhaustive same-support fallback is also the exact result
+returned by the production-shaped fallback.  The production fallback only
+consults bounded charge search after this non-exhaustive prefix fails.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_nonexhaustive
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec : recoverSameSupportGroupWithNonexhaustiveFallback? groupCNF = some d) :
+    recoverSameSupportGroupWithChargeSearchFallback? groupCNF = some d := by
+  unfold recoverSameSupportGroupWithNonexhaustiveFallback? at hrec
+  unfold recoverSameSupportGroupWithChargeSearchFallback?
+  cases htwo : recoverTwoChargeSameSupportGroupPerm? groupCNF with
+  | some dTwo =>
+      simp [htwo] at hrec
+      simpa [htwo] using hrec
+  | none =>
+      cases hdirect : recoverSameSupportGroupWithDirectChargeFallback? groupCNF with
+      | some dDirect =>
+          simp [htwo, hdirect] at hrec
+          simpa [htwo, hdirect] using hrec
+      | none =>
+          cases hinferred :
+              recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF with
+          | some dInferred =>
+              simp [htwo, hdirect, hinferred] at hrec
+              simpa [htwo, hdirect, hinferred] using hrec
+          | none =>
+              simp [htwo, hdirect, hinferred] at hrec
+
+/--
 Soundness for the production-shaped same-support recovery branch.  A returned
 decomposition covers the input component up to clause permutation and leaves no
 residual clauses.
@@ -11539,6 +11569,57 @@ theorem enhancedSemanticExtractorCompleteOn_of_singleGroupTwoChargeFallback
         hsplit hgf2)
 
 /--
+If a CNF groups as one merged support component, the ordinary one-block
+recognizer fails, and the production same-support fallback succeeds on that
+component, then the enhanced splitter satisfies the combined semantic/executable
+package for the recovered compact GF(2) core.
+-/
+theorem enhancedSemanticExtractorCompleteOn_of_singleGroupChargeSearchFallback
+    {m : Nat} {f : CNFModel.CNF m} {key : CanonicalClauseSupportKey}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hgroups : groupClausesByCanonicalSupport f = [(key, f)])
+    (hinfer : inferCanonicalParityBlock f = none)
+    (hrec : recoverSameSupportGroupWithChargeSearchFallback? f = some d) :
+    EnhancedSemanticExtractorCompleteOn f d.coreGF2 := by
+  have hres : d.residualCNF = [] :=
+    (recoverSameSupportGroupWithChargeSearchFallback_sound hrec).2
+  have hsplit :
+      splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback f =
+        { blocks := d.blocks, residualCNF := [] } := by
+    unfold splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback
+    rw [hgroups]
+    change
+      splitCanonicalSupportClauseGroupsWithTwoChargeFallback [(key, f)] =
+        { blocks := d.blocks, residualCNF := [] }
+    simp [splitCanonicalSupportClauseGroupsWithTwoChargeFallback,
+      hinfer, hrec, hres]
+  have hgf2 :
+      List.Perm (canonicalFingerprintRecognizedBlocksGF2 d.blocks) d.coreGF2 := by
+    simp [CanonicalFingerprintGF2Decomposition.coreGF2]
+  exact
+    enhancedSemanticExtractorCompleteOn_of_class
+      (class_of_recoverSameSupportGroupWithChargeSearchFallback hrec)
+      (enhancedExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithTwoChargeFallback
+        hsplit hgf2)
+
+/--
+The same single-group production-path theorem specialized to the
+non-exhaustive prefix.  This records that successful no-search same-support
+recovery is already wired through the public enhanced splitter.
+-/
+theorem enhancedSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback
+    {m : Nat} {f : CNFModel.CNF m} {key : CanonicalClauseSupportKey}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hgroups : groupClausesByCanonicalSupport f = [(key, f)])
+    (hinfer : inferCanonicalParityBlock f = none)
+    (hrec : recoverSameSupportGroupWithNonexhaustiveFallback? f = some d) :
+    EnhancedSemanticExtractorCompleteOn f d.coreGF2 :=
+  enhancedSemanticExtractorCompleteOn_of_singleGroupChargeSearchFallback
+    hgroups hinfer
+    (recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_nonexhaustive
+      hrec)
+
+/--
 Generic production-path theorem for the two-charge same-support fallback.  If a
 nonempty CNF is a clause permutation of the generated true/false parity
 expansions over one canonical support, and the ordinary one-block recognizer
@@ -11585,6 +11666,61 @@ theorem enhancedSemanticExtractorCompleteOn_of_perm_generatedParitySpecs_two_sam
     generatedParitySpecsFallbackDecomposition_coreGF2_eq
       [(vars, true), (vars, false)]
   simpa [hcore] using hmain
+
+/--
+Arbitrary generated same-support components have a production-path enhanced
+splitter certificate once the ordinary one-block recognizer misses them.  The
+result is stated around the emitted compact core `d.coreGF2`; a separate
+conjunct records assignment-equivalence between that canonicalized core and the
+hidden generated GF(2) source.
+
+This is the production-surface version of the no-search generated lane: the
+successful witness comes from `recoverSameSupportGroupWithNonexhaustiveFallback?`,
+and the enhanced splitter consumes the same result through its public fallback.
+-/
+theorem enhancedSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : vars ≠ [])
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ [])
+    (hinfer : inferCanonicalParityBlock target = none) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGroupWithNonexhaustiveFallback? target = some d /\
+        EnhancedSemanticExtractorCompleteOn target d.coreGF2 /\
+          ProductionSameSupportFallbackCoreGF2Target target d.coreGF2 /\
+            forall a : CNFModel.Assignment m,
+              ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 <->
+                ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                  (generatedParitySpecsGF2
+                    (generatedParitySpecsForSupportCharges vars charges)) := by
+  rcases
+    recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges
+      hvars hnormal hperm hnonempty with
+    ⟨d, hrec, _hcover, _hresidual, htarget, hgf2⟩
+  have hsame :
+      GeneratedParitySpecsSameSupportVars
+        (generatedParitySpecsForSupportCharges vars charges) vars :=
+    generatedParitySpecsForSupportCharges_sameSupport vars charges
+  have hgroups :
+      groupClausesByCanonicalSupport target =
+        [(GroupFrame.canonicalSupportKeyForVars vars, target)] :=
+    groupClausesByCanonicalSupport_eq_single_of_perm_generatedParitySpecs_sameSupport
+      hsame hnormal hperm hnonempty
+  exact
+    ⟨d, hrec,
+      enhancedSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback
+        (f := target)
+        (key := GroupFrame.canonicalSupportKeyForVars vars)
+        (d := d)
+        hgroups hinfer hrec,
+      htarget,
+      hgf2⟩
 
 /--
 The enhanced fallback splitter satisfies the combined semantic/enhanced-executable

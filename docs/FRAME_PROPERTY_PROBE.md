@@ -243,6 +243,17 @@ give the helper the same successful-return proof interface as the production
 fallback without mentioning bounded search.
 `recoverSameSupportGroupWithNonexhaustiveFallback_exists_certifiedCoreTarget_gf2Equiv_of_perm_supportCharges`
 packages the same returned-object certificate for the helper itself.  The
+bridge
+`recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_nonexhaustive`
+proves that successful no-search recovery is the exact result consumed by the
+production fallback, and
+`enhancedSemanticExtractorCompleteOn_of_singleGroupNonexhaustiveFallback`
+routes that object through the enhanced production splitter.  The generated
+same-support wrapper
+`enhancedSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport`
+now packages production-path enhanced extraction plus assignment-equivalence to
+the hidden generated GF(2) source under the generated same-support and
+one-block-miss hypotheses.  The
 remaining blocker is deriving charge
 multiplicities from arbitrary components; the current last-resort search is
 still exhaustive outside the generated lane, not an efficient reconstruction
