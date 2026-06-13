@@ -549,6 +549,12 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   production splitter now wires that formula through an inferred support-size
   direct branch after the older arity-three/four branch and before exhaustive
   charge-list enumeration.
+  `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges`
+  records the semantic consequence: the count-derived compact GF(2) target is
+  assignment-equivalent to the hidden generated charge source.
+  `AtomicClassBridge.recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize`
+  packages that hidden-source equivalence with success of the inferred
+  support-size direct branch, still before bounded charge-list search.
   This pins the open problem to discovering the exact split from CNF; neither
   the residual-free block target nor the compact GF(2) target loses
   multiplicity data once that split is supplied or recovered.

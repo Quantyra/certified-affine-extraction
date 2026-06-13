@@ -691,7 +691,15 @@ support-size branch validates exact generated coverage.  The stronger
 theorem records the whole production result as the first successful
 non-exhaustive branch under the generated same-support hypotheses.  It still
 does not recover charge identity or the per-charge multiplicity split inside an
-arbitrary component.  Any successful production fallback result now also
+arbitrary component.  The non-exhaustive generated lane also has a direct
+hidden-source GF(2) corollary:
+`gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges`
+proves the count-derived compact GF(2) target assignment-equivalent to the
+hidden generated charge source, and
+`recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize`
+packages that equivalence with inferred-branch success.  These theorems still
+assume a generated same-support source presentation up to permutation.  Any
+successful production fallback result now also
 transports through `class_of_recoverSameSupportGroupWithChargeSearchFallback`
 and
 `semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback`,

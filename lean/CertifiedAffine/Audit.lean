@@ -3244,6 +3244,17 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsGF2_forSupportCharges_eq_map
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsGF2_forSupportCharges_perm_of_charges_perm' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsGF2_forSupportCharges_perm_of_charges_perm
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem' depends on axioms: [propext,
  Quot.sound] -/
 #guard_msgs in
@@ -3507,6 +3518,12 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_of_directTargetCharges_supportSize
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithDirectChargeFallback_eq_some_of_directTargetCharges_arityThree' depends on axioms: [propext,
  Classical.choice,

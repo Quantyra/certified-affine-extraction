@@ -354,8 +354,14 @@ and older arity-three/four direct branch, while the generic theorem records the
 reusable proof obligation and the inferred support-size hook records the
 executable interface that consumes the uniform generated block-size theorem.
 The non-exhaustive production theorem records that this branch exhausts the
-production path for generated same-support components.  It still does not recover charge
-identity or per-charge multiplicity inside an arbitrary same-support component.
+production path for generated same-support components.
+`gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges`
+now records the branch's compact GF(2) target as assignment-equivalent to the
+hidden generated charge source, and
+`recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize`
+packages that semantic bridge with inferred-branch success.  It still does not
+recover charge identity or per-charge multiplicity inside an arbitrary
+same-support component.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

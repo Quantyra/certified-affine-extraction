@@ -2574,6 +2574,56 @@ theorem generatedParitySpecsGF2_forSupportCharges_eq_map
   rw [generatedParitySpecsGF2_eq_map]
   simp [generatedParitySpecsForSupportCharges, generatedParitySpecGF2]
 
+/-- Same-support generated GF(2) formulas are invariant under charge-list permutation. -/
+theorem generatedParitySpecsGF2_forSupportCharges_perm_of_charges_perm
+    {m : Nat} (vars : List (Fin m)) {charges1 charges2 : List Bool}
+    (hperm : List.Perm charges1 charges2) :
+    List.Perm
+      (generatedParitySpecsGF2
+        (generatedParitySpecsForSupportCharges vars charges1))
+      (generatedParitySpecsGF2
+        (generatedParitySpecsForSupportCharges vars charges2)) := by
+  rw [generatedParitySpecsGF2_forSupportCharges_eq_map,
+    generatedParitySpecsGF2_forSupportCharges_eq_map]
+  exact hperm.map (fun charge => parityClauseForVertex vars charge)
+
+/--
+For nonempty generated same-support components, the support-size-derived direct
+charge reconstruction emits a compact GF(2) formula assignment-equivalent to
+the hidden generated charge source.  This is the semantic form of the
+count-derived reconstruction theorem and does not use bounded charge-list
+enumeration.
+-/
+theorem gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : Not (vars = []))
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    forall a : CNFModel.Assignment m,
+      ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+        (generatedParitySpecsGF2
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target
+              (generatedParitySupportBlockSize vars)))) <->
+        ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+          (generatedParitySpecsGF2
+            (generatedParitySpecsForSupportCharges vars charges)) := by
+  intro a
+  have hdirectPerm :
+      List.Perm
+        (directSameSupportChargesFromTargetWithBlockSize vars target
+          (generatedParitySupportBlockSize vars))
+        charges :=
+    directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_supportSize
+      hvars hperm
+  exact
+    ParityEncoded.gf2Sat_iff_of_perm (a := a)
+      (generatedParitySpecsGF2_forSupportCharges_perm_of_charges_perm
+        vars hdirectPerm)
+
 /--
 The compact GF(2) RHS projection for generated same-support charges is exactly
 the input charge list.  Thus the compact generated core preserves charge
@@ -8185,6 +8235,42 @@ theorem recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_of_di
         exact clausesForVertex_length_eq_generatedParitySupportBlockSize
           (vars := vars) (charge := charge) hvars)
       hnormal hperm hnonempty
+
+/--
+The inferred support-size direct branch is not only successful on nonempty
+generated same-support components: its count-derived compact GF(2) target is
+assignment-equivalent to the hidden generated charge source.  This packages the
+non-exhaustive branch result without appealing to bounded charge-list search.
+-/
+theorem recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_gf2Equiv_of_perm_supportCharges_supportSize
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : Not (vars = []))
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSameSupportGroupWithDirectInferredBlockSizeFallback? target =
+        some (generatedParitySpecsFallbackDecomposition
+          (generatedParitySpecsForSupportCharges vars
+            (directSameSupportChargesFromTargetWithBlockSize vars target
+              (generatedParitySupportBlockSize vars)))) /\
+      forall a : CNFModel.Assignment m,
+        ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+          (generatedParitySpecsGF2
+            (generatedParitySpecsForSupportCharges vars
+              (directSameSupportChargesFromTargetWithBlockSize vars target
+                (generatedParitySupportBlockSize vars)))) <->
+          ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+            (generatedParitySpecsGF2
+              (generatedParitySpecsForSupportCharges vars charges)) := by
+  exact
+    ⟨recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_of_directTargetCharges_supportSize
+        hvars hnormal hperm hnonempty,
+      gf2Sat_generatedParitySpecsForSupportCharges_directTargetCharges_supportSize_iff_of_perm_supportCharges
+        hvars hperm⟩
 
 /--
 Arity-three direct same-support recovery succeeds using the charge list computed
