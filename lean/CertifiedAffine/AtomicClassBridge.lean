@@ -7239,6 +7239,57 @@ theorem recoverSameSupportGroupWithDirectChargeFallback_toSyntacticOk
     · simp [hthree, hfour] at hrec
 
 /--
+Block-size-parameterized direct same-support recovery branch.  The candidate
+support is still inferred from the component, but the caller supplies the
+single generated parity-block CNF size used for length quotienting.
+-/
+def recoverSameSupportGroupWithDirectBlockSizeFallback? {m : Nat}
+    (groupCNF : CNFModel.CNF m) (blockSize : Nat) :
+    Option (CanonicalFingerprintGF2Decomposition m) :=
+  let vars := parityCandidateCanonicalSupportFromBlock groupCNF
+  if blockSize = 0 then none
+  else
+    recoverSameSupportGeneratedParityChargesPerm? groupCNF
+      (directSameSupportChargesFromTargetWithBlockSize vars groupCNF blockSize)
+
+/--
+Soundness for the block-size-parameterized direct branch.  Any returned
+decomposition covers the input component up to clause permutation and leaves no
+residual clauses.
+-/
+theorem recoverSameSupportGroupWithDirectBlockSizeFallback_sound
+    {m : Nat} {groupCNF : CNFModel.CNF m} {blockSize : Nat}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGroupWithDirectBlockSizeFallback? groupCNF blockSize = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual := by
+  unfold recoverSameSupportGroupWithDirectBlockSizeFallback? at hrec
+  set vars := parityCandidateCanonicalSupportFromBlock groupCNF
+  by_cases hzero : blockSize = 0
+  · simp [hzero] at hrec
+  · simp [hzero] at hrec
+    rcases recoverSameSupportGeneratedParityChargesPerm_sound hrec with
+      ⟨hcover, hresidual, _hgf2⟩
+    exact ⟨hcover, hresidual⟩
+
+/--
+The block-size-parameterized direct branch returns syntactically upgradable
+blocks whenever it succeeds.
+-/
+theorem recoverSameSupportGroupWithDirectBlockSizeFallback_toSyntacticOk
+    {m : Nat} {groupCNF : CNFModel.CNF m} {blockSize : Nat}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGroupWithDirectBlockSizeFallback? groupCNF blockSize = some d) :
+    CanonicalBlocksToSyntacticOk d.blocks := by
+  unfold recoverSameSupportGroupWithDirectBlockSizeFallback? at hrec
+  set vars := parityCandidateCanonicalSupportFromBlock groupCNF
+  by_cases hzero : blockSize = 0
+  · simp [hzero] at hrec
+  · simp [hzero] at hrec
+    exact recoverSameSupportGeneratedParityChargesPerm_toSyntacticOk hrec
+
+/--
 Production-shaped same-support recovery branch.  It preserves the existing
 two-charge fast path, then tries direct arity-three/four count-derived
 recovery, and only then falls back to exhaustive bounded charge search using
@@ -7681,6 +7732,44 @@ theorem recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCh
   exact
     recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_perm_supportCharges
       hnormal hpermDirect hnonempty
+
+/--
+The block-size-parameterized production-shaped direct branch succeeds on a
+generated same-support component whenever callers certify the positive
+generated block size `k`.
+-/
+theorem recoverSameSupportGroupWithDirectBlockSizeFallback_eq_some_of_directTargetCharges_of_block_length
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    {k : Nat}
+    (hk : 0 < k)
+    (hlen :
+      forall charge : Bool, List.Mem charge charges ->
+        (clausesForVertex vars charge).length = k)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSameSupportGroupWithDirectBlockSizeFallback? target k =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target k))) := by
+  unfold recoverSameSupportGroupWithDirectBlockSizeFallback?
+  have hsame :
+      GeneratedParitySpecsSameSupportVars
+        (generatedParitySpecsForSupportCharges vars charges) vars :=
+    generatedParitySpecsForSupportCharges_sameSupport vars charges
+  have hsupport :
+      parityCandidateCanonicalSupportFromBlock target = vars :=
+    parityCandidateCanonicalSupportFromBlock_eq_of_perm_generatedParitySpecs_sameSupport
+      hsame hnormal hperm hnonempty
+  have hzero : Not (k = 0) := Nat.ne_of_gt hk
+  simp [hsupport, hzero]
+  exact
+    recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_of_block_length
+      hk hlen hnormal hperm hnonempty
 
 /--
 Arity-three direct same-support recovery succeeds using the charge list computed

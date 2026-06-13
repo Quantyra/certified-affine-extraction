@@ -249,8 +249,10 @@ The proof surface has also been factored through a block-size-generic direct
 recovery theorem: once a caller certifies a positive per-block generated CNF
 length `k`, the same quotient count and all-false fingerprint count recover a
 canonical charge representative without enumerating `chargeListsUpTo`.  The
-production branch still instantiates this only for the generated arity-three
-and arity-four cases.
+block-size-parameterized fallback hook now packages this at the
+production-shaped same-support interface, with returned-output soundness and
+syntactic-upgrade guards.  The public production branch still instantiates this
+only for the generated arity-three and arity-four cases.
 What remains open is extending the executable direct recovery lane beyond
 generated arity-three and arity-four components.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
@@ -301,7 +303,9 @@ block-size-generic
 `recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_of_block_length`
 and
 `recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_of_block_length`
-wrappers, together with the arity-specific
+wrappers, together with
+`recoverSameSupportGroupWithDirectBlockSizeFallback_eq_some_of_directTargetCharges_of_block_length`
+at the production-shaped same-support interface and the arity-specific
 `recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_*`
 plus
 `recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_*`
@@ -309,7 +313,8 @@ wrappers, prove that existing charge-guided recovery succeeds from it.  This
 replaces exhaustive `chargeListsUpTo` enumeration for generated arity-three and
 arity-four same-support components in the production path after the two-charge
 fast path, while the generic theorem records the reusable proof obligation for
-future block-size instances.  It still does not recover charge identity or per-charge
+future block-size instances and the new hook records the executable interface
+that can use those certificates.  It still does not recover charge identity or per-charge
 multiplicity inside an arbitrary same-support component.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized

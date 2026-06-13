@@ -660,7 +660,11 @@ block-size-generic
 `recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_of_block_length`
 and
 `recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_of_block_length`
-wrappers, together with the arity-specific
+wrappers, together with
+`recoverSameSupportGroupWithDirectBlockSizeFallback_sound`,
+`recoverSameSupportGroupWithDirectBlockSizeFallback_toSyntacticOk`, and
+`recoverSameSupportGroupWithDirectBlockSizeFallback_eq_some_of_directTargetCharges_of_block_length`
+at the production-shaped same-support interface, plus the arity-specific
 `recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_*`
 plus
 `recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_*`
@@ -782,10 +786,12 @@ The production same-support branch additionally tries direct arity-three/four
 count-derived recovery and then falls through to exhaustive bounded charge
 search when earlier branches miss.  The underlying direct theorem surface is now
 block-size-generic once a caller supplies a positive per-block length proof, but
-the production branch still instantiates only the arity-three/four cases.  This
-is a conditional single-group fallback theorem, not arbitrary same-support
-completeness or efficient arbitrary-CNF recovery.  The direct two-cycle boundary
-now has a combined
+the public production branch still instantiates only the arity-three/four cases.
+The separate block-size-parameterized direct hook exposes returned-output
+soundness, syntactic upgrade, and success for future callers that can certify
+that block size.  This is a conditional single-group fallback theorem, not
+arbitrary same-support completeness or efficient arbitrary-CNF recovery.  The
+direct two-cycle boundary now has a combined
 `EnhancedSemanticExtractorCompleteOn` theorem: the semantic half comes from the
 declarative cycle class, while the executable half comes from the enhanced
 splitter's residual-free output and compact GF(2) core.  Combined with the
@@ -998,5 +1004,7 @@ block-size-generic length accounting, this now yields direct count-derived
 recovery for generated same-support components whenever a positive per-block
 length certificate is available; the production splitter currently wires the
 arity-three and arity-four instances.  It is not a general CNF, arbitrary 3-SAT,
-or arbitrary same-support recovery algorithm; the next production task is
-extending the executable branch beyond generated arity-three/four components.
+or arbitrary same-support recovery algorithm; the new block-size-parameterized
+hook removes the hard-coded arity from the verified fallback interface, while
+the next production task is deriving or supplying such block-size certificates
+for executable branches beyond generated arity-three/four components.

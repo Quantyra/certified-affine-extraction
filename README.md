@@ -569,6 +569,9 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `AtomicClassBridge.directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_arityFour`,
   `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_of_block_length`,
   `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_of_block_length`,
+  `AtomicClassBridge.recoverSameSupportGroupWithDirectBlockSizeFallback_sound`,
+  `AtomicClassBridge.recoverSameSupportGroupWithDirectBlockSizeFallback_toSyntacticOk`,
+  `AtomicClassBridge.recoverSameSupportGroupWithDirectBlockSizeFallback_eq_some_of_directTargetCharges_of_block_length`,
   `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityThree`,
   `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityFour`,
   `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityThree`,
@@ -580,8 +583,12 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   permutation-equivalent to the hidden charge list whenever callers supply the
   positive per-block length proof; the arity-three and arity-four theorems are
   concrete instances.  The existing charge-guided recovery then succeeds
-  without `chargeListsUpTo` enumeration.  This is still generated-component
-  recovery, not arbitrary CNF or general 3-SAT recognition.
+  without `chargeListsUpTo` enumeration.  The new block-size-parameterized
+  fallback hook packages the same returned-output soundness, syntactic-upgrade,
+  and success theorem at the production-shaped same-support interface for any
+  caller-supplied positive block size.  This is still generated-component
+  recovery with a certified block-size premise, not arbitrary CNF or general
+  3-SAT recognition.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify
@@ -626,8 +633,11 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   package local same-support recovery as a production-shaped fallback splitter.
   The same-support branch first tries the legacy two-charge recovery, then the
   direct arity-three/four count-derived branch, and only then falls through to
-  exhaustive bounded charge search using the component length as the bound.  On
-  the direct two-cycle boundary it covers the CNF exactly, compacts
+  exhaustive bounded charge search using the component length as the bound.
+  Separately, the block-size-parameterized direct hook exposes the same direct
+  branch for future callers that can certify a positive generated block size;
+  the public splitter still wires only the arity-three/four instances.
+  On the direct two-cycle boundary it covers the CNF exactly, compacts
   to the direct two-equation GF(2) target, emits two compact equations, and
   leaves zero residual clauses.  The exact-list unguided recovery is proved to
   fail on the reversed direct two-cycle CNF, while the permutation-insensitive
