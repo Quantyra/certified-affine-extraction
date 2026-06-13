@@ -158,8 +158,10 @@ same-support recovery: the exact-list recovery is certified to fail on the
 reversed direct two-cycle CNF, while the permutation-insensitive recovery is
 certified to accept every nonempty clause permutation of the direct two-cycle
 component.  The production enhanced splitter is certified residual-free on the
-reversed boundary and preserves the input up to `List.Perm`; it also has the combined
-`EnhancedSemanticExtractorCompleteOn` theorem for the same compact GF(2) target.
+reversed boundary and preserves the input up to `List.Perm`; the stronger
+`enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle_of_perm`
+theorem lifts that production result to every nonempty clause permutation of
+the direct two-cycle CNF with the same compact GF(2) target.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

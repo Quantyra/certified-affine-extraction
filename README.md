@@ -419,6 +419,8 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_twoCycle_eq_generated`,
   `AtomicClassBridge.sameSupportTwoChargeCandidateSpecs_eq_generated_of_perm_twoCycle`,
   `AtomicClassBridge.recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_twoCycle`,
+  `AtomicClassBridge.groupClausesByCanonicalSupport_eq_single_of_perm_twoCycle`,
+  `AtomicClassBridge.inferCanonicalParityBlock_eq_none_of_perm_twoCycle`,
   `AtomicClassBridge.twoCycleSameSupportUnguidedDirectRecovery_eq_some`, and
   `AtomicClassBridge.twoCycleSameSupportUnguidedMergedSupportRecovery_isSome`:
   add the first unguided same-support recovery shape.  The recognizer infers the
@@ -515,6 +517,13 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   packages the reversed direct two-cycle boundary with the same combined
   `EnhancedSemanticExtractorCompleteOn` target, closing the concrete
   clause-order regression for the enhanced production splitter.
+- `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle_of_perm`:
+  generalizes that production-path boundary repair to every nonempty clause
+  permutation of the direct two-cycle CNF.  The theorem proves that the
+  permuted CNF still forms one support group, the ordinary one-block recognizer
+  still misses it, the permutation-insensitive fallback recovers the certified
+  two-charge split, and the enhanced splitter emits the same compact GF(2)
+  target with no residual clauses.
 - `AtomicClassBridge.enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula`:
   proves the combined semantic/enhanced-executable extraction theorem for
   every derived cycle with `1 < n`.  Nondegenerate cycles use the ordinary
@@ -987,7 +996,9 @@ one-block recognizer; on the direct two-cycle boundary it covers the CNF
 exactly, compacts to the direct two-equation GF(2) target, emits two equations,
 and leaves no residual clauses.  It also closes the reversed direct two-cycle
 boundary with the same compact target and a combined
-`EnhancedSemanticExtractorCompleteOn` theorem.  Residual-free
+`EnhancedSemanticExtractorCompleteOn` theorem; this is now subsumed by a
+production-path theorem for every nonempty clause permutation of that direct
+two-cycle CNF.  Residual-free
 enhanced fallback witnesses now compose under the same grouping-frame,
 clause-key-disjoint, and ordinary support-disjoint side-condition packages as
 the baseline splitter, so the fallback API is no longer only a single-instance

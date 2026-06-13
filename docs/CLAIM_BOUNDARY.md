@@ -529,7 +529,14 @@ splitter now uses the permutation-insensitive two-charge recovery, so the
 reversed direct two-cycle CNF is also certified residual-free as a concrete
 regression instance, with two compact equations, the same compact GF(2) target,
 expanded coverage up to `List.Perm`, and a combined
-`EnhancedSemanticExtractorCompleteOn` theorem.  It also has a
+`EnhancedSemanticExtractorCompleteOn` theorem.  That regression theorem is
+subsumed by
+`enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle_of_perm`,
+which proves the same production-path combined theorem for every nonempty
+clause permutation of the direct two-cycle CNF by showing that the permuted CNF
+still groups as one support component, the ordinary one-block recognizer still
+misses, and the permutation-insensitive fallback recovers the certified
+two-charge split.  It also has a
 generic clause-preservation theorem: at both the grouped and full-CNF splitter
 interfaces, the enhanced splitter's expanded CNF is a permutation of the input
 ordinary CNF.  This is a coverage invariant, not a residual-free completeness

@@ -5546,6 +5546,150 @@ theorem recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_twoCycle
   rw [recoverSameSupportGeneratedParitySpecsPerm_eq_some_of_perm hcover]
   simp [twoCycleSameSupportFallbackDecomposition, hcand]
 
+/-- The ordinary one-block canonical recognizer misses the direct two-cycle CNF. -/
+theorem inferCanonicalParityBlock_twoCycle_eq_none :
+    inferCanonicalParityBlock (TseitinCycleCNFFormula 2 (by decide)) = none := by
+  have hmiss :
+      (inferCanonicalParityBlock (TseitinCycleCNFFormula 2 (by decide))).isSome =
+        false := by
+    decide
+  cases h :
+      inferCanonicalParityBlock (TseitinCycleCNFFormula 2 (by decide)) with
+  | none =>
+      rfl
+  | some b =>
+      have hsome :
+          (inferCanonicalParityBlock
+            (TseitinCycleCNFFormula 2 (by decide))).isSome = true := by
+        simp [h]
+      rw [hmiss] at hsome
+      cases hsome
+
+/--
+Any nonempty clause permutation of the direct two-cycle CNF still groups as one
+canonical support component containing the whole permuted CNF.
+-/
+theorem groupClausesByCanonicalSupport_eq_single_of_perm_twoCycle
+    {target : CNFModel.CNF
+      (TseitinModel.GraphEncodingData.toGraph
+        (TseitinModel.encoding_cycle_derived 2 (by decide))).m}
+    (hperm : List.Perm target (TseitinCycleCNFFormula 2 (by decide)))
+    (hnonempty : target ≠ []) :
+    groupClausesByCanonicalSupport target =
+      [(GroupFrame.canonicalSupportKeyForVars
+          (parityCandidateCanonicalSupportFromBlock
+            (TseitinCycleCNFFormula 2 (by decide))),
+        target)] := by
+  let vars :=
+    parityCandidateCanonicalSupportFromBlock
+      (TseitinCycleCNFFormula 2 (by decide))
+  have hnormal : GroupFrame.VarsInCanonicalSupportOrder vars := by
+    dsimp [vars]
+    unfold GroupFrame.VarsInCanonicalSupportOrder
+    decide
+  cases htarget : target with
+  | nil =>
+      exact False.elim (hnonempty htarget)
+  | cons c tail =>
+      have hpermCons :
+          List.Perm (c :: tail)
+            (TseitinCycleCNFFormula 2 (by decide)) := by
+        simpa [htarget] using hperm
+      have htargetVars :
+          GroupFrame.CNFClausesHaveCanonicalSupportVars
+            (c :: tail) vars := by
+        simpa [vars] using
+          (GroupFrame.cnfClausesHaveCanonicalSupportVars_of_perm
+            (f := c :: tail)
+            (g := TseitinCycleCNFFormula 2 (by decide))
+            hpermCons
+            twoCycleCNF_clausesHaveCandidateSupportVars)
+      change
+        groupClausesByCanonicalSupport (c :: tail) =
+          [(GroupFrame.canonicalSupportKeyForVars vars, c :: tail)]
+      apply GroupFrame.groupClausesByCanonicalSupport_cons_eq_single_of_same_key
+      ·
+        have hcvars :
+            canonicalClauseSupportVars c = vars :=
+          htargetVars c (List.Mem.head tail)
+        rw [canonicalClauseSupportKey, GroupFrame.canonicalSupportKeyForVars,
+          hcvars, hnormal]
+      ·
+        intro d hd
+        have hdvars :
+            canonicalClauseSupportVars d = vars :=
+          htargetVars d (List.Mem.tail c hd)
+        rw [canonicalClauseSupportKey, GroupFrame.canonicalSupportKeyForVars,
+          hdvars, hnormal]
+
+/--
+The ordinary one-block canonical recognizer misses every nonempty clause
+permutation of the direct two-cycle CNF.
+-/
+theorem inferCanonicalParityBlock_eq_none_of_perm_twoCycle
+    {target : CNFModel.CNF
+      (TseitinModel.GraphEncodingData.toGraph
+        (TseitinModel.encoding_cycle_derived 2 (by decide))).m}
+    (hperm : List.Perm target (TseitinCycleCNFFormula 2 (by decide)))
+    (hnonempty : target ≠ []) :
+    inferCanonicalParityBlock target = none := by
+  let vars :=
+    parityCandidateCanonicalSupportFromBlock
+      (TseitinCycleCNFFormula 2 (by decide))
+  cases htarget : target with
+  | nil =>
+      exact False.elim (hnonempty htarget)
+  | cons c tail =>
+      cases hdirect :
+          TseitinCycleCNFFormula 2 (by decide) with
+      | nil =>
+          have hlen :
+              (TseitinCycleCNFFormula 2 (by decide)).length = 16 := by
+            decide
+          simp [hdirect] at hlen
+      | cons cd directTail =>
+          have hpermCons :
+              List.Perm (c :: tail) (cd :: directTail) := by
+            simpa [htarget, hdirect] using hperm
+          have htargetVars :
+              GroupFrame.CNFClausesHaveCanonicalSupportVars
+                (c :: tail) vars := by
+            simpa [vars, hdirect] using
+              (GroupFrame.cnfClausesHaveCanonicalSupportVars_of_perm
+                (f := c :: tail)
+                (g := TseitinCycleCNFFormula 2 (by decide))
+                (by simpa [htarget] using hperm)
+                twoCycleCNF_clausesHaveCandidateSupportVars)
+          have hdirectVars :
+              GroupFrame.CNFClausesHaveCanonicalSupportVars
+                (cd :: directTail) vars := by
+            simpa [vars, hdirect] using
+              twoCycleCNF_clausesHaveCandidateSupportVars
+          cases htargetInfer : inferCanonicalParityBlock (c :: tail) with
+          | none =>
+              simp [htarget, htargetInfer]
+          | some b =>
+              rcases
+                GroupFrame.inferCanonicalParityBlock_eq_some_of_perm_of_supportVars_cons
+                  (f := c :: tail)
+                  (g := cd :: directTail)
+                  (vars := vars)
+                  (cf := c)
+                  (cg := cd)
+                  (ftail := tail)
+                  (gtail := directTail)
+                  hpermCons.symm
+                  htargetVars
+                  hdirectVars
+                  rfl
+                  rfl
+                  htargetInfer with
+              ⟨bdirect, hdirectInfer, _hspec, _hblockPerm⟩
+              have hnoneDirect :
+                  inferCanonicalParityBlock (cd :: directTail) = none := by
+                simpa [hdirect] using inferCanonicalParityBlock_twoCycle_eq_none
+              simp [hnoneDirect] at hdirectInfer
+
 /-- Direct-CNF unguided recovery returns the certified two-cycle fallback. -/
 theorem twoCycleSameSupportUnguidedDirectRecovery_eq_some :
     twoCycleSameSupportUnguidedDirectRecovery? =
@@ -7099,6 +7243,55 @@ theorem enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle_reve
         simpa [CanonicalFingerprintGF2Decomposition.coreGF2] using
           twoCycleSameSupportTwoChargeFallbackSplitterReversed_coreGF2_eq
       exact hcore ▸ List.Perm.refl _
+
+/--
+The enhanced fallback splitter satisfies the combined semantic/enhanced
+executable package for every nonempty clause permutation of the direct
+two-cycle boundary.
+-/
+theorem enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle_of_perm
+    {target : CNFModel.CNF
+      (TseitinModel.GraphEncodingData.toGraph
+        (TseitinModel.encoding_cycle_derived 2 (by decide))).m}
+    (hperm : List.Perm target (TseitinCycleCNFFormula 2 (by decide)))
+    (hnonempty : target ≠ []) :
+    EnhancedSemanticExtractorCompleteOn
+      target
+      (TseitinParityFormulaFromEncoding
+        (TseitinModel.encoding_cycle_derived 2 (by decide)) cycleRootCharge) := by
+  let vars :=
+    parityCandidateCanonicalSupportFromBlock
+      (TseitinCycleCNFFormula 2 (by decide))
+  have hgroups :
+      groupClausesByCanonicalSupport target =
+        [(GroupFrame.canonicalSupportKeyForVars vars, target)] := by
+    simpa [vars] using
+      groupClausesByCanonicalSupport_eq_single_of_perm_twoCycle
+        hperm hnonempty
+  have hinfer :
+      inferCanonicalParityBlock target = none :=
+    inferCanonicalParityBlock_eq_none_of_perm_twoCycle
+      hperm hnonempty
+  have hrec :
+      recoverTwoChargeSameSupportGroupPerm? target =
+        some twoCycleSameSupportFallbackDecomposition :=
+    recoverTwoChargeSameSupportGroupPerm_eq_some_of_perm_twoCycle
+      hperm hnonempty
+  have hmain :
+      EnhancedSemanticExtractorCompleteOn
+        target
+        twoCycleSameSupportFallbackDecomposition.coreGF2 :=
+    enhancedSemanticExtractorCompleteOn_of_singleGroupTwoChargeFallback
+      (f := target)
+      (key := GroupFrame.canonicalSupportKeyForVars vars)
+      (d := twoCycleSameSupportFallbackDecomposition)
+      hgroups hinfer hrec
+  have hcore :
+      twoCycleSameSupportFallbackDecomposition.coreGF2 =
+        TseitinParityFormulaFromEncoding
+          (TseitinModel.encoding_cycle_derived 2 (by decide)) cycleRootCharge :=
+    twoCycleSameSupportFallbackDecomposition_coreGF2_eq
+  simpa [hcore] using hmain
 
 /--
 Every derived cycle with `1 < n` satisfies the combined semantic/enhanced
