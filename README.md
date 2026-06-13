@@ -472,8 +472,19 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   arity-three and arity-four lanes.  For arity three, component length is
   `charge_count * 4`; for arity four, it is `charge_count * 8`; both facts
   transport across clause permutation.  This lets component size determine the
-  total generated charge count in those lanes, while still not identifying the
-  charge values or per-charge multiplicities inside an arbitrary component.
+  total generated charge count in those lanes.  The quotient/divisibility
+  corollaries
+  `AtomicClassBridge.charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges`,
+  `AtomicClassBridge.charges_length_eq_target_length_div_eight_of_perm_generatedParitySpecsForSupportCharges`,
+  `AtomicClassBridge.target_length_mod_four_eq_zero_of_perm_generatedParitySpecsForSupportCharges`,
+  and
+  `AtomicClassBridge.target_length_mod_eight_eq_zero_of_perm_generatedParitySpecsForSupportCharges`
+  turn that accounting into exact arity-specific charge-count formulas, and the
+  `AtomicClassBridge.*_arityThreeExactBound` /
+  `AtomicClassBridge.*_arityFourExactBound` recovery theorems use
+  `target.length / 4` or `target.length / 8` as certified search bounds.  This
+  still does not identify the charge values or per-charge multiplicities inside
+  an arbitrary component.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify

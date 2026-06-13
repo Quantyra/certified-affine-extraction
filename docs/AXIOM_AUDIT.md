@@ -575,6 +575,14 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_mod_four_eq_zero_of_perm_generatedParitySpecsForSupportCharges` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.charges_length_eq_target_length_div_eight_of_perm_generatedParitySpecsForSupportCharges` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.target_length_mod_eight_eq_zero_of_perm_generatedParitySpecsForSupportCharges` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_arityThreeExactBound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityThreeExactBound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_disjoint_appendGroupRecognition` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_disjoint_appendGroupRecognition_toSyntacticOk_append` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_of_singleGroupRecognition_toSyntacticOk` | `propext`, `Classical.choice`, `Quot.sound` |

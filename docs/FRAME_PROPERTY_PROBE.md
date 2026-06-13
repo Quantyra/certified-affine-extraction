@@ -215,9 +215,22 @@ and
 `target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges`
 show that component length is `charge_count * 4` for arity three and
 `charge_count * 8` for arity four, transported across clause permutation.  This
-lets component size determine total generated charge count in those lanes, but
-still does not recover charge identity or per-charge multiplicity inside an
-arbitrary same-support component.
+lets component size determine total generated charge count in those lanes.  The
+quotient/divisibility corollaries
+`charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges`,
+`charges_length_eq_target_length_div_eight_of_perm_generatedParitySpecsForSupportCharges`,
+`target_length_mod_four_eq_zero_of_perm_generatedParitySpecsForSupportCharges`,
+and
+`target_length_mod_eight_eq_zero_of_perm_generatedParitySpecsForSupportCharges`
+then justify arity-specific exact recovery bounds, and the
+`recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_arityThreeExactBound`,
+`recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityThreeExactBound`,
+`recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound`,
+and
+`recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound`
+wrappers use `target.length / 4` or `target.length / 8` as the executable
+search bound.  This still does not recover charge identity or per-charge
+multiplicity inside an arbitrary same-support component.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized
 same-support recovery; they are no longer this class-level permutation lift.

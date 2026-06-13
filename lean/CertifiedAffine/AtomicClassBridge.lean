@@ -1678,6 +1678,90 @@ theorem target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForS
     (generatedParitySpecsForSupportCharges_cnf_length_of_vars_length_four
       (vars := vars) charges hlen)
 
+/--
+For arity-three same-support generated components, the component length quotient
+by four is exactly the generated charge-list length.
+-/
+theorem charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    charges.length = target.length / 4 := by
+  have htarget :=
+    target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges
+      (vars := vars) (charges := charges) (target := target) hlen hperm
+  calc
+    charges.length = (charges.length * 4) / 4 := by
+      exact (Nat.mul_div_left charges.length (by decide : 0 < 4)).symm
+    _ = target.length / 4 := by
+      simp [htarget]
+
+/--
+Arity-three same-support generated component lengths are divisible by four.
+-/
+theorem target_length_mod_four_eq_zero_of_perm_generatedParitySpecsForSupportCharges
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    target.length % 4 = 0 := by
+  have htarget :=
+    target_length_eq_charge_count_mul_four_of_perm_generatedParitySpecsForSupportCharges
+      (vars := vars) (charges := charges) (target := target) hlen hperm
+  rw [htarget]
+  exact Nat.mod_eq_zero_of_dvd (Nat.dvd_mul_left 4 charges.length)
+
+/--
+For arity-four same-support generated components, the component length quotient
+by eight is exactly the generated charge-list length.
+-/
+theorem charges_length_eq_target_length_div_eight_of_perm_generatedParitySpecsForSupportCharges
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    charges.length = target.length / 8 := by
+  have htarget :=
+    target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges
+      (vars := vars) (charges := charges) (target := target) hlen hperm
+  calc
+    charges.length = (charges.length * 8) / 8 := by
+      exact (Nat.mul_div_left charges.length (by decide : 0 < 8)).symm
+    _ = target.length / 8 := by
+      simp [htarget]
+
+/--
+Arity-four same-support generated component lengths are divisible by eight.
+-/
+theorem target_length_mod_eight_eq_zero_of_perm_generatedParitySpecsForSupportCharges
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    target.length % 8 = 0 := by
+  have htarget :=
+    target_length_eq_charge_count_mul_eight_of_perm_generatedParitySpecsForSupportCharges
+      (vars := vars) (charges := charges) (target := target) hlen hperm
+  rw [htarget]
+  exact Nat.mod_eq_zero_of_dvd (Nat.dvd_mul_left 8 charges.length)
+
 /-- The compact GF(2) formula for same-support charges is just the charge map. -/
 theorem generatedParitySpecsGF2_forSupportCharges_eq_map
     {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
@@ -6479,6 +6563,110 @@ theorem recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_suppo
       hnormal hperm hnonempty
       (charges_length_le_of_perm_generatedParitySpecsForSupportCharges
         hvars hperm)
+
+/--
+For arity-three same-support generated components, the exact component quotient
+`target.length / 4` is a certified charge-search bound.
+-/
+theorem recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_arityThreeExactBound
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGeneratedParityChargeSearchPerm?
+          target (target.length / 4) =
+        some d := by
+  exact
+    recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges
+      hnormal hperm hnonempty
+      (Nat.le_of_eq
+        (charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges
+          (vars := vars) (charges := charges) (target := target) hlen hperm))
+
+/--
+The same arity-three quotient bound lifts through the canonical support grouping
+wrapper for a single merged same-support component.
+-/
+theorem recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityThreeExactBound
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 3)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSingleMergedSupportGroupFromChargeSearchPerm?
+          (groupClausesByCanonicalSupport target) (target.length / 4) =
+        some d := by
+  exact
+    recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges
+      hnormal hperm hnonempty
+      (Nat.le_of_eq
+        (charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges
+          (vars := vars) (charges := charges) (target := target) hlen hperm))
+
+/--
+For arity-four same-support generated components, the exact component quotient
+`target.length / 8` is a certified charge-search bound.
+-/
+theorem recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGeneratedParityChargeSearchPerm?
+          target (target.length / 8) =
+        some d := by
+  exact
+    recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges
+      hnormal hperm hnonempty
+      (Nat.le_of_eq
+        (charges_length_eq_target_length_div_eight_of_perm_generatedParitySpecsForSupportCharges
+          (vars := vars) (charges := charges) (target := target) hlen hperm))
+
+/--
+The same arity-four quotient bound lifts through the canonical support grouping
+wrapper for a single merged same-support component.
+-/
+theorem recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hlen : vars.length = 4)
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSingleMergedSupportGroupFromChargeSearchPerm?
+          (groupClausesByCanonicalSupport target) (target.length / 8) =
+        some d := by
+  exact
+    recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges
+      hnormal hperm hnonempty
+      (Nat.le_of_eq
+        (charges_length_eq_target_length_div_eight_of_perm_generatedParitySpecsForSupportCharges
+          (vars := vars) (charges := charges) (target := target) hlen hperm))
 
 /--
 Unguided recovery for the one-merged-support-group boundary shape.  Other group

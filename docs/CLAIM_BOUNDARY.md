@@ -574,8 +574,23 @@ and
 show that arity-three same-support generated components have length
 `charge_count * 4`, arity-four components have length `charge_count * 8`, and
 both facts transport across clause permutation.  Thus component length
-determines total generated charge count in these lanes, but not charge identity
-or the per-charge multiplicity split inside an arbitrary component.  The unguided
+determines total generated charge count in these lanes.  The quotient and
+divisibility corollaries
+`charges_length_eq_target_length_div_four_of_perm_generatedParitySpecsForSupportCharges`,
+`charges_length_eq_target_length_div_eight_of_perm_generatedParitySpecsForSupportCharges`,
+`target_length_mod_four_eq_zero_of_perm_generatedParitySpecsForSupportCharges`,
+and
+`target_length_mod_eight_eq_zero_of_perm_generatedParitySpecsForSupportCharges`
+make that count executable as `target.length / 4` or `target.length / 8`, and
+the arity-specific exact-bound recovery wrappers
+`recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_arityThreeExactBound`,
+`recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityThreeExactBound`,
+`recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound`,
+and
+`recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound`
+use those quotients as certified charge-search bounds.  This still does not
+recover charge identity or the per-charge multiplicity split inside an
+arbitrary component.  The unguided
 two-charge probe
 infers the canonical support from that component, tries both charge orders,
 proves residual-free component coverage for any returned decomposition, proves
