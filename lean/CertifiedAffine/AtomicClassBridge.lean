@@ -2422,6 +2422,41 @@ def directSameSupportChargesFromTargetWithBlockSize {m : Nat}
     (allFalseFingerprintCount vars target)
 
 /--
+The generated one-block CNF size inferred from support arity.  Empty support is
+mapped to zero so executable direct-recovery callers keep rejecting that edge
+case through the existing positive-block-size guard.
+-/
+def generatedParitySupportBlockSize {m : Nat} (vars : List (Fin m)) : Nat :=
+  if vars = [] then 0 else 2 ^ (vars.length - 1)
+
+/-- Nonempty generated support has the expected inferred block size. -/
+theorem generatedParitySupportBlockSize_eq_pow_pred_of_vars_ne_empty
+    {m : Nat} {vars : List (Fin m)}
+    (hvars : Not (vars = [])) :
+    generatedParitySupportBlockSize vars = 2 ^ (vars.length - 1) := by
+  simp [generatedParitySupportBlockSize, hvars]
+
+/-- The inferred generated block size is positive for every nonempty support. -/
+theorem generatedParitySupportBlockSize_pos_of_vars_ne_empty
+    {m : Nat} {vars : List (Fin m)}
+    (hvars : Not (vars = [])) :
+    0 < generatedParitySupportBlockSize vars := by
+  rw [generatedParitySupportBlockSize_eq_pow_pred_of_vars_ne_empty hvars]
+  exact Nat.pow_pos (by decide : 0 < 2)
+
+/--
+For nonempty generated support, the inferred block-size function matches the
+actual generated CNF size of either charge.
+-/
+theorem clausesForVertex_length_eq_generatedParitySupportBlockSize
+    {m : Nat} {vars : List (Fin m)} {charge : Bool}
+    (hvars : Not (vars = [])) :
+    (clausesForVertex vars charge).length =
+      generatedParitySupportBlockSize vars := by
+  rw [generatedParitySupportBlockSize_eq_pow_pred_of_vars_ne_empty hvars]
+  exact clausesForVertex_length_eq_pow_pred_of_vars_ne_empty hvars
+
+/--
 For any positive certified block size `k`, the direct count-derived charge list
 is permutation-equivalent to the hidden charge list.  The arity-specific
 theorems below are instances of this block-size-generic statement.
@@ -2503,6 +2538,32 @@ theorem directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportChar
       (vars := vars) (charges := charges) (target := target) hperm
   rw [hlenCharges.symm, htrueCount]
   exact canonicalSupportChargesFromCounts_perm charges
+
+/--
+For any nonempty generated support, the support-size-derived direct charge list
+is permutation-equivalent to the hidden charge list.
+-/
+theorem directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_supportSize
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : Not (vars = []))
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    List.Perm
+      (directSameSupportChargesFromTargetWithBlockSize vars target
+        (generatedParitySupportBlockSize vars))
+      charges := by
+  exact
+    directSameSupportChargesFromTargetWithBlockSize_perm_of_perm_supportCharges_of_block_length
+      (vars := vars) (charges := charges) (target := target)
+      (generatedParitySupportBlockSize_pos_of_vars_ne_empty hvars)
+      (by
+        intro charge _hmem
+        exact clausesForVertex_length_eq_generatedParitySupportBlockSize
+          (vars := vars) (charge := charge) hvars)
+      hperm
 
 /-- The compact GF(2) formula for same-support charges is just the charge map. -/
 theorem generatedParitySpecsGF2_forSupportCharges_eq_map
@@ -7290,10 +7351,46 @@ theorem recoverSameSupportGroupWithDirectBlockSizeFallback_toSyntacticOk
     exact recoverSameSupportGeneratedParityChargesPerm_toSyntacticOk hrec
 
 /--
+Direct same-support recovery branch whose block size is inferred from the
+candidate support arity.  It is still guarded by the block-size fallback's
+zero-size check, so empty inferred support is rejected before recovery.
+-/
+def recoverSameSupportGroupWithDirectInferredBlockSizeFallback? {m : Nat}
+    (groupCNF : CNFModel.CNF m) :
+    Option (CanonicalFingerprintGF2Decomposition m) :=
+  let vars := parityCandidateCanonicalSupportFromBlock groupCNF
+  recoverSameSupportGroupWithDirectBlockSizeFallback? groupCNF
+    (generatedParitySupportBlockSize vars)
+
+/-- Soundness for the inferred-block-size direct branch. -/
+theorem recoverSameSupportGroupWithDirectInferredBlockSizeFallback_sound
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF = some d) :
+    List.Perm d.expandedCNF groupCNF /\ d.hasEmptyResidual := by
+  unfold recoverSameSupportGroupWithDirectInferredBlockSizeFallback? at hrec
+  exact recoverSameSupportGroupWithDirectBlockSizeFallback_sound hrec
+
+/--
+The inferred-block-size direct branch returns syntactically upgradable blocks
+whenever it succeeds.
+-/
+theorem recoverSameSupportGroupWithDirectInferredBlockSizeFallback_toSyntacticOk
+    {m : Nat} {groupCNF : CNFModel.CNF m}
+    {d : CanonicalFingerprintGF2Decomposition m}
+    (hrec :
+      recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF = some d) :
+    CanonicalBlocksToSyntacticOk d.blocks := by
+  unfold recoverSameSupportGroupWithDirectInferredBlockSizeFallback? at hrec
+  exact recoverSameSupportGroupWithDirectBlockSizeFallback_toSyntacticOk hrec
+
+/--
 Production-shaped same-support recovery branch.  It preserves the existing
 two-charge fast path, then tries direct arity-three/four count-derived
-recovery, and only then falls back to exhaustive bounded charge search using
-the component length as the search bound.
+recovery, then the support-size-derived direct branch, and only then falls back
+to exhaustive bounded charge search using the component length as the search
+bound.
 -/
 def recoverSameSupportGroupWithChargeSearchFallback? {m : Nat}
     (groupCNF : CNFModel.CNF m) :
@@ -7304,8 +7401,11 @@ def recoverSameSupportGroupWithChargeSearchFallback? {m : Nat}
       match recoverSameSupportGroupWithDirectChargeFallback? groupCNF with
       | some d => some d
       | none =>
-          if groupCNF = [] then none
-          else recoverSameSupportGeneratedParityChargeSearchPerm? groupCNF groupCNF.length
+          match recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF with
+          | some d => some d
+          | none =>
+              if groupCNF = [] then none
+              else recoverSameSupportGeneratedParityChargeSearchPerm? groupCNF groupCNF.length
 
 /--
 Soundness for the production-shaped same-support recovery branch.  A returned
@@ -7330,13 +7430,22 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_sound
           cases hrec
           exact recoverSameSupportGroupWithDirectChargeFallback_sound hdirect
       | none =>
-          by_cases hempty : groupCNF = []
-          · subst groupCNF
-            simp [htwo, hdirect] at hrec
-          · simp [htwo, hdirect, hempty] at hrec
-            rcases recoverSameSupportGeneratedParityChargeSearchPerm_sound hrec with
-              ⟨_charges, _hmem, hcover, hresidual, _hgf2⟩
-            exact ⟨hcover, hresidual⟩
+          cases hinferred :
+              recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF with
+          | some dInferred =>
+              simp [htwo, hdirect, hinferred] at hrec
+              cases hrec
+              exact
+                recoverSameSupportGroupWithDirectInferredBlockSizeFallback_sound
+                  hinferred
+          | none =>
+              by_cases hempty : groupCNF = []
+              · subst groupCNF
+                simp [htwo, hdirect, hinferred] at hrec
+              · simp [htwo, hdirect, hinferred, hempty] at hrec
+                rcases recoverSameSupportGeneratedParityChargeSearchPerm_sound hrec with
+                  ⟨_charges, _hmem, hcover, hresidual, _hgf2⟩
+                exact ⟨hcover, hresidual⟩
 
 /--
 The production-shaped same-support recovery branch returns syntactically
@@ -7360,11 +7469,20 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_toSyntacticOk
           cases hrec
           exact recoverSameSupportGroupWithDirectChargeFallback_toSyntacticOk hdirect
       | none =>
-          by_cases hempty : groupCNF = []
-          · subst groupCNF
-            simp [htwo, hdirect] at hrec
-          · simp [htwo, hdirect, hempty] at hrec
-            exact recoverSameSupportGeneratedParityChargeSearchPerm_toSyntacticOk hrec
+          cases hinferred :
+              recoverSameSupportGroupWithDirectInferredBlockSizeFallback? groupCNF with
+          | some dInferred =>
+              simp [htwo, hdirect, hinferred] at hrec
+              cases hrec
+              exact
+                recoverSameSupportGroupWithDirectInferredBlockSizeFallback_toSyntacticOk
+                  hinferred
+          | none =>
+              by_cases hempty : groupCNF = []
+              · subst groupCNF
+                simp [htwo, hdirect, hinferred] at hrec
+              · simp [htwo, hdirect, hinferred, hempty] at hrec
+                exact recoverSameSupportGeneratedParityChargeSearchPerm_toSyntacticOk hrec
 
 /--
 For a nonempty clause permutation of two generated parity specs over the same
@@ -7772,6 +7890,46 @@ theorem recoverSameSupportGroupWithDirectBlockSizeFallback_eq_some_of_directTarg
       hk hlen hnormal hperm hnonempty
 
 /--
+The inferred-block-size direct branch succeeds on any nonempty generated
+same-support component. The generated one-block CNF size is derived from the
+support arity, so no arity-three/four specialization or bounded charge-list
+enumeration is used in this theorem.
+-/
+theorem recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_of_directTargetCharges_supportSize
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : Not (vars = []))
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = [])) :
+    recoverSameSupportGroupWithDirectInferredBlockSizeFallback? target =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target
+            (generatedParitySupportBlockSize vars)))) := by
+  unfold recoverSameSupportGroupWithDirectInferredBlockSizeFallback?
+  have hsame :
+      GeneratedParitySpecsSameSupportVars
+        (generatedParitySpecsForSupportCharges vars charges) vars :=
+    generatedParitySpecsForSupportCharges_sameSupport vars charges
+  have hsupport :
+      parityCandidateCanonicalSupportFromBlock target = vars :=
+    parityCandidateCanonicalSupportFromBlock_eq_of_perm_generatedParitySpecs_sameSupport
+      hsame hnormal hperm hnonempty
+  rw [hsupport]
+  exact
+    recoverSameSupportGroupWithDirectBlockSizeFallback_eq_some_of_directTargetCharges_of_block_length
+      (generatedParitySupportBlockSize_pos_of_vars_ne_empty hvars)
+      (by
+        intro charge _hmem
+        exact clausesForVertex_length_eq_generatedParitySupportBlockSize
+          (vars := vars) (charge := charge) hvars)
+      hnormal hperm hnonempty
+
+/--
 Arity-three direct same-support recovery succeeds using the charge list computed
 from target length and all-false fingerprint count.  No bounded charge-list
 enumeration is used in this theorem.
@@ -8030,6 +8188,35 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetC
   simp [htwo, hdirect]
 
 /--
+The production-shaped same-support fallback uses the inferred support-size
+direct branch before exhaustive charge-list enumeration. This theorem records
+the generic nonempty generated-support path when the two-charge fast path and
+the older arity-three/four direct branch both miss.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_eq_some_of_directTargetCharges_supportSize_of_twoCharge_none_of_directCharge_none
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : Not (vars = []))
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : Not (target = []))
+    (htwo : recoverTwoChargeSameSupportGroupPerm? target = none)
+    (hdirect : recoverSameSupportGroupWithDirectChargeFallback? target = none) :
+    recoverSameSupportGroupWithChargeSearchFallback? target =
+      some (generatedParitySpecsFallbackDecomposition
+        (generatedParitySpecsForSupportCharges vars
+          (directSameSupportChargesFromTargetWithBlockSize vars target
+            (generatedParitySupportBlockSize vars)))) := by
+  unfold recoverSameSupportGroupWithChargeSearchFallback?
+  have hinferred :=
+    recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_of_directTargetCharges_supportSize
+      hvars hnormal hperm hnonempty
+  simp [htwo, hdirect, hinferred]
+
+/--
 Bounded charge-search recovery succeeds whenever the component is a
 same-support generated parity expansion whose true charge list is within the
 search bound.
@@ -8122,8 +8309,9 @@ theorem recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_support
 /--
 For nonempty generated same-support components, the production-shaped
 same-support branch succeeds: either the legacy two-charge fast path accepts,
-or the direct arity-three/four branch accepts, or the exhaustive charge-search
-fallback finds the generated charge list within the component-length bound.
+the direct arity-three/four branch accepts, the inferred block-size branch
+accepts, or the exhaustive charge-search fallback finds the generated charge
+list within the component-length bound.
 -/
 theorem recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCharges_componentBound
     {m : Nat} {vars : List (Fin m)}
@@ -8147,10 +8335,15 @@ theorem recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCh
       | some d =>
           exact ⟨d, by simp [htwo, hdirect]⟩
       | none =>
-          have hsearch :=
-            recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound
-              hvars hnormal hperm hnonempty
-          simpa [htwo, hdirect, hnonempty] using hsearch
+          cases hinferred :
+              recoverSameSupportGroupWithDirectInferredBlockSizeFallback? target with
+          | some d =>
+              exact ⟨d, by simp [htwo, hdirect, hinferred]⟩
+          | none =>
+              have hsearch :=
+                recoverSameSupportGeneratedParityChargeSearchPerm_exists_of_perm_supportCharges_componentBound
+                  hvars hnormal hperm hnonempty
+              simpa [htwo, hdirect, hinferred, hnonempty] using hsearch
 
 /--
 The same component-derived bound lifts through the canonical support grouping

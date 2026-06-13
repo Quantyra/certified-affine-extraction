@@ -478,8 +478,9 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   external bound in this generated lane, but it still does not infer the charge
   multiplicities directly from an arbitrary component.  The production-shaped
   fallback branch now keeps the legacy two-charge fast path, then tries direct
-  arity-three/four count-derived recovery, leaving this exhaustive
-  component-bound charge search as the last resort when both earlier branches
+  arity-three/four count-derived recovery, then tries the inferred support-size
+  direct branch for any nonempty generated support, leaving exhaustive
+  component-bound charge search as the last resort when those earlier branches
   miss.
 - `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
@@ -532,9 +533,10 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   representative without exhaustive charge enumeration.  The base generator now
   proves the uniform nonempty block-size formula
   `clausesForVertex_length_eq_pow_pred_of_vars_ne_empty`, namely
-  `2^(vars.length - 1)` clauses for support arity `vars.length`; the production
-  splitter currently wires the generated arity-three and arity-four instances
-  `k = 4` and `k = 8`.
+  `2^(vars.length - 1)` clauses for support arity `vars.length`.  The
+  production splitter now wires that formula through an inferred support-size
+  direct branch after the older arity-three/four branch and before exhaustive
+  charge-list enumeration.
   This pins the open problem to discovering the exact split from CNF; neither
   the residual-free block target nor the compact GF(2) target loses
   multiplicity data once that split is supplied or recovered.
@@ -587,20 +589,21 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `AtomicClassBridge.recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_arityFour`,
   `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityThree`,
   and
-  `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityFour`:
+  `AtomicClassBridge.recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_arityFour`,
+  plus
+  `AtomicClassBridge.recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_of_directTargetCharges_supportSize`:
   build the canonical charge representative directly from
   `target.length / blockSize` and the all-false fingerprint count.  In the
   block-size-generic form, that representative is proved
   permutation-equivalent to the hidden charge list whenever callers supply or
-  derive the positive per-block length proof; the arity-three and arity-four
-  theorems are concrete production-wired instances.  The existing charge-guided
-  recovery then succeeds without `chargeListsUpTo` enumeration.  The
-  block-size-parameterized
-  fallback hook packages the same returned-output soundness, syntactic-upgrade,
-  and success theorem at the production-shaped same-support interface for any
-  certified positive block size.  This is still generated-component recovery
-  with a certified block-size premise, not arbitrary CNF or general 3-SAT
-  recognition.
+  derive the positive per-block length proof; the inferred support-size branch
+  derives that proof from the uniform generated block-size theorem for every
+  nonempty generated support.  The existing charge-guided recovery then succeeds
+  without `chargeListsUpTo` enumeration.  The block-size-parameterized fallback
+  hook packages the same returned-output soundness, syntactic-upgrade, and
+  success theorem at the production-shaped same-support interface for any
+  certified positive block size.  This is still generated-component recovery,
+  not arbitrary CNF or general 3-SAT recognition.
 - `AtomicClassBridge.twoCycleSameSupportDirectRecovery_eq_some`,
   `AtomicClassBridge.twoCycleCanonicalSupportGroups_length`, and
   `AtomicClassBridge.twoCycleSameSupportMergedSupportRecovery_isSome`: certify
@@ -644,11 +647,11 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   and `AtomicClassBridge.twoCycleSameSupportTwoChargeFallbackSplitter_*`:
   package local same-support recovery as a production-shaped fallback splitter.
   The same-support branch first tries the legacy two-charge recovery, then the
-  direct arity-three/four count-derived branch, and only then falls through to
+  direct arity-three/four count-derived branch, then an inferred support-size
+  direct branch for nonempty generated supports, and only then falls through to
   exhaustive bounded charge search using the component length as the bound.
-  Separately, the block-size-parameterized direct hook exposes the same direct
-  branch for future callers that can certify a positive generated block size;
-  the public splitter still wires only the arity-three/four instances.
+  The block-size-parameterized direct hook remains available for callers that
+  want to certify a positive generated block size explicitly.
   On the direct two-cycle boundary it covers the CNF exactly, compacts
   to the direct two-equation GF(2) target, emits two compact equations, and
   leaves zero residual clauses.  The exact-list unguided recovery is proved to
@@ -1207,10 +1210,11 @@ two-cycle component.  Its permutation-insensitive variant succeeds for every
 nonempty clause permutation of that direct component, with the reversed
 component as the concrete regression theorem.  A production-shaped fallback
 splitter now wires that permutation-insensitive local probe after the existing
-one-block recognizer, followed by the direct arity-three/four count-derived
-branch and then bounded exhaustive search; on the direct two-cycle boundary it
-covers the CNF exactly, compacts to the direct two-equation GF(2) target, emits
-two equations, and leaves no residual clauses.  It also closes the reversed direct two-cycle
+one-block recognizer, followed by direct arity-three/four count-derived
+recovery, inferred support-size direct recovery, and then bounded exhaustive
+search; on the direct two-cycle boundary it covers the CNF exactly, compacts to
+the direct two-equation GF(2) target, emits two equations, and leaves no
+residual clauses.  It also closes the reversed direct two-cycle
 boundary with the same compact target and a combined
 `EnhancedSemanticExtractorCompleteOn` theorem; this is now subsumed by a
 production-path theorem for every nonempty clause permutation of that direct

@@ -154,8 +154,9 @@ and
 `AtomicClassBridge.semanticExtractorCompleteOn_of_clausePermutedRecognizedClass_perm`,
 with matching enhanced same-support fallback wrappers.
 The enhanced same-support fallback branch now uses permutation-insensitive
-two-charge recovery, then direct arity-three/four count-derived recovery, before
-falling through to exhaustive bounded charge search:
+two-charge recovery, then direct arity-three/four count-derived recovery, then
+inferred support-size direct recovery, before falling through to exhaustive
+bounded charge search:
 the exact-list recovery is certified to fail on the reversed direct two-cycle
 CNF, while the permutation-insensitive two-charge recovery is certified to
 accept every nonempty clause permutation of the direct two-cycle component.
@@ -199,11 +200,12 @@ and
 now instantiates that search with the component's own clause count for
 nonempty-support generated same-support components.  The production-shaped
 same-support fallback helper now tries the direct arity-three/four
-count-derived branch behind the legacy two-charge fast path, with guarded
-soundness and syntactic-upgrade theorems for every successful return, before
-falling back to exhaustive search.  The remaining blocker is deriving charge
-multiplicities from arbitrary components; the current last-resort search is
-still exhaustive, not an efficient reconstruction algorithm for arbitrary CNF.
+count-derived branch behind the legacy two-charge fast path, then an inferred
+support-size direct branch, with guarded soundness and syntactic-upgrade
+theorems for every successful return, before falling back to exhaustive search.
+The remaining blocker is deriving charge multiplicities from arbitrary
+components; the current last-resort search is still exhaustive, not an
+efficient reconstruction algorithm for arbitrary CNF.
 The semantic charge-presence lemmas
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
@@ -244,21 +246,22 @@ bridge proves that a true-charge block clause with the all-false canonical
 fingerprint is exactly the generated all-false clause, and the exact
 single-block count theorem proves that each true-charge block contributes
 exactly one all-false fingerprint.  This exact merged count is now used in the
-production direct branch for generated arity-three and arity-four components.
+production direct branch for generated arity-three and arity-four components,
+and in the inferred support-size branch for nonempty generated supports.
 The proof surface has also been factored through a block-size-generic direct
 recovery theorem: once a caller certifies a positive per-block generated CNF
 length `k`, the same quotient count and all-false fingerprint count recover a
 canonical charge representative without enumerating `chargeListsUpTo`.  The
 block-size-parameterized fallback hook now packages this at the
 production-shaped same-support interface, with returned-output soundness and
-syntactic-upgrade guards.  The public production branch still instantiates this
-only for the generated arity-three and arity-four cases.  The base generator
-now proves the missing uniform block-size fact:
+syntactic-upgrade guards.  The public production branch now also instantiates
+this through the inferred support-size branch.  The base generator proves the
+uniform block-size fact:
 `clausesForVertex_length_eq_pow_pred_of_vars_ne_empty` derives
 `2^(vars.length - 1)` clauses for every nonempty generated support, via
 `allAssignments_length` and `allAssignments_countP_parity_eq_succ`.
-What remains open is extending the executable direct recovery lane beyond
-generated arity-three and arity-four components.
+What remains open is extending efficient direct recovery beyond the generated
+same-support setting to arbitrary same-support components.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`
@@ -317,13 +320,12 @@ at the production-shaped same-support interface and the arity-specific
 plus
 `recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_*`
 wrappers, prove that existing charge-guided recovery succeeds from it.  This
-replaces exhaustive `chargeListsUpTo` enumeration for generated arity-three and
-arity-four same-support components in the production path after the two-charge
-fast path, while the generic theorem records the reusable proof obligation for
-future block-size instances and the new hook records the executable interface
-that can use those certificates.  That proof obligation is now discharged for
-single generated blocks by support arity; production branches beyond arity
-three/four remain to be instantiated.  It still does not recover charge
+replaces exhaustive `chargeListsUpTo` enumeration for nonempty generated
+same-support components in the production path after the two-charge fast path
+and older arity-three/four direct branch, while the generic theorem records the
+reusable proof obligation and the inferred support-size hook records the
+executable interface that consumes the uniform generated block-size theorem.
+It still does not recover charge
 identity or per-charge multiplicity inside an arbitrary same-support component.
 The remaining theorem-forming obligations are arbitrary declarative-class
 completeness, stronger bounded-overlap/function-level framing, and generalized

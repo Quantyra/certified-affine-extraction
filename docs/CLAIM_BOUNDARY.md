@@ -568,11 +568,12 @@ This is still not arbitrary same-support recognition: this generated lane no
 longer needs an external bound, but the next discovery problem is deriving the
 charge multiplicities directly from arbitrary components.  The production-shaped
 same-support fallback branch now preserves the legacy two-charge fast path and,
-when that misses, tries direct arity-three/four count-derived recovery before
-falling back to exhaustive component-bound charge search.  This wires the
-non-enumerative generated lane into the enhanced splitter path while retaining
-bounded exhaustive search as a last resort; it is not a polynomial-time
-recovery claim for arbitrary same-support CNF.  The semantic
+when that misses, tries direct arity-three/four count-derived recovery and then
+an inferred support-size direct branch before falling back to exhaustive
+component-bound charge search.  This wires the non-enumerative generated lane
+into the enhanced splitter path while retaining bounded exhaustive search as a
+last resort; it is not a polynomial-time recovery claim for arbitrary
+same-support CNF.  The semantic
 charge-presence lane now proves that this multiplicity problem is not semantic
 strength:
 `gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem` shows that
@@ -668,18 +669,23 @@ wrappers, together with
 `recoverSameSupportGroupWithDirectBlockSizeFallback_sound`,
 `recoverSameSupportGroupWithDirectBlockSizeFallback_toSyntacticOk`, and
 `recoverSameSupportGroupWithDirectBlockSizeFallback_eq_some_of_directTargetCharges_of_block_length`
-at the production-shaped same-support interface, plus the arity-specific
+at the production-shaped same-support interface, plus
+`recoverSameSupportGroupWithDirectInferredBlockSizeFallback_eq_some_of_directTargetCharges_supportSize`
+for the inferred support-size branch and the arity-specific
 `recoverSameSupportGeneratedParityChargesPerm_eq_some_of_directTargetCharges_*`
 plus
 `recoverSingleMergedSupportGroupFromChargesPerm_eq_some_of_directTargetCharges_*`
 wrappers, prove recovery success from that direct list.  The production helper
 `recoverSameSupportGroupWithDirectChargeFallback?` now packages this direct
 branch, its soundness and syntactic-upgrade theorems, and its arity-three/four
-success wrappers; `recoverSameSupportGroupWithChargeSearchFallback?` tries that
-direct branch after the two-charge fast path and before exhaustive
-`chargeListsUpTo` search.  This avoids exhaustive charge-list enumeration for
-generated arity-three and arity-four same-support components, but it still does
-not recover charge identity or the per-charge multiplicity split inside an
+success wrappers; `recoverSameSupportGroupWithDirectInferredBlockSizeFallback?`
+derives the positive generated block size from the recovered support arity; and
+`recoverSameSupportGroupWithChargeSearchFallback?` tries that inferred branch
+after the two-charge fast path and direct arity-three/four branch, before
+exhaustive `chargeListsUpTo` search.  This avoids exhaustive charge-list
+enumeration for nonempty generated same-support components when the inferred
+support-size branch validates exact generated coverage, but it still does not
+recover charge identity or the per-charge multiplicity split inside an
 arbitrary component.  The unguided
 two-charge probe
 infers the canonical support from that component, tries both charge orders,
@@ -709,7 +715,8 @@ compacts to the direct two-equation GF(2) target, emits two compact equations,
 and leaves zero residual ordinary clauses.  The production enhanced fallback
 splitter now uses a same-support branch that tries permutation-insensitive
 two-charge recovery first, direct arity-three/four count-derived recovery
-second, and exhaustive bounded charge search last, so the
+second, inferred support-size direct recovery third, and exhaustive bounded
+charge search last, so the
 reversed direct two-cycle CNF is also certified residual-free as a concrete
 regression instance, with two compact equations, the same compact GF(2) target,
 expanded coverage up to `List.Perm`, and a combined
@@ -787,13 +794,15 @@ fails the ordinary one-block recognizer, and succeeds under the two-charge
 same-support recovery now satisfies
 `EnhancedSemanticExtractorCompleteOn` for the recovered compact GF(2) core.
 The production same-support branch additionally tries direct arity-three/four
-count-derived recovery and then falls through to exhaustive bounded charge
-search when earlier branches miss.  The underlying direct theorem surface is now
-block-size-generic once a caller supplies a positive per-block length proof, but
-the public production branch still instantiates only the arity-three/four cases.
-The separate block-size-parameterized direct hook exposes returned-output
-soundness, syntactic upgrade, and success for future callers that can certify
-that block size.  This is a conditional single-group fallback theorem, not
+count-derived recovery, then an inferred support-size direct branch, and then
+falls through to exhaustive bounded charge search when earlier branches miss.
+The underlying direct theorem surface is block-size-generic once a caller
+supplies a positive per-block length proof, and the production path now derives
+that proof from the uniform generated block-size theorem for nonempty generated
+supports.  The separate block-size-parameterized direct hook still exposes
+returned-output soundness, syntactic upgrade, and success for callers that want
+to certify that block size explicitly.  This is a conditional single-group
+fallback theorem, not
 arbitrary same-support completeness or efficient arbitrary-CNF recovery.  The
 direct two-cycle boundary now has a combined
 `EnhancedSemanticExtractorCompleteOn` theorem: the semantic half comes from the
@@ -1008,9 +1017,10 @@ block-size-generic length accounting and the new uniform
 `clausesForVertex_length_eq_pow_pred_of_vars_ne_empty` theorem, this now yields
 direct count-derived recovery for generated same-support components whenever
 the relevant positive per-block length is certified from the support arity or
-otherwise supplied; the production splitter currently wires the arity-three and
-arity-four instances.  It is not a general CNF, arbitrary 3-SAT, or arbitrary
+otherwise supplied; the production splitter now wires the inferred support-size
+branch for nonempty generated supports after the older arity-three/four branch.
+It is not a general CNF, arbitrary 3-SAT, or arbitrary
 same-support recovery algorithm; the new block-size-parameterized hook removes
-the hard-coded arity from the verified fallback interface, while the next
-production task is using the uniform generated block-size theorem to instantiate
-executable branches beyond generated arity-three/four components.
+the hard-coded arity from the verified fallback interface, and the inferred
+support-size branch consumes the uniform generated block-size theorem in the
+executable production path.
