@@ -223,6 +223,13 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   strengthens the true-charge block witness from existence to exact
   multiplicity: a generated true-charge block contains exactly one all-false
   clause fingerprint.
+- `AtomicClassBridge.allFalseClauseFingerprint_count_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_eq_true_count`:
+  sums that exact single-block contribution across a merged generated
+  same-support component: the merged all-false fingerprint count equals the
+  hidden true-charge multiplicity.
+- `AtomicClassBridge.allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_supportCharges`:
+  transports the exact merged count across clause permutations of the generated
+  same-support component.
 - `AtomicClassBridge.canonicalBlockFingerprint_clausesForVertex_true_false_ne_of_allFalseFingerprint_not_mem`:
   reduces generated true/false block-fingerprint separation to absence of that
   all-false fingerprint from the generated false-charge block.
@@ -508,16 +515,16 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   fingerprint, a CNF-side witness rather than a GF(2) semantic fact.  Before
   the split is known, the merged same-support CNF already exposes true-charge
   presence through that fingerprint, and this presence signal transports across
-  clause permutation.  The merged fingerprint count also lower-bounds the
-  true-charge multiplicity and transports across clause permutation.  This is
-  a lower-bound theorem, not exact merged multiplicity reconstruction.  The
-  new all-false row and clause uniqueness bridge proves that the all-false
-  fingerprint has a unique generated source inside a true-charge block, and
-  the single-block count theorem proves that each true-charge block contributes
-  exactly one such fingerprint.  This removes the local counting ambiguity
-  needed for direct count reconstruction but does not yet sum that exact count
-  across merged same-support components or replace exhaustive charge search
-  with an efficient recovery algorithm.
+  clause permutation.  The merged fingerprint count now exactly equals
+  true-charge multiplicity for generated same-support components, and that
+  exact count transports across clause permutation.  The all-false row and
+  clause uniqueness bridge proves that the all-false fingerprint has a unique
+  generated source inside a true-charge block, the single-block count theorem
+  proves that each true-charge block contributes exactly one such fingerprint,
+  and the merged-count theorem sums those contributions across the component.
+  This removes the local counting ambiguity needed for direct count
+  reconstruction, but it does not yet replace exhaustive charge search with an
+  efficient recovery algorithm.
   This pins the open problem to discovering the exact split from CNF; neither
   the residual-free block target nor the compact GF(2) target loses
   multiplicity data once that split is supplied or recovered.

@@ -231,16 +231,19 @@ then proves that the all-false fingerprint count lower-bounds the true-charge
 multiplicity before a split is known, with
 `allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges`
 transporting the bound across clause permutation.  This moves the charge
-witness one layer earlier and makes it quantitative, but it is still only a
-lower bound, not exact multiplicity reconstruction.  The row-enumeration
-lemmas now prove the all-false row is unique in `allAssignments`, and the
-fingerprint bridge proves that a true-charge block clause with the all-false
-canonical fingerprint is exactly the generated all-false clause.  That removes
-one local ambiguity for a future direct count reconstruction.  The exact
-single-block count theorem now proves that each true-charge block contributes
-exactly one all-false fingerprint.  What remains open is summing that exact
-single-block count across a merged same-support component and using it to
-replace exhaustive charge search.
+witness one layer earlier and makes it quantitative.  The exact refinement
+`allFalseClauseFingerprint_count_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_eq_true_count`
+proves that the merged generated count is exactly the true-charge
+multiplicity, with
+`allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_supportCharges`
+transporting the exact count across clause permutation.  The row-enumeration
+lemmas prove the all-false row is unique in `allAssignments`, the fingerprint
+bridge proves that a true-charge block clause with the all-false canonical
+fingerprint is exactly the generated all-false clause, and the exact
+single-block count theorem proves that each true-charge block contributes
+exactly one all-false fingerprint.  What remains open is using this exact
+merged count to replace exhaustive charge search with an efficient recovery
+path.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`

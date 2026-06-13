@@ -3215,10 +3215,20 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_eq_true_count' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_eq_true_count
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges' depends on axioms: [propext,
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_supportCharges' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_supportCharges
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_signals_eq' depends on axioms: [propext,
  Quot.sound] -/

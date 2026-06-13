@@ -380,11 +380,11 @@ affine-structure extraction from CNF.
   appears in the charge list.  The theorem also transports across clause
   permutation of the generated component.  This is a CNF-side presence signal,
   not exact charge-multiplicity recovery.
-- A v0.2 merged same-support count lower bound: the all-false fingerprint count
-  in a generated same-support component lower-bounds the number of hidden
-  true-charge blocks, and the bound transports across clause permutation.  This
-  is deliberately a lower bound, not exact split or multiplicity
-  reconstruction.
+- A v0.2 merged same-support count theorem: the all-false fingerprint count in
+  a generated same-support component exactly equals the number of hidden
+  true-charge blocks, and the exact count transports across clause permutation.
+  This is exact multiplicity for generated components, not an efficient
+  arbitrary-CNF split or recovery algorithm.
 - A v0.2 list-level recognizer-to-class bridge: canonical-fingerprint block
   lists with per-block permutation certificates and append-disjoint supports
   instantiate `ParityEncoded.Class` over
@@ -598,9 +598,14 @@ The count refinement
 proves that the all-false fingerprint count in the merged generated component
 lower-bounds the number of true charges, and
 `allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges`
-transports that bound across clause permutations.  This proves a pre-split
-true-charge lower-bound signal; it does not recover exact true-charge
-multiplicity or the hidden split.
+transports that bound across clause permutations.  The exact refinement
+`allFalseClauseFingerprint_count_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_eq_true_count`
+proves that the merged generated count is exactly the true-charge
+multiplicity, and
+`allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_supportCharges`
+transports that exact count across clause permutations.  This proves exact
+multiplicity for generated same-support components; it does not recover the
+hidden split for arbitrary CNF or replace exhaustive charge search.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`
@@ -945,6 +950,7 @@ enhanced residual-free splitter for the `n = 2` boundary.  The all-false row is
 now proved unique in the generated Boolean rows, and the all-false canonical
 fingerprint is proved to identify exactly that generated clause inside a
 true-charge block.  A true-charge generated block is also now proved to
-contribute exactly one all-false fingerprint.  This is a foundation for direct
-multiplicity reconstruction; it is not yet an exact merged-count theorem or an
-efficient same-support recovery algorithm.
+contribute exactly one all-false fingerprint, and the merged generated count is
+now proved to equal the hidden true-charge multiplicity.  This is a foundation
+for direct multiplicity reconstruction, but it is not yet an efficient
+same-support recovery algorithm.

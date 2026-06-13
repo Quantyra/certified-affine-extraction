@@ -603,7 +603,9 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_mem_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_iff_true_mem` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_eq_true_count` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_supportCharges` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_signals_eq` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_count_true` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.canonicalBlocksFromGeneratedParitySpecs_forSupportCharges_allFalseFingerprint_count_false` | `propext`, `Quot.sound` |

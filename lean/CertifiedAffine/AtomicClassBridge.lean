@@ -1961,9 +1961,8 @@ theorem allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_sup
 
 /--
 On a merged same-support generated CNF, the all-false clause-fingerprint count
-lower-bounds the true-charge multiplicity.  This is intentionally only a lower
-bound: it does not assert exact recovery of every hidden block from the merged
-fingerprint multiset.
+lower-bounds the true-charge multiplicity.  The exact count theorem below
+strengthens this compatibility lemma.
 -/
 theorem allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges
     {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
@@ -1991,6 +1990,39 @@ theorem allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_genera
         omega
 
 /--
+On a merged same-support generated CNF, the all-false clause-fingerprint count
+is exactly the true-charge multiplicity.  This is the direct merged-component
+counterpart of the single-block exact count theorem.
+-/
+theorem allFalseClauseFingerprint_count_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_eq_true_count
+    {m : Nat} (vars : List (Fin m)) (charges : List Bool) :
+    (canonicalBlockFingerprint
+      (generatedParitySpecsCNF
+        (generatedParitySpecsForSupportCharges vars charges))).count
+      (canonicalClauseFingerprint
+        (clauseForAssignment vars (List.replicate vars.length false))) =
+      charges.count true := by
+  induction charges with
+  | nil =>
+      unfold canonicalBlockFingerprint
+      rw [sortClauseFingerprints_count_eq]
+      simp [generatedParitySpecsForSupportCharges, generatedParitySpecsCNF]
+  | cons charge charges ih =>
+      rw [generatedParitySpecsCNF_forSupportCharges_cons]
+      rw [canonicalBlockFingerprint_count_append]
+      cases charge
+      case false =>
+        have hfalse :=
+          allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_false
+            vars
+        simpa [hfalse] using ih
+      case true =>
+        have htrue :=
+          allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_true_eq_one
+            vars
+        simp [htrue, ih, Nat.add_comm]
+
+/--
 The merged-CNF all-false fingerprint count lower bound is invariant under
 clause permutation of the generated same-support component.
 -/
@@ -2014,6 +2046,32 @@ theorem allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_suppor
   rw [hfingerprint]
   exact
     allFalseClauseFingerprint_count_true_le_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges
+      vars charges
+
+/--
+The exact merged-CNF all-false fingerprint count is invariant under clause
+permutation of the generated same-support component.
+-/
+theorem allFalseClauseFingerprint_count_targetFingerprint_eq_true_count_of_perm_supportCharges
+    {m : Nat} {vars : List (Fin m)} {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges))) :
+    (canonicalBlockFingerprint target).count
+      (canonicalClauseFingerprint
+        (clauseForAssignment vars (List.replicate vars.length false))) =
+      charges.count true := by
+  have hfingerprint :
+      canonicalBlockFingerprint target =
+        canonicalBlockFingerprint
+          (generatedParitySpecsCNF
+            (generatedParitySpecsForSupportCharges vars charges)) :=
+    canonicalBlockFingerprint_eq_of_perm hperm
+  rw [hfingerprint]
+  exact
+    allFalseClauseFingerprint_count_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_eq_true_count
       vars charges
 
 /--
