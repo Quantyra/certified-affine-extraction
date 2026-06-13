@@ -489,6 +489,11 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   `AtomicClassBridge.class_of_recoverSameSupportGroupWithChargeSearchFallback`
   and to per-assignment CNF/GF(2) preservation via
   `AtomicClassBridge.semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback`.
+  The generated component theorem now bundles those facts directly:
+  `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_class_of_perm_supportCharges_componentBound`
+  returns a production fallback result with a `ParityEncoded.Class` witness, and
+  `AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_semanticPreservation_of_perm_supportCharges_componentBound`
+  returns one with assignment-level semantic preservation.
 - `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_forall_mem`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_eraseDups`,
   `AtomicClassBridge.gf2Sat_generatedParitySpecsForSupportCharges_iff_charge_presence`,

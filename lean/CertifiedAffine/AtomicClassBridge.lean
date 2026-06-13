@@ -9771,6 +9771,65 @@ theorem semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback
     (class_of_recoverSameSupportGroupWithChargeSearchFallback hrec) a
 
 /--
+For nonempty generated same-support components, the production same-support
+fallback returns a decomposition that carries a local semantic class witness.
+This packages the generated success theorem with the returned-output class
+bridge.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_exists_class_of_perm_supportCharges_componentBound
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : vars ≠ [])
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGroupWithChargeSearchFallback? target = some d /\
+        ParityEncoded.Class m target d.coreGF2 := by
+  rcases
+    recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCharges_componentBound
+      hvars hnormal hperm hnonempty with
+    ⟨d, hrec⟩
+  exact
+    ⟨d, hrec,
+      class_of_recoverSameSupportGroupWithChargeSearchFallback hrec⟩
+
+/--
+For nonempty generated same-support components, the production same-support
+fallback returns a compact core that is assignment-equivalent to the source
+component.
+-/
+theorem recoverSameSupportGroupWithChargeSearchFallback_exists_semanticPreservation_of_perm_supportCharges_componentBound
+    {m : Nat} {vars : List (Fin m)}
+    {charges : List Bool}
+    {target : CNFModel.CNF m}
+    (hvars : vars ≠ [])
+    (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+    (hperm :
+      List.Perm target
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges vars charges)))
+    (hnonempty : target ≠ []) :
+    exists d : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGroupWithChargeSearchFallback? target = some d /\
+        forall a : CNFModel.Assignment m,
+          CNFModel.cnfSat a target <->
+            ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a d.coreGF2 := by
+  rcases
+    recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCharges_componentBound
+      hvars hnormal hperm hnonempty with
+    ⟨d, hrec⟩
+  exact
+    ⟨d, hrec,
+      fun a =>
+        semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback
+          hrec a⟩
+
+/--
 When the support groups for a CNF are all recognized, the emitted canonical
 blocks cover exactly the original CNF up to clause permutation.
 -/

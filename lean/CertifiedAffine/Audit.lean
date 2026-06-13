@@ -3177,6 +3177,18 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_of_perm_supportCharges_componentBound
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_class_of_perm_supportCharges_componentBound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_class_of_perm_supportCharges_componentBound
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_semanticPreservation_of_perm_supportCharges_componentBound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSameSupportGroupWithChargeSearchFallback_exists_semanticPreservation_of_perm_supportCharges_componentBound
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsGF2_forSupportCharges_eq_map' depends on axioms: [propext,
  Quot.sound] -/
 #guard_msgs in

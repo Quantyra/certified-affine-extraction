@@ -206,6 +206,11 @@ theorems for every successful return, before falling back to exhaustive search.
 The successful production fallback path now also has guarded semantic bridges:
 `class_of_recoverSameSupportGroupWithChargeSearchFallback` and
 `semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback`.
+For nonempty generated same-support components, the wrapper theorems
+`recoverSameSupportGroupWithChargeSearchFallback_exists_class_of_perm_supportCharges_componentBound`
+and
+`recoverSameSupportGroupWithChargeSearchFallback_exists_semanticPreservation_of_perm_supportCharges_componentBound`
+bundle production success with those semantic witnesses directly.
 The deterministic
 `recoverSameSupportGroupWithChargeSearchFallback_eq_nonexhaustive_of_perm_supportCharges`
 theorem now proves that nonempty generated same-support components never need

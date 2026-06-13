@@ -696,7 +696,12 @@ transports through `class_of_recoverSameSupportGroupWithChargeSearchFallback`
 and
 `semanticPreservation_of_recoverSameSupportGroupWithChargeSearchFallback`,
 which state the local `ParityEncoded.Class` witness and per-assignment
-CNF/GF(2) preservation for the returned compact core.  The unguided
+CNF/GF(2) preservation for the returned compact core.  The generated
+component-level wrappers
+`recoverSameSupportGroupWithChargeSearchFallback_exists_class_of_perm_supportCharges_componentBound`
+and
+`recoverSameSupportGroupWithChargeSearchFallback_exists_semanticPreservation_of_perm_supportCharges_componentBound`
+package the same result without exposing the branch case split.  The unguided
 two-charge probe
 infers the canonical support from that component, tries both charge orders,
 proves residual-free component coverage for any returned decomposition, proves
