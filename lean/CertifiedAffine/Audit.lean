@@ -88,6 +88,18 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.TseitinCycleGF2NormalizationSurface_resourceCounts
 
+/-- info: 'CertifiedAffine.TseitinCNFData.allAssignments_nodup' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.allAssignments_nodup
+
+/-- info: 'CertifiedAffine.TseitinCNFData.allAssignments_count_replicate_false' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.allAssignments_count_replicate_false
+
+/-- info: 'CertifiedAffine.TseitinCNFData.boolList_eq_replicate_false_of_true_not_mem' does not depend on any axioms -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.boolList_eq_replicate_false_of_true_not_mem
+
 /-- info: 'CertifiedAffine.TseitinCNFData.mem_clausesForVertex_imp_exists_bad_row' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.mem_clausesForVertex_imp_exists_bad_row
@@ -3168,6 +3180,16 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.one_le_allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_true
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.row_eq_replicate_false_of_canonicalClauseFingerprint_eq_allFalse' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.row_eq_replicate_false_of_canonicalClauseFingerprint_eq_allFalse
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.clause_eq_allFalse_of_mem_clausesForVertex_true_and_fingerprint_eq' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.clause_eq_allFalse_of_mem_clausesForVertex_true_and_fingerprint_eq
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsCNF_forSupportCharges_cons' depends on axioms: [propext] -/
 #guard_msgs in

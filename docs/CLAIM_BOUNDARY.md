@@ -941,4 +941,9 @@ class-to-extractor completeness theorem or bounded-overlap/function-level frame
 theorem for graph encodings, fresh-key analysis on graph families beyond cycles
 and `circulant12`, plus generalization of the executable same-support recovery
 theorem that now finds the already-certified fallback blocks and powers an
-enhanced residual-free splitter for the `n = 2` boundary.
+enhanced residual-free splitter for the `n = 2` boundary.  The all-false row is
+now proved unique in the generated Boolean rows, and the all-false canonical
+fingerprint is proved to identify exactly that generated clause inside a
+true-charge block.  This is a foundation for direct multiplicity reconstruction;
+it is not yet an exact merged-count theorem or an efficient same-support
+recovery algorithm.

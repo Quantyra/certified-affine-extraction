@@ -28,6 +28,9 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.TseitinCycleCNFFormula_length` | `propext`, `Classical.choice`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.TseitinParityFormulaFromEncoding_length` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.TseitinCycleGF2NormalizationSurface_resourceCounts` | `propext`, `Classical.choice`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.allAssignments_nodup` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.allAssignments_count_replicate_false` | `propext` |
+| `CertifiedAffine.TseitinCNFData.boolList_eq_replicate_false_of_true_not_mem` | none |
 | `CertifiedAffine.TseitinCNFData.mem_clausesForVertex_imp_exists_bad_row` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.NatListLexLEProp` | none |
 | `CertifiedAffine.TseitinCNFData.natListLexLE_eq_decide_prop` | `propext` |
@@ -593,6 +596,8 @@ Current guarded declarations:
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_signal_clausesForVertex_eq_charge` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_false` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.one_le_allFalseClauseFingerprint_count_canonicalBlockFingerprint_clausesForVertex_true` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.row_eq_replicate_false_of_canonicalClauseFingerprint_eq_allFalse` | `propext`, `Quot.sound` |
+| `CertifiedAffine.TseitinCNFData.AtomicClassBridge.clause_eq_allFalse_of_mem_clausesForVertex_true_and_fingerprint_eq` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.generatedParitySpecsCNF_forSupportCharges_cons` | `propext` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_mem_canonicalBlockFingerprint_generatedParitySpecsCNF_forSupportCharges_iff_true_mem` | `propext`, `Quot.sound` |
 | `CertifiedAffine.TseitinCNFData.AtomicClassBridge.allFalseClauseFingerprint_mem_targetFingerprint_iff_true_mem_of_perm_supportCharges` | `propext`, `Quot.sound` |

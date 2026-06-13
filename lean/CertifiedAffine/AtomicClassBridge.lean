@@ -537,6 +537,64 @@ theorem one_le_allFalseClauseFingerprint_count_canonicalBlockFingerprint_clauses
       (allFalseClauseFingerprint_mem_canonicalBlockFingerprint_clausesForVertex_true
         vars))
 
+/--
+Within one generated parity block, the all-false canonical fingerprint can only
+come from the all-false row.
+-/
+theorem row_eq_replicate_false_of_canonicalClauseFingerprint_eq_allFalse
+    {m : Nat} {vars : List (Fin m)} {bs : List Bool}
+    (hlen : bs.length = vars.length)
+    (hfp :
+      canonicalClauseFingerprint (clauseForAssignment vars bs) =
+        canonicalClauseFingerprint
+          (clauseForAssignment vars (List.replicate vars.length false))) :
+    bs = List.replicate vars.length false := by
+  have hnot : Not (List.Mem true bs) := by
+    intro htrue
+    cases exists_evenLiteralAtom_mem_canonicalClauseFingerprint_clauseForAssignment
+        (vars := vars) (bs := bs) hlen htrue with
+    | intro v heven =>
+        have hallFalseMem :
+            List.Mem (2 * v.val)
+              (canonicalClauseFingerprint
+                (clauseForAssignment vars (List.replicate vars.length false))) := by
+          simpa [hfp] using heven
+        exact evenLiteralAtom_not_mem_canonicalClauseFingerprint_allFalse
+          vars v hallFalseMem
+  have hrow := boolList_eq_replicate_false_of_true_not_mem bs hnot
+  calc
+    bs = List.replicate bs.length false := hrow
+    _ = List.replicate vars.length false := by rw [hlen]
+
+/--
+The all-false fingerprint identifies the all-false generated clause in a
+true-charge parity block.
+-/
+theorem clause_eq_allFalse_of_mem_clausesForVertex_true_and_fingerprint_eq
+    {m : Nat} {vars : List (Fin m)} {c : CNFModel.Clause m}
+    (hmem : List.Mem c (clausesForVertex vars true))
+    (hfp :
+      canonicalClauseFingerprint c =
+        canonicalClauseFingerprint
+          (clauseForAssignment vars (List.replicate vars.length false))) :
+    c = clauseForAssignment vars (List.replicate vars.length false) := by
+  cases mem_clausesForVertex_imp_exists_bad_row hmem with
+  | intro bs hwit =>
+      cases hwit with
+      | intro hlen hrest =>
+          cases hrest with
+          | intro _hbad hc =>
+              have hfp' :
+                  canonicalClauseFingerprint (clauseForAssignment vars bs) =
+                    canonicalClauseFingerprint
+                      (clauseForAssignment vars
+                        (List.replicate vars.length false)) := by
+                simpa [hc] using hfp
+              rw [hc]
+              rw [
+                row_eq_replicate_false_of_canonicalClauseFingerprint_eq_allFalse
+                  (vars := vars) (bs := bs) hlen hfp']
+
 /-- A canonical parity-block signal is false when the block fingerprints differ. -/
 theorem canonicalParityBlockRecognitionSignal_eq_false_of_fingerprint_ne
     {m : Nat}

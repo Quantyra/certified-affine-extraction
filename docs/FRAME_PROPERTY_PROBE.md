@@ -232,7 +232,12 @@ multiplicity before a split is known, with
 `allFalseClauseFingerprint_count_true_le_targetFingerprint_of_perm_supportCharges`
 transporting the bound across clause permutation.  This moves the charge
 witness one layer earlier and makes it quantitative, but it is still only a
-lower bound, not exact multiplicity reconstruction.
+lower bound, not exact multiplicity reconstruction.  The row-enumeration
+lemmas now prove the all-false row is unique in `allAssignments`, and the
+fingerprint bridge proves that a true-charge block clause with the all-false
+canonical fingerprint is exactly the generated all-false clause.  That removes
+one local ambiguity for a future direct count reconstruction, but it does not
+yet prove exact merged multiplicity or replace exhaustive charge search.
 The matching `generatedParitySpecsFallbackDecomposition_forSupportCharges_coreGF2_*`,
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_block_charges_*`, and
 `generatedParitySpecsFallbackDecomposition_forSupportCharges_allFalseFingerprint_*`

@@ -203,12 +203,22 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
 - `AtomicClassBridge.exists_evenLiteralAtom_mem_canonicalClauseFingerprint_clauseForAssignment`:
   proves that any row containing a true bit contributes an even signed-literal
   atom to its forbidden assignment clause fingerprint.
+- `TseitinCNFData.allAssignments_nodup`,
+  `TseitinCNFData.allAssignments_count_replicate_false`, and
+  `TseitinCNFData.boolList_eq_replicate_false_of_true_not_mem`:
+  record row-enumeration uniqueness facts used to isolate the all-false source
+  row without relying on executable search.
 - `AtomicClassBridge.canonicalBlockFingerprint_ne_of_mem_not_mem`: separates
   two block fingerprints using a fingerprint present on one side and absent on
   the other.
 - `AtomicClassBridge.allFalseClauseFingerprint_mem_canonicalBlockFingerprint_clausesForVertex_true`:
   proves that the all-false assignment clause fingerprint is present in every
   generated true-charge parity block.
+- `AtomicClassBridge.row_eq_replicate_false_of_canonicalClauseFingerprint_eq_allFalse`
+  and
+  `AtomicClassBridge.clause_eq_allFalse_of_mem_clausesForVertex_true_and_fingerprint_eq`:
+  prove that, inside a generated parity block, the all-false canonical
+  fingerprint identifies the all-false row and its generated clause.
 - `AtomicClassBridge.canonicalBlockFingerprint_clausesForVertex_true_false_ne_of_allFalseFingerprint_not_mem`:
   reduces generated true/false block-fingerprint separation to absence of that
   all-false fingerprint from the generated false-charge block.
@@ -496,7 +506,11 @@ The audit surface is `lean/CertifiedAffine/Audit.lean`.
   presence through that fingerprint, and this presence signal transports across
   clause permutation.  The merged fingerprint count also lower-bounds the
   true-charge multiplicity and transports across clause permutation.  This is
-  a lower-bound theorem, not exact multiplicity reconstruction.
+  a lower-bound theorem, not exact multiplicity reconstruction.  The new
+  all-false row and clause uniqueness bridge proves that the all-false
+  fingerprint has a unique generated source inside a true-charge block, which
+  removes a local ambiguity needed for direct count reconstruction but does not
+  yet replace exhaustive charge search with an efficient recovery algorithm.
   This pins the open problem to discovering the exact split from CNF; neither
   the residual-free block target nor the compact GF(2) target loses
   multiplicity data once that split is supplied or recovered.

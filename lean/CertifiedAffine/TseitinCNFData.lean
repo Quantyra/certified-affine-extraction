@@ -124,6 +124,94 @@ theorem mem_allAssignments_of_length :
               List.mem_map.2 (Exists.intro bs (And.intro hbs rfl))
             exact List.mem_append_right _ hmap
 
+/-- The generated Boolean rows contain no duplicates. -/
+theorem allAssignments_nodup (n : Nat) : (allAssignments n).Nodup := by
+  induction n with
+  | zero =>
+      simp [allAssignments]
+  | succ k ih =>
+      unfold allAssignments
+      have hfalseNodup :
+          (List.map (fun xs => false :: xs) (allAssignments k)).Nodup :=
+        List.Nodup.map (f := fun xs => false :: xs)
+          (by intro a b h; injection h) ih
+      have htrueNodup :
+          (List.map (fun xs => true :: xs) (allAssignments k)).Nodup :=
+        List.Nodup.map (f := fun xs => true :: xs)
+          (by intro a b h; injection h) ih
+      have hdisjoint :
+          (List.map (fun xs => false :: xs) (allAssignments k)).Disjoint
+            (List.map (fun xs => true :: xs) (allAssignments k)) := by
+        rw [List.disjoint_left]
+        intro row hfalse htrue
+        cases List.mem_map.1 hfalse with
+        | intro xs hxsPair =>
+            cases hxsPair with
+            | intro _hxs hx =>
+                cases List.mem_map.1 htrue with
+                | intro ys hysPair =>
+                    cases hysPair with
+                    | intro _hys hy =>
+                        have hcontra : false :: xs = true :: ys := hx.trans hy.symm
+                        cases hcontra
+      simpa using List.Nodup.append hfalseNodup htrueNodup hdisjoint
+
+private theorem count_false_cons_map_false_cons
+    (target : List Bool) (rows : List (List Bool)) :
+    (List.map (fun xs => false :: xs) rows).count (false :: target) =
+      rows.count target := by
+  induction rows with
+  | nil =>
+      simp
+  | cons row rows ih =>
+      simp [List.count_cons, ih]
+
+private theorem count_false_cons_map_true_cons
+    (target : List Bool) (rows : List (List Bool)) :
+    (List.map (fun xs => true :: xs) rows).count (false :: target) = 0 := by
+  induction rows with
+  | nil =>
+      simp
+  | cons row rows ih =>
+      simp [List.count_cons, ih]
+
+/-- The all-false row occurs exactly once in the generated Boolean rows. -/
+theorem allAssignments_count_replicate_false (n : Nat) :
+    (allAssignments n).count (List.replicate n false) = 1 := by
+  induction n with
+  | zero =>
+      simp [allAssignments]
+  | succ k ih =>
+      change
+        (List.map (fun xs => false :: xs) (allAssignments k) ++
+          List.map (fun xs => true :: xs) (allAssignments k)).count
+          (false :: List.replicate k false) = 1
+      rw [List.count_append]
+      rw [count_false_cons_map_false_cons]
+      rw [count_false_cons_map_true_cons]
+      exact ih
+
+/-- A Boolean row with no true bit is the all-false row. -/
+theorem boolList_eq_replicate_false_of_true_not_mem :
+    forall (bs : List Bool),
+      Not (List.Mem true bs) -> bs = List.replicate bs.length false := by
+  intro bs
+  induction bs with
+  | nil =>
+      intro _h
+      rfl
+  | cons b bs ih =>
+      intro hnot
+      cases b with
+      | false =>
+          have htail : Not (List.Mem true bs) := by
+            intro hmem
+            exact hnot (List.Mem.tail false hmem)
+          change false :: bs = false :: List.replicate bs.length false
+          exact congrArg (fun xs => false :: xs) (ih htail)
+      | true =>
+          exact False.elim (hnot (List.Mem.head bs))
+
 /-- Build a clause forbidding a specific assignment on a list of variables. -/
 def clauseForAssignment {m : Nat} : List (Fin m) -> List Bool -> CNFModel.Clause m
   | [], [] => []
