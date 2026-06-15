@@ -1,6 +1,7 @@
 import CertifiedAffine.TseitinCNFData
 import CertifiedAffine.ParityEncoded
 import CertifiedAffine.ExtractorCompleteness
+import CertifiedAffine.ExtractorCompletenessInstances
 import CertifiedAffine.GroupFrame
 import CertifiedAffine.CanonicalSort
 import CertifiedAffine.AtomicClassBridge
@@ -3845,3 +3846,39 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.recoverSingleMergedSupportGroupFromChargeSearchPerm_exists_of_perm_supportCharges_arityFourExactBound
+
+/-!
+## M-A3 concrete extractor-completeness instances
+
+The `Lean.ofReduceBool` axiom below is introduced by `native_decide`, used to
+verify (over the concrete, finite Tseitin formula) that the executable
+canonical-fingerprint splitter recognizes every clause group residual-free.
+This is an honest, expected dependency for compiled decision procedures.
+-/
+
+/-- info: 'CertifiedAffine.TseitinCNFData.ExtractorCompleteness.extractorCompleteOn_threeCycle' depends on axioms: [propext,
+ Lean.ofReduceBool,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.extractorCompleteOn_threeCycle
+
+/-- info: 'CertifiedAffine.TseitinCNFData.ExtractorCompleteness.extractorCompleteOn_fourCycle' depends on axioms: [propext,
+ Classical.choice,
+ Lean.ofReduceBool,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.extractorCompleteOn_fourCycle
+
+/-- info: 'CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_threeCycle' depends on axioms: [propext,
+ Classical.choice,
+ Lean.ofReduceBool,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_threeCycle
+
+/-- info: 'CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_fourCycle' depends on axioms: [propext,
+ Classical.choice,
+ Lean.ofReduceBool,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_fourCycle
