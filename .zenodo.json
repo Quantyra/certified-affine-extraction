@@ -1,0 +1,19 @@
+{
+  "title": "Certified affine extraction from CNF in Lean 4",
+  "upload_type": "software",
+  "creators": [
+    { "name": "Fredriksen, Daniel" }
+  ],
+  "license": "Apache-2.0",
+  "version": "0.2.0",
+  "keywords": [
+    "Lean 4",
+    "formal verification",
+    "SAT",
+    "proof logging",
+    "affine extraction",
+    "GF(2)",
+    "Tseitin formulas"
+  ],
+  "description": "<p>A Lean 4 artifact for certified affine-structure extraction and GF(2) semantic preservation for scoped Tseitin-style CNF families, with a machine-checked, axiom-audited theorem surface.</p><p><strong>v0.2.0</strong> adds executable extractor-completeness results: for concrete Tseitin cycle families (three-cycle and four-cycle), the canonical-fingerprint splitter is proven to return the GF(2) parity equations <em>residual-free</em>, together with per-assignment CNF&#8596;GF(2) equivalence (combined <code>SemanticExtractorCompleteOn</code>). It also includes the first unconditional, premise-free lower bounds in the bundled resolution model. The audit surface is <code>lean/CertifiedAffine/Audit.lean</code>.</p><p><strong>Non-claims (binding):</strong> this artifact does <strong>not</strong> claim or imply P = NP, P != NP, a general SAT algorithm, a general CNF-to-XOR recognizer, a matchgate/Pfaffian/GCT/holographic/halting-style result, or any result beyond the explicitly-scoped, Lean-checked theorems for the named Tseitin-style families.</p>"
+}

@@ -22,11 +22,28 @@ private planning history and speculative research notes.
 
 The audit surface is `lean/CertifiedAffine/Audit.lean`.
 
-## Working v0.2 Surface
+## v0.2.0 Surface — Executable Extractor Completeness
+
+v0.2.0 discharges the executable extractor-completeness obligation on concrete recognized
+families: for the three-cycle and four-cycle Tseitin formulas, the canonical-fingerprint
+splitter is proven to return the GF(2) parity equations with **empty residual CNF**, and the
+combined semantic + executable claim holds.
+
+- `ExtractorCompleteness.extractorCompleteOn_threeCycle` /
+  `extractorCompleteOn_fourCycle`: the executable splitter's residual-free output equals the
+  extracted GF(2) target (3 and 4 parity equations respectively).
+- `ExtractorCompleteness.semanticExtractorCompleteOn_threeCycle` /
+  `semanticExtractorCompleteOn_fourCycle`: the above **plus** per-assignment CNF ↔ GF(2)
+  equivalence (`SemanticExtractorCompleteOn`).
+- Scope note: these are concrete instances for the named families, not a general/uniform
+  completeness over all Tseitin graphs.
+
+Supporting reduction surface (carried from the working v0.2 line):
 
 - `ParityEncoded.Class.sound`: semantic soundness for a declarative
-  fixed-ambient class of parity-encoded CNFs.  This does not yet claim extractor
-  completeness for the canonical fingerprint splitter.
+  fixed-ambient class of parity-encoded CNFs.  Extractor completeness for the canonical
+  fingerprint splitter is now proven on the concrete families above (general completeness
+  remains open).
 - `ParityEncoded.Class.append`: a semantic gluing constructor for appended
   parity-encoded CNFs.  Unlike the frame-oriented `union` constructor, this
   rule permits overlapping variables, matching ordinary Tseitin vertex blocks
