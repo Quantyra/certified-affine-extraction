@@ -3,6 +3,7 @@ import CertifiedAffine.FrameProbe
 import CertifiedAffine.ParityEncoded
 import CertifiedAffine.ExtractorCompleteness
 import CertifiedAffine.ExtractorCompletenessInstances
+import CertifiedAffine.ExtractorCompletenessUniform
 import CertifiedAffine.CanonicalSort
 import CertifiedAffine.GroupFrame
 import CertifiedAffine.AtomicClassBridge

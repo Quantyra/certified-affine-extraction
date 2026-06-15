@@ -2,6 +2,7 @@ import CertifiedAffine.TseitinCNFData
 import CertifiedAffine.ParityEncoded
 import CertifiedAffine.ExtractorCompleteness
 import CertifiedAffine.ExtractorCompletenessInstances
+import CertifiedAffine.ExtractorCompletenessUniform
 import CertifiedAffine.GroupFrame
 import CertifiedAffine.CanonicalSort
 import CertifiedAffine.AtomicClassBridge
@@ -3882,3 +3883,32 @@ This is an honest, expected dependency for compiled decision procedures.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_fourCycle
+
+-- M-A5: uniform cycle family extractor completeness (n = 5, 6).
+/-- info: 'CertifiedAffine.TseitinCNFData.ExtractorCompleteness.extractorCompleteOn_cycle5' depends on axioms: [propext,
+ Classical.choice,
+ Lean.ofReduceBool,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.extractorCompleteOn_cycle5
+
+/-- info: 'CertifiedAffine.TseitinCNFData.ExtractorCompleteness.extractorCompleteOn_cycle6' depends on axioms: [propext,
+ Classical.choice,
+ Lean.ofReduceBool,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.extractorCompleteOn_cycle6
+
+/-- info: 'CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_cycle5' depends on axioms: [propext,
+ Classical.choice,
+ Lean.ofReduceBool,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_cycle5
+
+/-- info: 'CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_cycle6' depends on axioms: [propext,
+ Classical.choice,
+ Lean.ofReduceBool,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_cycle6

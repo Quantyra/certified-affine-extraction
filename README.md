@@ -44,6 +44,17 @@ Supporting reduction surface (carried from the working v0.2 line):
   fixed-ambient class of parity-encoded CNFs.  Extractor completeness for the canonical
   fingerprint splitter is now proven on the concrete families above (general completeness
   remains open).
+
+### Post-v0.2.0 (on `main`, unreleased)
+
+- `ExtractorCompleteness.extractorCompleteOn_cycle5` / `_cycle6` and
+  `semanticExtractorCompleteOn_cycle5` / `_cycle6`: extractor completeness extended along the
+  *uniform* directed-cycle Tseitin family `TseitinCycleCNFFormula n` to `n = 5` and `n = 6`
+  (residual-free; 5 and 6 parity equations).
+- `ExtractorCompleteness.UniformCycleExtractorCompleteness`: the general claim for all `n >= 3`,
+  stated as an explicitly **OPEN** target (verified computationally for `n = 3,4,5,6`; a single
+  general proof is open).
+
 - `ParityEncoded.Class.append`: a semantic gluing constructor for appended
   parity-encoded CNFs.  Unlike the frame-oriented `union` constructor, this
   rule permits overlapping variables, matching ordinary Tseitin vertex blocks
