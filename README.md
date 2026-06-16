@@ -42,8 +42,10 @@ Supporting reduction surface (carried from the working v0.2 line):
 
 - `ParityEncoded.Class.sound`: semantic soundness for a declarative
   fixed-ambient class of parity-encoded CNFs.  Extractor completeness for the canonical
-  fingerprint splitter is now proven on the concrete families above (general completeness
-  remains open).
+  fingerprint splitter is proven on the concrete families above and, for the uniform directed-cycle
+  Tseitin family `TseitinCycleCNFFormula n`, generally for all `n >= 3` (via the pre-existing
+  structural theorem `extractorCompleteOn_TseitinCycleCNFFormula_nonDegenerate`). Completeness over
+  *arbitrary* Tseitin graphs (beyond the cycle family) remains open.
 
 ### Post-v0.2.0 (on `main`, unreleased)
 
@@ -51,13 +53,18 @@ Supporting reduction surface (carried from the working v0.2 line):
   `semanticExtractorCompleteOn_cycle5` / `_cycle6`: extractor completeness extended along the
   *uniform* directed-cycle Tseitin family `TseitinCycleCNFFormula n` to `n = 5` and `n = 6`
   (residual-free; 5 and 6 parity equations).
-- `ExtractorCompleteness.uniformCycleExtractorCompleteness`: the general claim for all `n >= 3` is
-  now **PROVEN** (not just the concrete instances). For every cycle size `n >= 3` the executable
-  canonical-fingerprint splitter recognizes the uniform Tseitin cycle CNF residual-free and returns
-  its GF(2) parity equations. The proof is general in `n` (no `native_decide`); it reduces via
-  `cycleSplit_residualFree` to the general structural cycle theorem
-  `AtomicClassBridge.extractorCompleteOn_TseitinCycleCNFFormula_nonDegenerate`. Axioms: only
-  `[propext, Classical.choice, Quot.sound]`.
+- `ExtractorCompleteness.uniformCycleExtractorCompleteness`: a `Prop`-level **restatement** of
+  general uniform-cycle completeness (for all `n >= 3`), exposed under a public name. This is **not a
+  newly proven theorem.** Its proof (`cycleSplit_residualFree`) is a thin wrapper that reduces it to
+  the **pre-existing** general structural cycle theorem
+  `AtomicClassBridge.extractorCompleteOn_TseitinCycleCNFFormula_nonDegenerate`, which was proven
+  earlier in commit `6783d8a` (2026-06-12) — before the M-A5 / "uniform" milestone line. The
+  mathematical content (residual-free recognition of the uniform Tseitin cycle CNF and extraction of
+  its GF(2) parity equations for every `n >= 3`) was therefore already established; this entry only
+  re-packages it under a uniform name, and the `n = 5, 6` instances above are concrete corroborations,
+  not the source of the general result. The wrapper is general in `n` (no `native_decide`); axioms
+  `[propext, Classical.choice, Quot.sound]`. See `INTEGRITY-CLAIMS.md` for the full
+  provenance/classification ledger.
 
 - `ParityEncoded.Class.append`: a semantic gluing constructor for appended
   parity-encoded CNFs.  Unlike the frame-oriented `union` constructor, this

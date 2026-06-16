@@ -3913,7 +3913,11 @@ This is an honest, expected dependency for compiled decision procedures.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_cycle6
 
--- Step 4: uniform extractor completeness for all n >= 3 (general proof; no native_decide).
+-- Uniform extractor completeness for all n >= 3. NOTE: this is a thin restatement, NOT a new
+-- theorem. Its proof wraps the PRE-EXISTING general structural theorem
+-- `extractorCompleteOn_TseitinCycleCNFFormula_nonDegenerate` (committed 6783d8a, 2026-06-12).
+-- The general result is genuine and axiom-clean ([propext, Classical.choice, Quot.sound], no
+-- native_decide); the "uniform" name only re-exposes it. See INTEGRITY-CLAIMS.md.
 /-- info: 'CertifiedAffine.TseitinCNFData.ExtractorCompleteness.uniformCycleExtractorCompleteness' depends on axioms: [propext,
  Classical.choice,
  Quot.sound] -/
