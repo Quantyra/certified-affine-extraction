@@ -79,17 +79,52 @@ theorem semanticExtractorCompleteOn_cycle6 :
   exact semanticExtractorCompleteOn_of_class hclass extractorCompleteOn_cycle6
 
 /--
-OPEN MILESTONE (not proven): uniform extractor completeness for the directed-cycle Tseitin family.
+MILESTONE (now PROVEN, see `uniformCycleExtractorCompleteness` below): uniform extractor
+completeness for the directed-cycle Tseitin family.
 
 For every cycle size `n >= 3`, the executable canonical-fingerprint splitter recognizes the uniform
 Tseitin cycle CNF residual-free and returns its GF(2) parity equations. This holds computationally
-for `n = 3,4,5,6` (the concrete instances), but a single general proof for all `n >= 3` requires a
-structural/inductive argument about the splitter on the general cycle encoding and is OPEN. This
-`def` records the statement; it is deliberately left unproven.
+for `n = 3,4,5,6` (the concrete instances), and a single general proof for all `n >= 3` is now
+discharged via the general cycle splitter-residual-free theorem
+`extractorCompleteOn_TseitinCycleCNFFormula_nonDegenerate`.
 -/
 def UniformCycleExtractorCompleteness : Prop :=
   ∀ (n : Nat) (hn : 1 < n), 3 ≤ n →
     ExtractorCompleteOn (TseitinCycleCNFFormula n hn) (cycleGF2Target n hn)
+
+/--
+The executable canonical-fingerprint splitter leaves no residual CNF on the uniform directed-cycle
+Tseitin family for every `n >= 3`.
+
+This is the structural core: it extracts the residual-free split equation from the general
+nondegenerate cycle extractor-completeness theorem
+`AtomicClassBridge.extractorCompleteOn_TseitinCycleCNFFormula_nonDegenerate`, whose
+`ExtractorCompleteOn` witness packages exactly that split equation (against the
+`TseitinParityFormulaFromEncoding` GF(2) target). The residual field is read off the packaged split
+record. No `native_decide` / no finite enumeration: the argument is general in `n`.
+-/
+theorem cycleSplit_residualFree (n : Nat) (hn : 1 < n) (hn3 : 3 ≤ n) :
+    (splitArityFourParityCanonicalSupportGroups (TseitinCycleCNFFormula n hn)).residualCNF = [] := by
+  have hn2 : 2 < n := hn3
+  obtain ⟨blocks, hsplit, _hperm⟩ :=
+    AtomicClassBridge.extractorCompleteOn_TseitinCycleCNFFormula_nonDegenerate n hn hn2
+  rw [hsplit]
+
+/--
+**Uniform extractor completeness for the directed-cycle Tseitin family (milestone "step 4"),
+FULLY PROVEN for every `n >= 3`.**
+
+The executable canonical-fingerprint splitter recognizes the uniform Tseitin cycle CNF
+`TseitinCycleCNFFormula n hn` residual-free and returns its extracted GF(2) parity equations
+`cycleGF2Target n hn`. The proof is general in `n` (no `native_decide`, no `sorry`, no finite check):
+it reduces, via `extractorCompleteOn_of_residualFree`, to the general residual-free split fact
+`cycleSplit_residualFree`, which is in turn obtained from the general structural cycle theorem
+`AtomicClassBridge.extractorCompleteOn_TseitinCycleCNFFormula_nonDegenerate`.
+-/
+theorem uniformCycleExtractorCompleteness : UniformCycleExtractorCompleteness := by
+  intro n hn hn3
+  exact extractorCompleteOn_of_residualFree (TseitinCycleCNFFormula n hn)
+    (cycleSplit_residualFree n hn hn3)
 
 end ExtractorCompleteness
 end TseitinCNFData

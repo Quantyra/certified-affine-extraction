@@ -3912,3 +3912,10 @@ This is an honest, expected dependency for compiled decision procedures.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.semanticExtractorCompleteOn_cycle6
+
+-- Step 4: uniform extractor completeness for all n >= 3 (general proof; no native_decide).
+/-- info: 'CertifiedAffine.TseitinCNFData.ExtractorCompleteness.uniformCycleExtractorCompleteness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.ExtractorCompleteness.uniformCycleExtractorCompleteness

@@ -51,9 +51,13 @@ Supporting reduction surface (carried from the working v0.2 line):
   `semanticExtractorCompleteOn_cycle5` / `_cycle6`: extractor completeness extended along the
   *uniform* directed-cycle Tseitin family `TseitinCycleCNFFormula n` to `n = 5` and `n = 6`
   (residual-free; 5 and 6 parity equations).
-- `ExtractorCompleteness.UniformCycleExtractorCompleteness`: the general claim for all `n >= 3`,
-  stated as an explicitly **OPEN** target (verified computationally for `n = 3,4,5,6`; a single
-  general proof is open).
+- `ExtractorCompleteness.uniformCycleExtractorCompleteness`: the general claim for all `n >= 3` is
+  now **PROVEN** (not just the concrete instances). For every cycle size `n >= 3` the executable
+  canonical-fingerprint splitter recognizes the uniform Tseitin cycle CNF residual-free and returns
+  its GF(2) parity equations. The proof is general in `n` (no `native_decide`); it reduces via
+  `cycleSplit_residualFree` to the general structural cycle theorem
+  `AtomicClassBridge.extractorCompleteOn_TseitinCycleCNFFormula_nonDegenerate`. Axioms: only
+  `[propext, Classical.choice, Quot.sound]`.
 
 - `ParityEncoded.Class.append`: a semantic gluing constructor for appended
   parity-encoded CNFs.  Unlike the frame-oriented `union` constructor, this
