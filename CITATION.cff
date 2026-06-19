@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: "Fredriksen"
     given-names: "Daniel"
-abstract: "Lean 4 artifact for certified affine-structure extraction and GF(2) semantic preservation for scoped Tseitin-style CNF families. v0.2.0 adds executable extractor-completeness results: for concrete Tseitin cycle families the canonical-fingerprint splitter is proven (machine-checked, axiom-audited) to return the GF(2) parity equations residual-free, together with per-assignment CNF-to-GF(2) equivalence. The artifact does not claim P = NP, P != NP, a general SAT algorithm, or a general CNF-to-XOR recognizer."
+abstract: "Lean 4 artifact for certified affine-structure extraction and GF(2) semantic preservation for scoped Tseitin-style CNF families. v0.3.0 adds a reusable private-incident sufficient condition for semantic extractor completeness over Tseitin CNF formulas, plus a non-cycle P3 witness routed through the public CertifiedAffine surface. The artifact does not claim P = NP, P != NP, a general SAT algorithm, or a general CNF-to-XOR recognizer."
 keywords:
   - Lean 4
   - formal verification
@@ -16,5 +16,5 @@ keywords:
   - Tseitin formulas
 license: Apache-2.0
 repository-code: "https://github.com/Quantyra/certified-affine-extraction"
-version: "0.2.0"
-date-released: "2026-06-15"
+version: "0.3.0"
+date-released: "2026-06-19"

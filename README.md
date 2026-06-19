@@ -22,6 +22,23 @@ private planning history and speculative research notes.
 
 The audit surface is `lean/CertifiedAffine/Audit.lean`.
 
+## v0.3.0 Surface — Private-Incident Tseitin Extraction Bridge
+
+v0.3.0 adds a reusable graph-local sufficient condition for certified affine extraction
+completeness beyond cycle-specific wrappers.  The new public surface packages symmetric
+private-incident witnesses plus positive degree into `SemanticExtractorCompleteOn` for
+Tseitin CNF formulas, via the low-degree incident-distinctness engine.
+
+- `AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormula_of_privateIncident_degreePos`:
+  reusable private-incident bridge for Tseitin CNF extraction completeness.
+- `AtomicClassBridge.path3_privateIncidentWitnesses`: concrete private-incident witness data
+  for the path P3.
+- `AtomicClassBridge.semanticExtractorCompleteOn_path3_privateIncident`: non-cycle P3 witness
+  routed through the new bridge and the public CertifiedAffine surface.
+
+Scope note: this remains certified affine/GF(2) extraction for Tseitin encodings.  It is not
+a general SAT algorithm, not a general CNF-to-XOR recognizer, and not a P-vs-NP claim.
+
 ## v0.2.0 Surface — Executable Extractor Completeness
 
 v0.2.0 discharges the executable extractor-completeness obligation on concrete recognized
@@ -47,7 +64,7 @@ Supporting reduction surface (carried from the working v0.2 line):
   structural theorem `extractorCompleteOn_TseitinCycleCNFFormula_nonDegenerate`). Completeness over
   *arbitrary* Tseitin graphs (beyond the cycle family) remains open.
 
-### Post-v0.2.0 (on `main`, unreleased)
+### Additional main-branch surfaces carried into v0.3.0
 
 - `ExtractorCompleteness.extractorCompleteOn_cycle5` / `_cycle6` and
   `semanticExtractorCompleteOn_cycle5` / `_cycle6`: extractor completeness extended along the

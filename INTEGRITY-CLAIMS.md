@@ -23,6 +23,9 @@ Tseitin families** (uniform directed cycles, plus generic helpers). That is the 
 | `…ExtractorCompleteness.extractorCompleteOn_{threeCycle,fourCycle,cycle5,cycle6}` | The executable splitter's residual-free output equals the extracted GF(2) target, at `n = 3,4,5,6`. | + `Lean.ofReduceBool` | Concrete instances (`native_decide`) |
 | `…ExtractorCompleteness.semanticExtractorCompleteOn_{threeCycle,fourCycle,cycle5,cycle6}` | The above **plus** per-assignment CNF ↔ GF(2) equivalence. | + `Lean.ofReduceBool` | Concrete instances (`native_decide`) |
 | `…ExtractorCompleteness.extractorCompleteOn_of_residualFree` | Generic reduction: a residual-free split implies extractor completeness. | (none) | Axiom-free helper |
+| `…AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormula_of_privateIncident_degreePos` | Reusable graph-local private-incident sufficient condition for semantic extractor completeness over Tseitin CNF formulas, assuming positive degree. | propext, Classical.choice, Quot.sound | General bridge theorem |
+| `…AtomicClassBridge.path3_privateIncidentWitnesses` | Concrete private-incident witness package for the path P3. | propext, Quot.sound | Non-cycle witness data |
+| `…AtomicClassBridge.semanticExtractorCompleteOn_path3_privateIncident` | P3 semantic extractor completeness routed through the private-incident bridge and public surface. | propext, Classical.choice, Quot.sound | Non-cycle witness theorem |
 
 **No declaration depends on `sorryAx`.** The `Lean.ofReduceBool` axiom marks `native_decide`-checked
 **concrete instances** — finite computations, not general theorems.
@@ -40,8 +43,9 @@ corroborate it at concrete sizes.
 
 ## What remains open
 
-Completeness over **arbitrary** Tseitin graphs (beyond the uniform cycle family) is **not** proven and
-is the genuine open frontier for this line of work.
+Completeness over **arbitrary** Tseitin graphs is **not** proven and is the genuine open frontier
+for this line of work.  v0.3.0 broadens the reusable sufficient-condition family beyond cycles
+through private-incident witnesses, but it does not discharge the arbitrary-graph case.
 
 ## How to re-verify
 
