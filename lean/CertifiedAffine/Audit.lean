@@ -3,6 +3,7 @@ import CertifiedAffine.ParityEncoded
 import CertifiedAffine.ExtractorCompleteness
 import CertifiedAffine.ExtractorCompletenessInstances
 import CertifiedAffine.ExtractorCompletenessUniform
+import CertifiedAffine.ExtractorCompletenessLowDegree
 import CertifiedAffine.GroupFrame
 import CertifiedAffine.CanonicalSort
 import CertifiedAffine.AtomicClassBridge
@@ -1494,6 +1495,23 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormulaFromEncoding_of_incidentKeyFresh_degree_pos
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormula_of_privateIncident_degreePos' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormula_of_privateIncident_degreePos
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.path3_privateIncidentWitnesses' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.path3_privateIncidentWitnesses
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_path3_privateIncident' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_path3_privateIncident
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.extractorCompleteOn_TseitinCirculant12CNFFormula_of_incidentKeyFresh' depends on axioms: [propext,
  Classical.choice,

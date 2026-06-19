@@ -147,6 +147,47 @@ theorem incidentKeyFresh_of_distinctIncident
       hkey.symm
 
 /--
+PRIVATE-INCIDENT hypothesis (IN-RANGE): every pair of distinct in-range vertices
+has an incident directed-edge index on one side that is not incident to the other.
+This packages the graph-local "some side has a private incident edge" certificate
+used by non-cycle simple-graph families such as paths and trees with distinct
+incidence profiles.  The symmetric form is necessary: in a path an endpoint's
+incident set may be a proper subset of its neighbor's incident set.
+-/
+def PrivateIncidentWitnesses
+    (G : TseitinModel.Graph) (hme : G.m = G.edges.length) : Prop :=
+  forall a b : Nat,
+    a < G.n ->
+      b < G.n ->
+        a ≠ b ->
+          exists i : Fin G.m,
+            (List.Mem i (incidentIndices G hme a) ∧
+              TseitinModel.UEdge.incident (edgeAt G hme i) b = false)
+            \/
+            (List.Mem i (incidentIndices G hme b) ∧
+              TseitinModel.UEdge.incident (edgeAt G hme i) a = false)
+
+/-- A private incident-edge witness immediately gives incident-distinctness. -/
+theorem distinctIncidentSets_of_privateIncidentWitnesses
+    (G : TseitinModel.Graph) (hme : G.m = G.edges.length)
+    (hprivate : PrivateIncidentWitnesses G hme) :
+    DistinctIncidentSets G hme := by
+  intro a b ha hb hne
+  exact hprivate a b ha hb hne
+
+/-- Fresh canonical incident keys from the graph-local private-incident condition. -/
+theorem incidentKeyFresh_of_privateIncidentWitnesses
+    (G : TseitinModel.Graph) (hme : G.m = G.edges.length)
+    (hprivate : PrivateIncidentWitnesses G hme) :
+    forall v prior : Nat,
+      v < G.n ->
+        prior < v ->
+          Not (GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme v) =
+            GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme prior)) := by
+  exact incidentKeyFresh_of_distinctIncident G hme
+    (distinctIncidentSets_of_privateIncidentWitnesses G hme hprivate)
+
+/--
 MAIN THEOREM (LOW-DEGREE COVERAGE).
 
 For any graph encoding `enc` and per-vertex charge, IF distinct in-range vertices
@@ -182,6 +223,36 @@ theorem semanticExtractorCompleteOn_tseitinCNFFormula_of_distinctIncident_degree
       (TseitinModel.m_eq_edges_length_of_encoding enc) hdistinct
   · intro G' v hv
     exact hdeg v hv
+
+/--
+PUBLIC-SURFACE BRIDGE (PRIVATE-INCIDENT FORM).
+
+For any graph encoding, a graph-local private-incident certificate plus positive
+in-range degree suffices for certified affine extraction completeness.  This is a
+reusable simple-graph/Tseitin extraction lemma beyond cycle-specific wrappers: it
+routes a local incidence certificate to the existing public `CertifiedAffine`
+semantic extractor surface without search or new axioms.
+-/
+theorem semanticExtractorCompleteOn_tseitinCNFFormula_of_privateIncident_degreePos
+    (enc : TseitinModel.GraphEncodingData)
+    (charge : Nat -> Bool)
+    (hprivate :
+      PrivateIncidentWitnesses
+        (TseitinModel.GraphEncodingData.toGraph enc)
+        (TseitinModel.m_eq_edges_length_of_encoding enc))
+    (hdeg :
+      forall v : Nat,
+        v < (TseitinModel.GraphEncodingData.toGraph enc).n ->
+          0 < TseitinModel.degree (TseitinModel.GraphEncodingData.toGraph enc) v) :
+    ExtractorCompleteness.SemanticExtractorCompleteOn
+      (TseitinCNFFormulaFromEncoding enc charge)
+      (TseitinParityFormulaFromEncoding enc charge) := by
+  exact semanticExtractorCompleteOn_tseitinCNFFormula_of_distinctIncident_degreePos
+    enc charge
+    (distinctIncidentSets_of_privateIncidentWitnesses
+      (TseitinModel.GraphEncodingData.toGraph enc)
+      (TseitinModel.m_eq_edges_length_of_encoding enc) hprivate)
+    hdeg
 
 /-! ## NEWLY-COVERED witness family: the path `P3` (0 - 1 - 2)
 
@@ -278,6 +349,12 @@ theorem path3_distinctIncidentSets :
     exact ⟨⟨0, by decide⟩, Or.inr ⟨incidentIndex_mem_of_incident (by decide), by decide⟩⟩
   · exact absurd rfl hab
 
+/-- `P3` also satisfies the named private-incident certificate. -/
+theorem path3_privateIncidentWitnesses :
+    PrivateIncidentWitnesses encoding_path3.toGraph
+      (TseitinModel.m_eq_edges_length_of_encoding _) :=
+  path3_distinctIncidentSets
+
 /--
 The path `P3` is a concrete instance of the LOW-DEGREE theorem: its Tseitin
 extractor is complete.  This witnesses non-vacuity end-to-end for a graph family
@@ -292,6 +369,17 @@ theorem semanticExtractorCompleteOn_path3
   semanticExtractorCompleteOn_tseitinCNFFormula_of_distinctIncident_degreePos
     encoding_path3 charge
     path3_distinctIncidentSets
+    path3_degree_pos
+
+/-- The same `P3` witness routed through the new private-incident public bridge. -/
+theorem semanticExtractorCompleteOn_path3_privateIncident
+    (charge : Nat -> Bool) :
+    ExtractorCompleteness.SemanticExtractorCompleteOn
+      (TseitinCNFFormulaFromEncoding encoding_path3 charge)
+      (TseitinParityFormulaFromEncoding encoding_path3 charge) :=
+  semanticExtractorCompleteOn_tseitinCNFFormula_of_privateIncident_degreePos
+    encoding_path3 charge
+    path3_privateIncidentWitnesses
     path3_degree_pos
 
 /-! ## Axiom audit -/
