@@ -37,7 +37,8 @@ Tseitin CNF formulas, via the low-degree incident-distinctness engine.
   routed through the new bridge and the public CertifiedAffine surface.
 
 Scope note: this remains certified affine/GF(2) extraction for Tseitin encodings.  It is not
-a general SAT algorithm, not a general CNF-to-XOR recognizer, and not a P-vs-NP claim.
+a general SAT algorithm, not a general CNF-to-XOR recognizer, not an NP or circuit lower
+bound, and not a P-vs-NP claim.
 
 ## v0.2.0 Surface — Executable Extractor Completeness
 
