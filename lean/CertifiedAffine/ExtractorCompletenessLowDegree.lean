@@ -121,6 +121,108 @@ theorem incidentCanonicalKeys_ne_of_distinctIncident
   exact Bool.noConfusion hmiss
 
 /--
+COLLISION ANALYSIS.  If two vertices have the same canonical incident-support
+key, then every concrete incident edge index of one vertex is incident to the
+other.  This is the reusable collision-handling direction needed before one can
+decompose arbitrary graphs: canonical-key collisions are exactly where the
+current support-splitting extractor can no longer separate vertex blocks by
+fresh support keys.
+-/
+theorem incidentIndex_mem_iff_of_incidentCanonicalKeys_eq
+    (G : TseitinModel.Graph) (hme : G.m = G.edges.length)
+    (v w : Nat)
+    (hkey : GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme v) =
+      GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme w))
+    (i : Fin G.m) :
+    List.Mem i (incidentIndices G hme v) ↔
+      List.Mem i (incidentIndices G hme w) := by
+  constructor
+  · intro hi
+    have hkv :
+        List.Mem i.val
+          (GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme v)) :=
+      (mem_canonicalSupportKeyForVars_iff (incidentIndices G hme v) i.val).2
+        (Exists.intro i (And.intro hi rfl))
+    have hkw :
+        List.Mem i.val
+          (GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme w)) := by
+      rw [hkey] at hkv
+      exact hkv
+    rcases (mem_canonicalSupportKeyForVars_iff
+      (incidentIndices G hme w) i.val).1 hkw with ⟨j, hjmem, hjval⟩
+    have hji : j = i := Fin.ext hjval
+    rw [hji] at hjmem
+    exact hjmem
+  · intro hi
+    have hkw :
+        List.Mem i.val
+          (GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme w)) :=
+      (mem_canonicalSupportKeyForVars_iff (incidentIndices G hme w) i.val).2
+        (Exists.intro i (And.intro hi rfl))
+    have hkv :
+        List.Mem i.val
+          (GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme v)) := by
+      rw [← hkey] at hkw
+      exact hkw
+    rcases (mem_canonicalSupportKeyForVars_iff
+      (incidentIndices G hme v) i.val).1 hkv with ⟨j, hjmem, hjval⟩
+    have hji : j = i := Fin.ext hjval
+    rw [hji] at hjmem
+    exact hjmem
+
+/-- A local canonical incident-key collision is an obstruction to the global
+`DistinctIncidentSets` side condition: if distinct in-range vertices have the
+same canonical incident key, then no symmetric-difference incident-index witness
+can exist for that pair. -/
+theorem not_distinctIncidentSets_of_incidentCanonicalKeys_eq
+    (G : TseitinModel.Graph) (hme : G.m = G.edges.length)
+    (a b : Nat) (ha : a < G.n) (hb : b < G.n) (hne : a ≠ b)
+    (hkey : GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme a) =
+      GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme b)) :
+    Not (DistinctIncidentSets G hme) := by
+  intro hdistinct
+  rcases hdistinct a b ha hb hne with ⟨i, hcase⟩
+  have hmem := incidentIndex_mem_iff_of_incidentCanonicalKeys_eq G hme a b hkey i
+  rcases hcase with ⟨hi, hmiss⟩ | ⟨hi, hmiss⟩
+  · have hib : List.Mem i (incidentIndices G hme b) := hmem.1 hi
+    have hinc : TseitinModel.UEdge.incident (edgeAt G hme i) b = true :=
+      incident_of_mem_incidentIndex hib
+    rw [hinc] at hmiss
+    exact Bool.noConfusion hmiss
+  · have hia : List.Mem i (incidentIndices G hme a) := hmem.2 hi
+    have hinc : TseitinModel.UEdge.incident (edgeAt G hme i) a = true :=
+      incident_of_mem_incidentIndex hia
+    rw [hinc] at hmiss
+    exact Bool.noConfusion hmiss
+
+/-- Direct collision-free form of the freshness obligation: distinct in-range
+vertices have distinct canonical incident-support keys.  This is weaker as an
+API burden than producing explicit private/symmetric-difference incident
+witnesses, and is the natural next surface for arbitrary simple/low-degree
+families whose collision analysis is discharged separately. -/
+def IncidentKeyCollisionFree
+    (G : TseitinModel.Graph) (hme : G.m = G.edges.length) : Prop :=
+  forall a b : Nat,
+    a < G.n ->
+      b < G.n ->
+        a ≠ b ->
+          Not (GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme a) =
+            GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme b))
+
+/-- The direct collision-free condition is exactly the freshness shape consumed
+by the existing generated-spec engine. -/
+theorem incidentKeyFresh_of_collisionFree
+    (G : TseitinModel.Graph) (hme : G.m = G.edges.length)
+    (hfree : IncidentKeyCollisionFree G hme) :
+    forall v prior : Nat,
+      v < G.n ->
+        prior < v ->
+          Not (GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme v) =
+            GroupFrame.canonicalSupportKeyForVars (incidentIndices G hme prior)) := by
+  intro v prior hv hprior
+  exact hfree v prior hv (by omega) (by omega)
+
+/--
 GENERAL freshness from incident-distinctness (DEGREE-FREE): in a graph whose
 distinct in-range vertices have distinct incident-index sets, the canonical
 incident-support keys are fresh in vertex-range order.  This is exactly the side
@@ -145,6 +247,19 @@ theorem incidentKeyFresh_of_distinctIncident
     intro hkey
     exact incidentCanonicalKeys_ne_of_distinctIncident G hme prior v i hi hmiss
       hkey.symm
+
+/-- Incident-distinctness is one sufficient way to prove direct collision
+freedom; future arbitrary-graph work can instead prove collision freedom by a
+different decomposition or canonical-key analysis. -/
+theorem incidentKeyCollisionFree_of_distinctIncident
+    (G : TseitinModel.Graph) (hme : G.m = G.edges.length)
+    (hdistinct : DistinctIncidentSets G hme) :
+    IncidentKeyCollisionFree G hme := by
+  intro a b ha hb hne hkey
+  by_cases hab : a < b
+  · exact incidentKeyFresh_of_distinctIncident G hme hdistinct b a hb hab hkey.symm
+  · have hba : b < a := by omega
+    exact incidentKeyFresh_of_distinctIncident G hme hdistinct a b ha hba hkey
 
 /--
 PRIVATE-INCIDENT hypothesis (IN-RANGE): every pair of distinct in-range vertices
@@ -221,6 +336,41 @@ theorem semanticExtractorCompleteOn_tseitinCNFFormula_of_distinctIncident_degree
   · exact incidentKeyFresh_of_distinctIncident
       (TseitinModel.GraphEncodingData.toGraph enc)
       (TseitinModel.m_eq_edges_length_of_encoding enc) hdistinct
+  · intro G' v hv
+    exact hdeg v hv
+
+/--
+PUBLIC-SURFACE BRIDGE (COLLISION-FREE FORM).
+
+For any graph encoding, if the canonical incident-support key is collision-free
+on distinct in-range vertices and every in-range vertex has positive degree, then
+the semantic + executable extractor is complete on the Tseitin CNF/parity pair.
+This is the next reusable surface beyond private/distinct-incident witnesses: an
+arbitrary graph family can now discharge the extractor side condition by proving
+canonical-key collision freedom directly, with collision analysis handled by
+`incidentIndex_mem_iff_of_incidentCanonicalKeys_eq` and
+`not_distinctIncidentSets_of_incidentCanonicalKeys_eq`.
+-/
+theorem semanticExtractorCompleteOn_tseitinCNFFormula_of_collisionFree_degreePos
+    (enc : TseitinModel.GraphEncodingData)
+    (charge : Nat -> Bool)
+    (hfree :
+      IncidentKeyCollisionFree
+        (TseitinModel.GraphEncodingData.toGraph enc)
+        (TseitinModel.m_eq_edges_length_of_encoding enc))
+    (hdeg :
+      forall v : Nat,
+        v < (TseitinModel.GraphEncodingData.toGraph enc).n ->
+          0 < TseitinModel.degree (TseitinModel.GraphEncodingData.toGraph enc) v) :
+    ExtractorCompleteness.SemanticExtractorCompleteOn
+      (TseitinCNFFormulaFromEncoding enc charge)
+      (TseitinParityFormulaFromEncoding enc charge) := by
+  refine
+    semanticExtractorCompleteOn_tseitinCNFFormulaFromEncoding_of_incidentKeyFresh_degree_pos
+      enc charge ?_ ?_
+  · exact incidentKeyFresh_of_collisionFree
+      (TseitinModel.GraphEncodingData.toGraph enc)
+      (TseitinModel.m_eq_edges_length_of_encoding enc) hfree
   · intro G' v hv
     exact hdeg v hv
 

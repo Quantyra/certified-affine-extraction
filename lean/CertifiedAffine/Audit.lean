@@ -1496,6 +1496,35 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormulaFromEncoding_of_incidentKeyFresh_degree_pos
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.incidentIndex_mem_iff_of_incidentCanonicalKeys_eq' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.incidentIndex_mem_iff_of_incidentCanonicalKeys_eq
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.not_distinctIncidentSets_of_incidentCanonicalKeys_eq' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.not_distinctIncidentSets_of_incidentCanonicalKeys_eq
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.incidentKeyFresh_of_collisionFree' depends on axioms: [propext,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.incidentKeyFresh_of_collisionFree
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.incidentKeyCollisionFree_of_distinctIncident' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.incidentKeyCollisionFree_of_distinctIncident
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormula_of_collisionFree_degreePos' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormula_of_collisionFree_degreePos
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormula_of_privateIncident_degreePos' depends on axioms: [propext,
  Classical.choice,
  Quot.sound] -/

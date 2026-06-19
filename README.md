@@ -22,6 +22,27 @@ private planning history and speculative research notes.
 
 The audit surface is `lean/CertifiedAffine/Audit.lean`.
 
+## Main-Branch Surface After v0.3.0 — Collision-Free Tseitin Extraction Bridge
+
+The main branch now exposes a direct canonical-key collision surface for the
+low-degree Tseitin extraction lane.  This separates the local collision analysis
+from the earlier private/distinct-incident witness conditions.
+
+- `AtomicClassBridge.incidentIndex_mem_iff_of_incidentCanonicalKeys_eq`:
+  equal canonical incident-support keys force identical concrete incident-index
+  membership.
+- `AtomicClassBridge.not_distinctIncidentSets_of_incidentCanonicalKeys_eq`:
+  a local canonical-key collision blocks the global `DistinctIncidentSets`
+  side condition for that vertex pair.
+- `AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormula_of_collisionFree_degreePos`:
+  collision-free canonical incident keys plus positive in-range degree suffice
+  for `SemanticExtractorCompleteOn` on the Tseitin CNF/parity pair.
+
+Scope note: this is a reusable sufficient condition for certified affine/GF(2)
+Tseitin extraction.  It is not arbitrary graph extraction by itself, not a
+general SAT algorithm, not a general CNF-to-XOR recognizer, not an NP or circuit
+lower bound, and not a P-vs-NP claim.
+
 ## v0.3.0 Surface — Private-Incident Tseitin Extraction Bridge
 
 v0.3.0 adds a reusable graph-local sufficient condition for certified affine extraction
