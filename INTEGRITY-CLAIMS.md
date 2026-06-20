@@ -26,6 +26,7 @@ Tseitin families** (uniform directed cycles, plus generic helpers). That is the 
 | `…AtomicClassBridge.semanticExtractorCompleteOn_tseitinCNFFormula_of_privateIncident_degreePos` | Reusable graph-local private-incident sufficient condition for semantic extractor completeness over Tseitin CNF formulas, assuming positive degree. | propext, Classical.choice, Quot.sound | General bridge theorem |
 | `…AtomicClassBridge.path3_privateIncidentWitnesses` | Concrete private-incident witness package for the path P3. | propext, Quot.sound | Non-cycle witness data |
 | `…AtomicClassBridge.semanticExtractorCompleteOn_path3_privateIncident` | P3 semantic extractor completeness routed through the private-incident bridge and public surface. | propext, Classical.choice, Quot.sound | Non-cycle witness theorem |
+| `…AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_append_sameSupportComponents_of_keyDisjoint` | Two generated same-support collision components compose through the no-search fallback splitter when their canonical support keys are disjoint. The concrete `…twoDisjointTwoCycleSameSupportWitness` instantiates two disjoint two-charge components over supports `[0,1,2,3]` and `[4,5,6,7]`. | propext, Classical.choice, Quot.sound | General append bridge + concrete affine witness |
 
 **No declaration depends on `sorryAx`.** The `Lean.ofReduceBool` axiom marks `native_decide`-checked
 **concrete instances** — finite computations, not general theorems.

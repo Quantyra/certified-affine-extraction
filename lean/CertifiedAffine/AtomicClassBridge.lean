@@ -10121,6 +10121,104 @@ theorem splitCanonicalSupportClauseGroupsWithTwoChargeFallback_append_of_residua
                           unfold splitCanonicalSupportClauseGroupsWithTwoChargeFallback
                           simp [hih, hgempty, hinferEmpty, hrecEmpty]
 
+/-
+Residual-free no-search fallback support-group splits compose across appended
+group lists.  This is the non-exhaustive analogue of
+`splitCanonicalSupportClauseGroupsWithTwoChargeFallback_append_of_residual_free`.
+-/
+theorem splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_append_of_residual_free
+    {m : Nat}
+    {leftGroups rightGroups : List (CanonicalSupportClauseGroup m)}
+    {leftBlocks rightBlocks :
+      List (CanonicalFingerprintRecognizedParityBlock m)}
+    (hleft :
+      splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback leftGroups =
+        { blocks := leftBlocks, residualCNF := [] })
+    (hright :
+      splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback rightGroups =
+        { blocks := rightBlocks, residualCNF := [] }) :
+    splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback
+        (leftGroups ++ rightGroups) =
+      { blocks := leftBlocks ++ rightBlocks, residualCNF := [] } := by
+  induction leftGroups generalizing leftBlocks with
+  | nil =>
+      simp [splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback] at hleft
+      cases hleft
+      simpa [splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback] using hright
+  | cons g groups ih =>
+      unfold splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback at hleft
+      cases hinfer : inferCanonicalParityBlock g.2 with
+      | some b =>
+          cases htail :
+              splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups with
+          | mk tailBlocks tailResidual =>
+              simp [hinfer, htail] at hleft
+              cases leftBlocks with
+              | nil =>
+                  simp at hleft
+              | cons b' leftBlocksTail =>
+                  cases hleft with
+                  | intro hblocks hresidual =>
+                      cases hblocks
+                      cases hresidual
+                      have htailFree :
+                          splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups =
+                            { blocks := tailBlocks, residualCNF := [] } := by
+                        simpa using htail
+                      have hih := ih htailFree
+                      unfold splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback
+                      simp [hinfer, hih]
+      | none =>
+          cases hrec : recoverSameSupportGroupWithNonexhaustiveFallback? g.2 with
+          | some d =>
+              cases htail :
+                  splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups with
+              | mk tailBlocks tailResidual =>
+                  simp [hinfer, hrec, htail] at hleft
+                  cases hleft with
+                  | intro hblocks hresidual =>
+                      have hdres : d.residualCNF = [] := by
+                        exact hresidual.1
+                      have htailResidual : tailResidual = [] := by
+                        exact hresidual.2
+                      have htailFree :
+                          splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups =
+                            { blocks := tailBlocks, residualCNF := [] } := by
+                        simpa [htailResidual] using htail
+                      have hih := ih htailFree
+                      have hblocksAppend :
+                          d.blocks ++ (tailBlocks ++ rightBlocks) =
+                            leftBlocks ++ rightBlocks := by
+                        rw [<- List.append_assoc, hblocks]
+                      unfold splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback
+                      simp [hinfer, hrec, hih, hdres, hblocksAppend]
+          | none =>
+              cases htail :
+                  splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups with
+              | mk tailBlocks tailResidual =>
+                  simp [hinfer, hrec, htail] at hleft
+                  cases hleft with
+                  | intro hblocks hrest =>
+                      cases hrest with
+                      | intro hgempty hresidual =>
+                          cases hblocks
+                          cases hresidual
+                          have htailFree :
+                              splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups =
+                                { blocks := leftBlocks, residualCNF := [] } := by
+                            simpa using htail
+                          have hih := ih htailFree
+                          have hinferEmpty :
+                              inferCanonicalParityBlock
+                                ([] : CNFModel.CNF m) = none := by
+                            simpa [hgempty] using hinfer
+                          have hrecEmpty :
+                              recoverSameSupportGroupWithNonexhaustiveFallback?
+                                ([] : CNFModel.CNF m) = none := by
+                            simpa [hgempty] using hrec
+                          unfold splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback
+                          simp [hih, hgempty, hinferEmpty, hrecEmpty]
+
 /--
 Exact enhanced fallback splitter frame under operational
 canonical-support-key disjointness.  If each fragment is already residual-free
@@ -11758,6 +11856,89 @@ theorem enhancedSemanticExtractorCompleteOn_append_of_disjointSupport
       f g hdisjoint hnonempty)
     hleft hright
 
+/-
+No-search fallback extractor completeness composes when the grouping pass frames
+an append as the concatenation of the two fragment groupings.
+-/
+theorem nonexhaustiveExtractorCompleteOn_append_of_groupAppend
+    {m : Nat} {f g : CNFModel.CNF m}
+    {s t : ParityEncoded.GF2Formula m}
+    (hgroups :
+      groupClausesByCanonicalSupport (f ++ g) =
+        groupClausesByCanonicalSupport f ++ groupClausesByCanonicalSupport g)
+    (hleft : NonexhaustiveExtractorCompleteOn f s)
+    (hright : NonexhaustiveExtractorCompleteOn g t) :
+    NonexhaustiveExtractorCompleteOn (f ++ g) (List.append s t) := by
+  cases hleft with
+  | intro leftBlocks hleftRest =>
+      cases hleftRest with
+      | intro hleftSplit hleftGF2 =>
+          cases hright with
+          | intro rightBlocks hrightRest =>
+              cases hrightRest with
+              | intro hrightSplit hrightGF2 =>
+                  refine Exists.intro (leftBlocks ++ rightBlocks) ?_
+                  constructor
+                  case left =>
+                    unfold splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+                      at hleftSplit hrightSplit
+                    unfold splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+                    rw [hgroups]
+                    exact
+                      splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_append_of_residual_free
+                        hleftSplit hrightSplit
+                  case right =>
+                    rw [canonicalFingerprintRecognizedBlocksGF2_append]
+                    exact hleftGF2.append hrightGF2
+
+/- No-search fallback extractor completeness composes under canonical-key disjointness. -/
+theorem nonexhaustiveExtractorCompleteOn_append_of_clauseKeysDisjoint
+    {m : Nat} {f g : CNFModel.CNF m}
+    {s t : ParityEncoded.GF2Formula m}
+    (hdisjoint : GroupFrame.CNFClauseKeysDisjoint f g)
+    (hleft : NonexhaustiveExtractorCompleteOn f s)
+    (hright : NonexhaustiveExtractorCompleteOn g t) :
+    NonexhaustiveExtractorCompleteOn (f ++ g) (List.append s t) :=
+  nonexhaustiveExtractorCompleteOn_append_of_groupAppend
+    (GroupFrame.groupClausesByCanonicalSupport_append_of_clauseKeysDisjoint
+      f g hdisjoint)
+    hleft hright
+
+/-
+Combined semantic/no-search extraction composes under operational
+canonical-support-key disjointness.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_append_of_clauseKeysDisjoint
+    {m : Nat} {f g : CNFModel.CNF m}
+    {s t : ParityEncoded.GF2Formula m}
+    (hdisjoint : GroupFrame.CNFClauseKeysDisjoint f g)
+    (hleft : NonexhaustiveSemanticExtractorCompleteOn f s)
+    (hright : NonexhaustiveSemanticExtractorCompleteOn g t) :
+    NonexhaustiveSemanticExtractorCompleteOn (f ++ g) (List.append s t) := by
+  constructor
+  case left =>
+    intro a
+    constructor
+    case mp =>
+      intro hsat
+      have hsplit := (cnfSat_append_iff a f g).1 hsat
+      exact
+        (ParityEncoded.gf2Sat_append_iff a s t).2
+          (And.intro
+            ((hleft.1 a).1 hsplit.1)
+            ((hright.1 a).1 hsplit.2))
+    case mpr =>
+      intro hsat
+      have hsplit := (ParityEncoded.gf2Sat_append_iff a s t).1 hsat
+      exact
+        (cnfSat_append_iff a f g).2
+          (And.intro
+            ((hleft.1 a).2 hsplit.1)
+            ((hright.1 a).2 hsplit.2))
+  case right =>
+    exact nonexhaustiveExtractorCompleteOn_append_of_clauseKeysDisjoint
+      hdisjoint hleft.2 hright.2
+
 /--
 Residual-free enhanced fallback splits with syntactically checked blocks satisfy
 the combined semantic/enhanced-executable package for their emitted GF(2) core.
@@ -12120,6 +12301,220 @@ theorem nonexhaustiveSemanticExtractorCompleteOn_exists_of_perm_generatedParityS
         hgroups hinfer hrec,
       htarget,
       hgf2⟩
+
+/-
+Two generated same-support collision components compose through the no-search
+fallback surface when their canonical support keys are disjoint.  Each component
+may internally contain repeated support keys (for example true/false equations
+over the same support); the disjointness premise is only between the two
+components, so the executable grouping frames the append without merging them.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_append_sameSupportComponents_of_keyDisjoint
+    {m : Nat}
+    {leftVars rightVars : List (Fin m)}
+    {leftCharges rightCharges : List Bool}
+    {leftTarget rightTarget : CNFModel.CNF m}
+    (hleftVars : leftVars ≠ [])
+    (hrightVars : rightVars ≠ [])
+    (hleftNormal : GroupFrame.VarsInCanonicalSupportOrder leftVars)
+    (hrightNormal : GroupFrame.VarsInCanonicalSupportOrder rightVars)
+    (hleftPerm :
+      List.Perm leftTarget
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges leftVars leftCharges)))
+    (hrightPerm :
+      List.Perm rightTarget
+        (generatedParitySpecsCNF
+          (generatedParitySpecsForSupportCharges rightVars rightCharges)))
+    (hleftNonempty : leftTarget ≠ [])
+    (hrightNonempty : rightTarget ≠ [])
+    (hleftInfer : inferCanonicalParityBlock leftTarget = none)
+    (hrightInfer : inferCanonicalParityBlock rightTarget = none)
+    (hdisjoint : GroupFrame.CNFClauseKeysDisjoint leftTarget rightTarget) :
+    exists leftD rightD : CanonicalFingerprintGF2Decomposition m,
+      recoverSameSupportGroupWithNonexhaustiveFallback? leftTarget = some leftD /\
+        recoverSameSupportGroupWithNonexhaustiveFallback? rightTarget = some rightD /\
+          NonexhaustiveSemanticExtractorCompleteOn
+            (leftTarget ++ rightTarget)
+            (List.append leftD.coreGF2 rightD.coreGF2) /\
+            ProductionSameSupportFallbackCoreGF2Target leftTarget leftD.coreGF2 /\
+              ProductionSameSupportFallbackCoreGF2Target rightTarget rightD.coreGF2 /\
+                (forall a : CNFModel.Assignment m,
+                  ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a leftD.coreGF2 <->
+                    ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                      (generatedParitySpecsGF2
+                        (generatedParitySpecsForSupportCharges leftVars leftCharges))) /\
+                  (forall a : CNFModel.Assignment m,
+                    ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a rightD.coreGF2 <->
+                      ResoplusPDT.CNFSat (F := Basic.CNF.mk m) a
+                        (generatedParitySpecsGF2
+                          (generatedParitySpecsForSupportCharges rightVars rightCharges))) := by
+  rcases
+    nonexhaustiveSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport
+      hleftVars hleftNormal hleftPerm hleftNonempty hleftInfer with
+    ⟨leftD, hleftRec, hleftSem, hleftTarget, hleftGF2⟩
+  rcases
+    nonexhaustiveSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport
+      hrightVars hrightNormal hrightPerm hrightNonempty hrightInfer with
+    ⟨rightD, hrightRec, hrightSem, hrightTarget, hrightGF2⟩
+  exact
+    ⟨leftD, rightD, hleftRec, hrightRec,
+      nonexhaustiveSemanticExtractorCompleteOn_append_of_clauseKeysDisjoint
+        hdisjoint hleftSem hrightSem,
+      hleftTarget, hrightTarget, hleftGF2, hrightGF2⟩
+
+/- Witness left support for one two-charge same-support component. -/
+def twoDisjointTwoCycleSameSupportLeftVars : List (Fin 8) :=
+  [⟨0, by decide⟩, ⟨1, by decide⟩, ⟨2, by decide⟩, ⟨3, by decide⟩]
+
+/- Witness right support for a second, key-disjoint two-charge component. -/
+def twoDisjointTwoCycleSameSupportRightVars : List (Fin 8) :=
+  [⟨4, by decide⟩, ⟨5, by decide⟩, ⟨6, by decide⟩, ⟨7, by decide⟩]
+
+/- Each witness component has the two charges of the direct two-cycle boundary. -/
+def twoDisjointTwoCycleSameSupportCharges : List Bool :=
+  [true, false]
+
+/- Left ordinary CNF component for the disjoint two-cycle witness. -/
+def twoDisjointTwoCycleSameSupportLeftCNF : CNFModel.CNF 8 :=
+  generatedParitySpecsCNF
+    (generatedParitySpecsForSupportCharges
+      twoDisjointTwoCycleSameSupportLeftVars
+      twoDisjointTwoCycleSameSupportCharges)
+
+/- Right ordinary CNF component for the disjoint two-cycle witness. -/
+def twoDisjointTwoCycleSameSupportRightCNF : CNFModel.CNF 8 :=
+  generatedParitySpecsCNF
+    (generatedParitySpecsForSupportCharges
+      twoDisjointTwoCycleSameSupportRightVars
+      twoDisjointTwoCycleSameSupportCharges)
+
+/-
+The concrete witness really consists of two same-support collision components:
+each side has two generated equations over one support, the component supports
+have distinct canonical keys, and the baseline one-block recognizer misses both
+components.  Thus this witness is outside the earlier one-block/ordinary
+recognized-component lane and is not a collision-free component internally.
+-/
+theorem twoDisjointTwoCycleSameSupportWitness_shape :
+    twoDisjointTwoCycleSameSupportCharges.length = 2 /\
+      GroupFrame.canonicalSupportKeyForVars twoDisjointTwoCycleSameSupportLeftVars ≠
+        GroupFrame.canonicalSupportKeyForVars twoDisjointTwoCycleSameSupportRightVars /\
+      inferCanonicalParityBlock twoDisjointTwoCycleSameSupportLeftCNF = none /\
+      inferCanonicalParityBlock twoDisjointTwoCycleSameSupportRightCNF = none := by
+  refine ⟨rfl, ?_, ?_, ?_⟩
+  · unfold twoDisjointTwoCycleSameSupportLeftVars
+    unfold twoDisjointTwoCycleSameSupportRightVars
+    unfold GroupFrame.canonicalSupportKeyForVars
+    decide
+  · rfl
+  · rfl
+
+/-
+Concrete nonempty witness: appending two key-disjoint, two-charge same-support
+components is certified by the no-search fallback splitter.  The two components
+are generated over disjoint canonical support keys `[0,1,2,3]` and `[4,5,6,7]`;
+each component contains the two charges `[true,false]` over one support, so the
+ordinary single-block recognizer misses them and the same-support fallback is
+essential.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_twoDisjointTwoCycleSameSupportWitness :
+    exists leftD rightD : CanonicalFingerprintGF2Decomposition 8,
+      recoverSameSupportGroupWithNonexhaustiveFallback?
+          twoDisjointTwoCycleSameSupportLeftCNF = some leftD /\
+        recoverSameSupportGroupWithNonexhaustiveFallback?
+          twoDisjointTwoCycleSameSupportRightCNF = some rightD /\
+          NonexhaustiveSemanticExtractorCompleteOn
+            (twoDisjointTwoCycleSameSupportLeftCNF ++
+              twoDisjointTwoCycleSameSupportRightCNF)
+            (List.append leftD.coreGF2 rightD.coreGF2) /\
+            ProductionSameSupportFallbackCoreGF2Target
+              twoDisjointTwoCycleSameSupportLeftCNF leftD.coreGF2 /\
+              ProductionSameSupportFallbackCoreGF2Target
+                twoDisjointTwoCycleSameSupportRightCNF rightD.coreGF2 /\
+                (forall a : CNFModel.Assignment 8,
+                  ResoplusPDT.CNFSat (F := Basic.CNF.mk 8) a leftD.coreGF2 <->
+                    ResoplusPDT.CNFSat (F := Basic.CNF.mk 8) a
+                      (generatedParitySpecsGF2
+                        (generatedParitySpecsForSupportCharges
+                          twoDisjointTwoCycleSameSupportLeftVars
+                          twoDisjointTwoCycleSameSupportCharges))) /\
+                  (forall a : CNFModel.Assignment 8,
+                    ResoplusPDT.CNFSat (F := Basic.CNF.mk 8) a rightD.coreGF2 <->
+                      ResoplusPDT.CNFSat (F := Basic.CNF.mk 8) a
+                        (generatedParitySpecsGF2
+                          (generatedParitySpecsForSupportCharges
+                            twoDisjointTwoCycleSameSupportRightVars
+                            twoDisjointTwoCycleSameSupportCharges))) := by
+  exact
+    nonexhaustiveSemanticExtractorCompleteOn_append_sameSupportComponents_of_keyDisjoint
+      (leftVars := twoDisjointTwoCycleSameSupportLeftVars)
+      (rightVars := twoDisjointTwoCycleSameSupportRightVars)
+      (leftCharges := twoDisjointTwoCycleSameSupportCharges)
+      (rightCharges := twoDisjointTwoCycleSameSupportCharges)
+      (leftTarget := twoDisjointTwoCycleSameSupportLeftCNF)
+      (rightTarget := twoDisjointTwoCycleSameSupportRightCNF)
+      (by unfold twoDisjointTwoCycleSameSupportLeftVars; decide)
+      (by unfold twoDisjointTwoCycleSameSupportRightVars; decide)
+      (by
+        unfold GroupFrame.VarsInCanonicalSupportOrder
+        unfold twoDisjointTwoCycleSameSupportLeftVars
+        decide)
+      (by
+        unfold GroupFrame.VarsInCanonicalSupportOrder
+        unfold twoDisjointTwoCycleSameSupportRightVars
+        decide)
+      (by simp [twoDisjointTwoCycleSameSupportLeftCNF])
+      (by simp [twoDisjointTwoCycleSameSupportRightCNF])
+      (by unfold twoDisjointTwoCycleSameSupportLeftCNF; decide)
+      (by unfold twoDisjointTwoCycleSameSupportRightCNF; decide)
+      (by rfl)
+      (by rfl)
+      (by
+        unfold twoDisjointTwoCycleSameSupportLeftCNF
+        unfold twoDisjointTwoCycleSameSupportRightCNF
+        unfold twoDisjointTwoCycleSameSupportLeftVars
+        unfold twoDisjointTwoCycleSameSupportRightVars
+        unfold twoDisjointTwoCycleSameSupportCharges
+        intro cf hcf cg hcg hkey
+        simp only [generatedParitySpecsForSupportCharges, generatedParitySpecsCNF,
+          generatedParitySpecCNF, List.bind_cons, List.bind_nil, List.append_nil,
+          List.mem_append] at hcg
+        have hfreshTrue :
+            forall spec : GeneratedParitySpec 8,
+              List.Mem spec
+                [(([⟨0, by decide⟩, ⟨1, by decide⟩, ⟨2, by decide⟩, ⟨3, by decide⟩] : List (Fin 8)), true),
+                 (([⟨0, by decide⟩, ⟨1, by decide⟩, ⟨2, by decide⟩, ⟨3, by decide⟩] : List (Fin 8)), false)] ->
+                Not (GroupFrame.canonicalSupportKeyForVars
+                    ([⟨4, by decide⟩, ⟨5, by decide⟩, ⟨6, by decide⟩, ⟨7, by decide⟩] : List (Fin 8)) =
+                  GroupFrame.canonicalSupportKeyForVars spec.1) := by
+          intro spec hspec
+          cases hspec with
+          | head =>
+              decide
+          | tail _ htail =>
+              cases htail with
+              | head =>
+                  decide
+              | tail _ hnil =>
+                  cases hnil
+        have hdisjTrue :=
+          clauseKeysDisjoint_generatedParitySpecsCNF_of_freshCanonicalSupportKeys
+            (m := 8)
+            (specs := [(([⟨0, by decide⟩, ⟨1, by decide⟩, ⟨2, by decide⟩, ⟨3, by decide⟩] : List (Fin 8)), true),
+              (([⟨0, by decide⟩, ⟨1, by decide⟩, ⟨2, by decide⟩, ⟨3, by decide⟩] : List (Fin 8)), false)])
+            (vars := ([⟨4, by decide⟩, ⟨5, by decide⟩, ⟨6, by decide⟩, ⟨7, by decide⟩] : List (Fin 8)))
+            (charge := true) hfreshTrue
+        have hdisjFalse :=
+          clauseKeysDisjoint_generatedParitySpecsCNF_of_freshCanonicalSupportKeys
+            (m := 8)
+            (specs := [(([⟨0, by decide⟩, ⟨1, by decide⟩, ⟨2, by decide⟩, ⟨3, by decide⟩] : List (Fin 8)), true),
+              (([⟨0, by decide⟩, ⟨1, by decide⟩, ⟨2, by decide⟩, ⟨3, by decide⟩] : List (Fin 8)), false)])
+            (vars := ([⟨4, by decide⟩, ⟨5, by decide⟩, ⟨6, by decide⟩, ⟨7, by decide⟩] : List (Fin 8)))
+            (charge := false) hfreshTrue
+        rcases (List.mem_append.1 hcg) with hcgTrue | hcgFalse
+        · exact hdisjTrue _ hcf _ hcgTrue hkey
+        · exact hdisjFalse _ hcf _ hcgFalse hkey)
 
 /--
 The enhanced fallback splitter satisfies the combined semantic/enhanced-executable

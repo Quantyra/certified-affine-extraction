@@ -3,6 +3,27 @@
 All notable changes to this artifact are documented here. Versions are archived on Zenodo;
 cite the version DOI minted from the corresponding tagged release.
 
+## v0.3.1 — 2026-06-19
+
+### Added — nonexhaustive collision-free append bridge (same-support components under key disjointness)
+- `AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_append_sameSupportComponents_of_keyDisjoint`:
+  two generated same-support collision components compose through the no-search fallback splitter
+  when their canonical support keys are disjoint.
+- Concrete witness `AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_twoDisjointTwoCycleSameSupportWitness`:
+  instantiates two disjoint two-charge components over supports `[0,1,2,3]` and `[4,5,6,7]`.
+- Axiom profile `[propext, Classical.choice, Quot.sound]` for the general theorem;
+  the shape theorem `twoDisjointTwoCycleSameSupportWitness_shape` is axiom-free.
+- `lean/CertifiedAffine/Audit.lean` updated with pinned `#print axioms` guards for the new declarations.
+- `INTEGRITY-CLAIMS.md` updated with the new entry.
+
+### Quality
+- Scope is unchanged: certified affine/GF(2) extraction for scoped Tseitin-style families only.
+
+### Non-claims (binding)
+This release does **not** claim or imply P = NP, P != NP, a general SAT algorithm, a general
+CNF-to-XOR recognizer, or any result beyond the explicitly-scoped, Lean-checked theorems for the
+named Tseitin-style families.
+
 ## v0.2.0 — 2026-06-15
 
 ### Added — executable extractor completeness (scoped Tseitin families)

@@ -22,6 +22,23 @@ private planning history and speculative research notes.
 
 The audit surface is `lean/CertifiedAffine/Audit.lean`.
 
+## Main-Branch Surface After v0.3.1 — Nonexhaustive Collision-Free Append Bridge (same-support components)
+
+v0.3.1 adds a nonexhaustive append bridge for same-support collision components under key-disjointness.
+The new public surface packages the residual-free composition of two generated same-support components
+through the no-search fallback splitter, when their canonical support keys are disjoint.
+
+- `AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_append_sameSupportComponents_of_keyDisjoint`:
+  two generated same-support collision components compose through the no-search fallback splitter
+  when their canonical support keys are disjoint.  Axioms: `[propext, Classical.choice, Quot.sound]`.
+- `AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_twoDisjointTwoCycleSameSupportWitness`:
+  concrete witness instantiating two disjoint two-charge components over supports `[0,1,2,3]` and `[4,5,6,7]`.
+- `AtomicClassBridge.twoDisjointTwoCycleSameSupportWitness_shape`: axiom-free shape theorem for the witness.
+
+Scope note: this is a reusable sufficient condition for certified affine/GF(2) Tseitin extraction.
+It is not arbitrary graph extraction by itself, not a general SAT algorithm, not a general CNF-to-XOR
+recognizer, not an NP or circuit lower bound, and not a P-vs-NP claim.
+
 ## Main-Branch Surface After v0.3.0 — Collision-Free Tseitin Extraction Bridge
 
 The main branch now exposes a direct canonical-key collision surface for the
