@@ -3032,6 +3032,42 @@ theorem clauseKeysDisjoint_generatedParitySpecsCNF_of_freshCanonicalSupportKeys
     rw [← hcgKey, hkey, hcfKey]
   exact hfresh spec hspec hsupportKey
 
+/-- Two generated-spec CNFs are clause-key-disjoint when every generated support
+key on the left is distinct from every generated support key on the right. -/
+theorem clauseKeysDisjoint_generatedParitySpecsCNF_of_pairwiseFreshCanonicalSupportKeys
+    {m : Nat}
+    {left right : List (GeneratedParitySpec m)}
+    (hfresh :
+      forall lspec : GeneratedParitySpec m,
+        List.Mem lspec left ->
+          forall rspec : GeneratedParitySpec m,
+            List.Mem rspec right ->
+              Not (GroupFrame.canonicalSupportKeyForVars lspec.1 =
+                GroupFrame.canonicalSupportKeyForVars rspec.1)) :
+    GroupFrame.CNFClauseKeysDisjoint
+      (generatedParitySpecsCNF left)
+      (generatedParitySpecsCNF right) := by
+  intro cf hcf cg hcg hkey
+  rcases mem_generatedParitySpecsCNF_imp_exists_spec hcf with
+    ⟨lspec, hlspec, hcfSpec⟩
+  rcases mem_generatedParitySpecsCNF_imp_exists_spec hcg with
+    ⟨rspec, hrspec, hcgSpec⟩
+  have hcfKey :
+      canonicalClauseSupportKey cf =
+        GroupFrame.canonicalSupportKeyForVars lspec.1 :=
+    GroupFrame.cnfClausesHaveCanonicalSupportKey_clausesForVertex
+      (m := m) (vars := lspec.1) (charge := lspec.2) cf hcfSpec
+  have hcgKey :
+      canonicalClauseSupportKey cg =
+        GroupFrame.canonicalSupportKeyForVars rspec.1 :=
+    GroupFrame.cnfClausesHaveCanonicalSupportKey_clausesForVertex
+      (m := m) (vars := rspec.1) (charge := rspec.2) cg hcgSpec
+  have hsupportKey :
+      GroupFrame.canonicalSupportKeyForVars lspec.1 =
+        GroupFrame.canonicalSupportKeyForVars rspec.1 := by
+    rw [← hcfKey, ← hkey, hcgKey]
+  exact hfresh lspec hlspec rspec hrspec hsupportKey
+
 /-- Generated parity specs obtained from an incident-list Tseitin encoder. -/
 def generatedParitySpecsFromIncident {m : Nat}
     (vertices : List Nat)
@@ -10300,6 +10336,36 @@ theorem splitCanonicalSupportClauseGroupsWithTwoChargeFallback_of_groupsRecogniz
           simp [splitCanonicalSupportClauseGroupsWithTwoChargeFallback,
             hinfer, hsplit]
 
+/--
+Recognized canonical support groups are residual-free for the no-search fallback
+splitter as well.  The same-support fallback branch is not used: every group is
+accepted by the ordinary one-block recognizer first.
+-/
+theorem splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_of_groupsRecognized
+    {m : Nat}
+    {groups : List (CanonicalSupportClauseGroup m)}
+    {blocks : List (CanonicalFingerprintRecognizedParityBlock m)}
+    (h : ExtractorCompleteness.GroupsRecognized groups blocks) :
+    splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback groups =
+      { blocks := blocks, residualCNF := [] } := by
+  induction groups generalizing blocks with
+  | nil =>
+      cases blocks with
+      | nil =>
+          rfl
+      | cons _ _ =>
+          cases h
+  | cons g groups ih =>
+      cases blocks with
+      | nil =>
+          cases h
+      | cons b blocks =>
+          have hinfer : inferCanonicalParityBlock g.2 = some b := h.1
+          have htail : ExtractorCompleteness.GroupsRecognized groups blocks := h.2
+          have hsplit := ih htail
+          simp [splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback,
+            hinfer, hsplit]
+
 /-- Enhanced splitter output on the direct two-cycle same-support boundary. -/
 def twoCycleSameSupportTwoChargeFallbackSplitter :
     CanonicalFingerprintGF2Decomposition
@@ -11904,6 +11970,51 @@ theorem nonexhaustiveExtractorCompleteOn_append_of_clauseKeysDisjoint
       f g hdisjoint)
     hleft hright
 
+/--
+Recognized canonical support groups give no-search fallback extractor
+completeness.  This records the ordinary recognized-component lane inside the
+non-exhaustive splitter, before any same-support fallback branch is considered.
+-/
+theorem nonexhaustiveExtractorCompleteOn_of_groupRecognition
+    {m : Nat} {f : CNFModel.CNF m}
+    {s : ParityEncoded.GF2Formula m}
+    {groups : List (CanonicalSupportClauseGroup m)}
+    {blocks : List (CanonicalFingerprintRecognizedParityBlock m)}
+    (hgroups : groupClausesByCanonicalSupport f = groups)
+    (hrec : ExtractorCompleteness.GroupsRecognized groups blocks)
+    (hgf2 : List.Perm (canonicalFingerprintRecognizedBlocksGF2 blocks) s) :
+    NonexhaustiveExtractorCompleteOn f s := by
+  refine Exists.intro blocks ?_
+  constructor
+  · unfold splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+    rw [hgroups]
+    exact
+      splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_of_groupsRecognized
+        hrec
+  · exact hgf2
+
+/--
+Generated key-disjoint ordinary families are accepted by the no-search fallback
+splitter through the ordinary recognized-group lane.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_of_generatedKeyDisjointFamily
+    {m : Nat}
+    {f : CNFModel.CNF m}
+    {s : ParityEncoded.GF2Formula m}
+    (hfamily : GeneratedKeyDisjointFamily m f s) :
+    NonexhaustiveSemanticExtractorCompleteOn f s := by
+  rcases groupsRecognized_exists_of_generatedKeyDisjointFamily hfamily with
+    ⟨blocks, hrec, hgf2⟩
+  exact
+    nonexhaustiveSemanticExtractorCompleteOn_of_class
+      (class_of_generatedKeyDisjointFamily hfamily)
+      (nonexhaustiveExtractorCompleteOn_of_groupRecognition
+        (f := f)
+        (groups := groupClausesByCanonicalSupport f)
+        (blocks := blocks)
+        rfl hrec hgf2)
+
+
 /-
 Combined semantic/no-search extraction composes under operational
 canonical-support-key disjointness.
@@ -11938,6 +12049,54 @@ theorem nonexhaustiveSemanticExtractorCompleteOn_append_of_clauseKeysDisjoint
   case right =>
     exact nonexhaustiveExtractorCompleteOn_append_of_clauseKeysDisjoint
       hdisjoint hleft.2 hright.2
+
+/--
+Finite no-search component-list certificate: each head component is already a
+semantic/no-search extraction component, and its canonical support keys are
+disjoint from the concatenated tail CNF.  This is only a certified affine/GF(2)
+extraction composition certificate; it is not a SAT, PvNP, lower-bound, or
+general-recognizer claim.
+-/
+inductive NonexhaustiveKeyDisjointComponentList {m : Nat} :
+    List (CNFModel.CNF m × ParityEncoded.GF2Formula m) → Prop
+  | nil : NonexhaustiveKeyDisjointComponentList []
+  | cons {f : CNFModel.CNF m} {s : ParityEncoded.GF2Formula m}
+      {rest : List (CNFModel.CNF m × ParityEncoded.GF2Formula m)}
+      (hhead : NonexhaustiveSemanticExtractorCompleteOn f s)
+      (htail : NonexhaustiveKeyDisjointComponentList rest)
+      (hdisjoint : GroupFrame.CNFClauseKeysDisjoint f (rest.bind Prod.fst)) :
+      NonexhaustiveKeyDisjointComponentList ((f, s) :: rest)
+
+/--
+Finite no-search component-list composition under the head-vs-tail
+canonical-key-disjoint certificate.  The conclusion is bounded to the Lean
+`NonexhaustiveSemanticExtractorCompleteOn` affine/GF(2) extraction surface.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_of_keyDisjointComponentList
+    {m : Nat}
+    {components : List (CNFModel.CNF m × ParityEncoded.GF2Formula m)}
+    (h : NonexhaustiveKeyDisjointComponentList components) :
+    NonexhaustiveSemanticExtractorCompleteOn
+      (components.bind Prod.fst)
+      (components.bind Prod.snd) := by
+  induction h with
+  | nil =>
+      exact
+        nonexhaustiveSemanticExtractorCompleteOn_of_class
+          (ParityEncoded.Class.empty (m := m))
+          (nonexhaustiveExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+            (f := ([] : CNFModel.CNF m))
+            (blocks := ([] : List (CanonicalFingerprintRecognizedParityBlock m)))
+            (s := ([] : ParityEncoded.GF2Formula m))
+            (by
+              simp [splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback,
+                splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback,
+                groupClausesByCanonicalSupport])
+            (List.Perm.refl _))
+  | cons hhead htail hdisjoint ih =>
+      simpa using
+      nonexhaustiveSemanticExtractorCompleteOn_append_of_clauseKeysDisjoint
+          hdisjoint hhead ih
 
 /--
 Residual-free enhanced fallback splits with syntactically checked blocks satisfy
@@ -12302,6 +12461,214 @@ theorem nonexhaustiveSemanticExtractorCompleteOn_exists_of_perm_generatedParityS
       htarget,
       hgf2⟩
 
+/-- One finite generated same-support component: support variables, component
+charges, and the concrete CNF target carrying those generated clauses. -/
+abbrev SameSupportComponentSpec (m : Nat) :=
+  List (Fin m) × List Bool × CNFModel.CNF m
+
+/-- The concrete CNF carried by one generated same-support component. -/
+def sameSupportComponentCNF {m : Nat} (component : SameSupportComponentSpec m) :
+    CNFModel.CNF m :=
+  component.2.2
+
+/-- Append the concrete CNFs carried by a finite same-support component list. -/
+def sameSupportComponentsCNF {m : Nat}
+    (components : List (SameSupportComponentSpec m)) : CNFModel.CNF m :=
+  components.bind sameSupportComponentCNF
+
+/-- Append the recovered quotient GF(2) cores for a finite component list. -/
+def sameSupportComponentCoresGF2 {m : Nat}
+    (ds : List (CanonicalFingerprintGF2Decomposition m)) :
+    ParityEncoded.GF2Formula m :=
+  ds.bind (fun d => d.coreGF2)
+
+/--
+Finite generated same-support component-list certificate.  Each component is a
+nonempty generated same-support collision component missed by the ordinary
+one-block recognizer; each head component is canonical-key-disjoint from the
+concatenated tail, so grouping never merges distinct quotient components.  This
+certificate only describes certified affine/GF(2) extraction components, not
+SAT solving, PvNP, lower bounds, or arbitrary graph recognition.
+-/
+inductive NonexhaustiveSameSupportKeyDisjointComponentList {m : Nat} :
+    List (SameSupportComponentSpec m) → Prop
+  | nil : NonexhaustiveSameSupportKeyDisjointComponentList []
+  | cons
+      {vars : List (Fin m)} {charges : List Bool} {target : CNFModel.CNF m}
+      {rest : List (SameSupportComponentSpec m)}
+      (hvars : vars ≠ [])
+      (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+      (hperm :
+        List.Perm target
+          (generatedParitySpecsCNF
+            (generatedParitySpecsForSupportCharges vars charges)))
+      (hnonempty : target ≠ [])
+      (hinfer : inferCanonicalParityBlock target = none)
+      (htail : NonexhaustiveSameSupportKeyDisjointComponentList rest)
+      (hdisjoint :
+        GroupFrame.CNFClauseKeysDisjoint target
+          (sameSupportComponentsCNF rest)) :
+      NonexhaustiveSameSupportKeyDisjointComponentList
+        ((vars, charges, target) :: rest)
+
+/--
+Finite quotient-component composition theorem for generated same-support
+components.  The theorem only claims the composed no-search extraction surface
+for components satisfying the explicit same-support generation, nonempty,
+ordinary-recognizer-miss, and head-vs-tail canonical-key-disjoint premises; it
+does not assert SAT solving, PvNP/lower-bound consequences, or a general graph
+recognizer.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_of_sameSupportKeyDisjointComponentList
+    {m : Nat}
+    {components : List (SameSupportComponentSpec m)}
+    (h : NonexhaustiveSameSupportKeyDisjointComponentList components) :
+    exists ds : List (CanonicalFingerprintGF2Decomposition m),
+      ds.length = components.length /\
+        NonexhaustiveSemanticExtractorCompleteOn
+          (sameSupportComponentsCNF components)
+          (sameSupportComponentCoresGF2 ds) := by
+  induction h with
+  | nil =>
+      refine ⟨[], rfl, ?_⟩
+      exact
+        nonexhaustiveSemanticExtractorCompleteOn_of_class
+          (ParityEncoded.Class.empty (m := m))
+          (nonexhaustiveExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+            (f := ([] : CNFModel.CNF m))
+            (blocks := ([] : List (CanonicalFingerprintRecognizedParityBlock m)))
+            (s := ([] : ParityEncoded.GF2Formula m))
+            (by
+              simp [sameSupportComponentsCNF, sameSupportComponentCoresGF2,
+                splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback,
+                splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback,
+                groupClausesByCanonicalSupport])
+            (List.Perm.refl _))
+  | cons hvars hnormal hperm hnonempty hinfer _htail hdisjoint ih =>
+      rcases
+        nonexhaustiveSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport
+          hvars hnormal hperm hnonempty hinfer with
+        ⟨d, _hrec, hhead, _htarget, _hgf2⟩
+      rcases ih with ⟨tailDs, hlen, htailSem⟩
+      refine ⟨d :: tailDs, ?_, ?_⟩
+      · simp [hlen]
+      · simpa [sameSupportComponentsCNF, sameSupportComponentCNF,
+          sameSupportComponentCoresGF2] using
+          nonexhaustiveSemanticExtractorCompleteOn_append_of_clauseKeysDisjoint
+            hdisjoint hhead htailSem
+
+/-- A quotient component is either an already-certified ordinary component or a
+generated same-support fallback component. -/
+inductive MixedQuotientComponentSpec (m : Nat) where
+  | ordinary : CNFModel.CNF m → ParityEncoded.GF2Formula m →
+      MixedQuotientComponentSpec m
+  | sameSupport : List (Fin m) → List Bool → CNFModel.CNF m →
+      MixedQuotientComponentSpec m
+
+/-- The CNF carried by one mixed quotient component. -/
+def mixedQuotientComponentCNF {m : Nat} :
+    MixedQuotientComponentSpec m → CNFModel.CNF m
+  | MixedQuotientComponentSpec.ordinary f _ => f
+  | MixedQuotientComponentSpec.sameSupport _ _ target => target
+
+/-- Append the concrete CNFs carried by a finite mixed quotient certificate. -/
+def mixedQuotientComponentsCNF {m : Nat}
+    (components : List (MixedQuotientComponentSpec m)) : CNFModel.CNF m :=
+  components.bind mixedQuotientComponentCNF
+
+/-- Shape predicates used by finite witness theorems. -/
+def MixedQuotientComponentSpec.IsOrdinary {m : Nat} :
+    MixedQuotientComponentSpec m → Prop
+  | MixedQuotientComponentSpec.ordinary _ _ => True
+  | MixedQuotientComponentSpec.sameSupport _ _ _ => False
+
+/-- Shape predicates used by finite witness theorems. -/
+def MixedQuotientComponentSpec.IsSameSupportFallback {m : Nat} :
+    MixedQuotientComponentSpec m → Prop
+  | MixedQuotientComponentSpec.ordinary _ _ => False
+  | MixedQuotientComponentSpec.sameSupport _ _ _ => True
+
+/--
+Finite mixed quotient-component certificate.  Ordinary heads carry an existing
+`NonexhaustiveSemanticExtractorCompleteOn` proof; same-support heads carry the
+same generated/nonempty/recognizer-miss data as `SameSupportComponentSpec`.
+Every head is canonical-key-disjoint from the concatenated tail.  The claim is
+only a certified affine/GF(2) extraction composition certificate.
+-/
+inductive NonexhaustiveMixedQuotientKeyDisjointComponentList {m : Nat} :
+    List (MixedQuotientComponentSpec m) → Prop
+  | nil : NonexhaustiveMixedQuotientKeyDisjointComponentList []
+  | ordinary {f : CNFModel.CNF m} {s : ParityEncoded.GF2Formula m}
+      {rest : List (MixedQuotientComponentSpec m)}
+      (hhead : NonexhaustiveSemanticExtractorCompleteOn f s)
+      (htail : NonexhaustiveMixedQuotientKeyDisjointComponentList rest)
+      (hdisjoint : GroupFrame.CNFClauseKeysDisjoint f
+        (mixedQuotientComponentsCNF rest)) :
+      NonexhaustiveMixedQuotientKeyDisjointComponentList
+        (MixedQuotientComponentSpec.ordinary f s :: rest)
+  | sameSupport
+      {vars : List (Fin m)} {charges : List Bool} {target : CNFModel.CNF m}
+      {rest : List (MixedQuotientComponentSpec m)}
+      (hvars : vars ≠ [])
+      (hnormal : GroupFrame.VarsInCanonicalSupportOrder vars)
+      (hperm :
+        List.Perm target
+          (generatedParitySpecsCNF
+            (generatedParitySpecsForSupportCharges vars charges)))
+      (hnonempty : target ≠ [])
+      (hinfer : inferCanonicalParityBlock target = none)
+      (htail : NonexhaustiveMixedQuotientKeyDisjointComponentList rest)
+      (hdisjoint : GroupFrame.CNFClauseKeysDisjoint target
+        (mixedQuotientComponentsCNF rest)) :
+      NonexhaustiveMixedQuotientKeyDisjointComponentList
+        (MixedQuotientComponentSpec.sameSupport vars charges target :: rest)
+
+/--
+Finite mixed quotient/decomposition bridge for components that combine ordinary
+certified no-search extraction components with generated same-support fallback
+components.  It returns the concatenated recovered GF(2) quotient target but does
+not assert a general graph recognizer, SAT solver, or lower-bound consequence.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_of_mixedQuotientKeyDisjointComponentList
+    {m : Nat}
+    {components : List (MixedQuotientComponentSpec m)}
+    (h : NonexhaustiveMixedQuotientKeyDisjointComponentList components) :
+    exists s : ParityEncoded.GF2Formula m,
+      NonexhaustiveSemanticExtractorCompleteOn
+        (mixedQuotientComponentsCNF components) s := by
+  induction h with
+  | nil =>
+      refine ⟨[], ?_⟩
+      exact
+        nonexhaustiveSemanticExtractorCompleteOn_of_class
+          (ParityEncoded.Class.empty (m := m))
+          (nonexhaustiveExtractorCompleteOn_of_splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback
+            (f := ([] : CNFModel.CNF m))
+            (blocks := ([] : List (CanonicalFingerprintRecognizedParityBlock m)))
+            (s := ([] : ParityEncoded.GF2Formula m))
+            (by
+              simp [mixedQuotientComponentsCNF,
+                splitArityFourParityCanonicalSupportGroupsWithNonexhaustiveFallback,
+                splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback,
+                groupClausesByCanonicalSupport])
+            (List.Perm.refl _))
+  | ordinary hhead _htail hdisjoint ih =>
+      rcases ih with ⟨tailS, htailSem⟩
+      exact ⟨_, by
+        simpa [mixedQuotientComponentsCNF, mixedQuotientComponentCNF] using
+          nonexhaustiveSemanticExtractorCompleteOn_append_of_clauseKeysDisjoint
+            hdisjoint hhead htailSem⟩
+  | sameSupport hvars hnormal hperm hnonempty hinfer _htail hdisjoint ih =>
+      rcases
+        nonexhaustiveSemanticExtractorCompleteOn_exists_of_perm_generatedParitySpecs_sameSupport
+          hvars hnormal hperm hnonempty hinfer with
+        ⟨d, _hrec, hhead, _htarget, _hgf2⟩
+      rcases ih with ⟨tailS, htailSem⟩
+      refine ⟨List.append d.coreGF2 tailS, ?_⟩
+      simpa [mixedQuotientComponentsCNF, mixedQuotientComponentCNF] using
+        nonexhaustiveSemanticExtractorCompleteOn_append_of_clauseKeysDisjoint
+          hdisjoint hhead htailSem
+
 /-
 Two generated same-support collision components compose through the no-search
 fallback surface when their canonical support keys are disjoint.  Each component
@@ -12515,6 +12882,461 @@ theorem nonexhaustiveSemanticExtractorCompleteOn_twoDisjointTwoCycleSameSupportW
         rcases (List.mem_append.1 hcg) with hcgTrue | hcgFalse
         · exact hdisjTrue _ hcf _ hcgTrue hkey
         · exact hdisjFalse _ hcf _ hcgFalse hkey)
+
+/-- A three-component finite witness support, first component. -/
+def threeMixedSameSupportFirstVars : List (Fin 12) :=
+  [⟨0, by decide⟩, ⟨1, by decide⟩, ⟨2, by decide⟩, ⟨3, by decide⟩]
+
+/-- A three-component finite witness support, second component. -/
+def threeMixedSameSupportSecondVars : List (Fin 12) :=
+  [⟨4, by decide⟩, ⟨5, by decide⟩, ⟨6, by decide⟩, ⟨7, by decide⟩]
+
+/-- A three-component finite witness support, third component. -/
+def threeMixedSameSupportThirdVars : List (Fin 12) :=
+  [⟨8, by decide⟩, ⟨9, by decide⟩, ⟨10, by decide⟩, ⟨11, by decide⟩]
+
+/-- Mixed nonempty component charges: each component has an internal support collision. -/
+def threeMixedSameSupportCharges : List Bool :=
+  [true, false]
+
+def threeMixedSameSupportFirstCNF : CNFModel.CNF 12 :=
+  generatedParitySpecsCNF
+    (generatedParitySpecsForSupportCharges
+      threeMixedSameSupportFirstVars threeMixedSameSupportCharges)
+
+def threeMixedSameSupportSecondCNF : CNFModel.CNF 12 :=
+  generatedParitySpecsCNF
+    (generatedParitySpecsForSupportCharges
+      threeMixedSameSupportSecondVars threeMixedSameSupportCharges)
+
+def threeMixedSameSupportThirdCNF : CNFModel.CNF 12 :=
+  generatedParitySpecsCNF
+    (generatedParitySpecsForSupportCharges
+      threeMixedSameSupportThirdVars threeMixedSameSupportCharges)
+
+def threeMixedSameSupportComponents : List (SameSupportComponentSpec 12) :=
+  [(threeMixedSameSupportFirstVars, threeMixedSameSupportCharges,
+      threeMixedSameSupportFirstCNF),
+    (threeMixedSameSupportSecondVars, threeMixedSameSupportCharges,
+      threeMixedSameSupportSecondCNF),
+    (threeMixedSameSupportThirdVars, threeMixedSameSupportCharges,
+      threeMixedSameSupportThirdCNF)]
+
+/--
+Concrete shape facts for the finite witness: it has three nonempty generated
+same-support collision components, each with two charges over one support, the
+three component support keys are pairwise distinct, and the ordinary one-block
+recognizer misses each component.  This theorem is an executable shape check
+only for this certified affine/GF(2) witness.
+-/
+theorem threeMixedSameSupportComponentWitness_shape :
+    threeMixedSameSupportComponents.length = 3 /\
+      threeMixedSameSupportCharges.length = 2 /\
+      GroupFrame.canonicalSupportKeyForVars threeMixedSameSupportFirstVars ≠
+        GroupFrame.canonicalSupportKeyForVars threeMixedSameSupportSecondVars /\
+      GroupFrame.canonicalSupportKeyForVars threeMixedSameSupportFirstVars ≠
+        GroupFrame.canonicalSupportKeyForVars threeMixedSameSupportThirdVars /\
+      GroupFrame.canonicalSupportKeyForVars threeMixedSameSupportSecondVars ≠
+        GroupFrame.canonicalSupportKeyForVars threeMixedSameSupportThirdVars /\
+      inferCanonicalParityBlock threeMixedSameSupportFirstCNF = none /\
+      inferCanonicalParityBlock threeMixedSameSupportSecondCNF = none /\
+      inferCanonicalParityBlock threeMixedSameSupportThirdCNF = none := by
+  refine ⟨rfl, rfl, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · unfold threeMixedSameSupportFirstVars
+    unfold threeMixedSameSupportSecondVars
+    decide
+  · unfold threeMixedSameSupportFirstVars
+    unfold threeMixedSameSupportThirdVars
+    decide
+  · unfold threeMixedSameSupportSecondVars
+    unfold threeMixedSameSupportThirdVars
+    decide
+  · rfl
+  · rfl
+  · rfl
+
+/--
+Concrete nonempty finite witness beyond the prior two-component bridge: three
+key-disjoint generated same-support collision components compose through the
+finite no-search quotient-component theorem.  The result is limited to
+`NonexhaustiveSemanticExtractorCompleteOn` for the displayed certified
+affine/GF(2) construction; it does not claim SAT/PvNP/lower-bound results or
+arbitrary graph extraction.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_threeMixedSameSupportComponentWitness :
+    exists ds : List (CanonicalFingerprintGF2Decomposition 12),
+      ds.length = 3 /\
+        NonexhaustiveSemanticExtractorCompleteOn
+          (sameSupportComponentsCNF threeMixedSameSupportComponents)
+          (sameSupportComponentCoresGF2 ds) := by
+  have hcert :
+      NonexhaustiveSameSupportKeyDisjointComponentList
+        threeMixedSameSupportComponents := by
+    unfold threeMixedSameSupportComponents
+    apply NonexhaustiveSameSupportKeyDisjointComponentList.cons
+    · unfold threeMixedSameSupportFirstVars; decide
+    · unfold GroupFrame.VarsInCanonicalSupportOrder
+      unfold threeMixedSameSupportFirstVars
+      decide
+    · simp [threeMixedSameSupportFirstCNF]
+    · unfold threeMixedSameSupportFirstCNF; decide
+    · rfl
+    · apply NonexhaustiveSameSupportKeyDisjointComponentList.cons
+      · unfold threeMixedSameSupportSecondVars; decide
+      · unfold GroupFrame.VarsInCanonicalSupportOrder
+        unfold threeMixedSameSupportSecondVars
+        decide
+      · simp [threeMixedSameSupportSecondCNF]
+      · unfold threeMixedSameSupportSecondCNF; decide
+      · rfl
+      · apply NonexhaustiveSameSupportKeyDisjointComponentList.cons
+        · unfold threeMixedSameSupportThirdVars; decide
+        · unfold GroupFrame.VarsInCanonicalSupportOrder
+          unfold threeMixedSameSupportThirdVars
+          decide
+        · simp [threeMixedSameSupportThirdCNF]
+        · unfold threeMixedSameSupportThirdCNF; decide
+        · rfl
+        · exact NonexhaustiveSameSupportKeyDisjointComponentList.nil
+        · unfold sameSupportComponentsCNF
+          intro c _hc d hd
+          cases hd
+      · simpa [sameSupportComponentsCNF, sameSupportComponentCNF,
+          threeMixedSameSupportSecondCNF, threeMixedSameSupportThirdCNF,
+          threeMixedSameSupportSecondVars, threeMixedSameSupportThirdVars,
+          threeMixedSameSupportCharges, generatedParitySpecsCNF_eq_bind] using
+          (clauseKeysDisjoint_generatedParitySpecsCNF_of_pairwiseFreshCanonicalSupportKeys
+            (m := 12)
+            (left := generatedParitySpecsForSupportCharges
+              threeMixedSameSupportSecondVars threeMixedSameSupportCharges)
+            (right := generatedParitySpecsForSupportCharges
+              threeMixedSameSupportThirdVars threeMixedSameSupportCharges)
+            (by
+              intro l hl r hr hkey
+              have hlvars :=
+                generatedParitySpecsForSupportCharges_sameSupport
+                  threeMixedSameSupportSecondVars threeMixedSameSupportCharges l hl
+              have hrvars :=
+                generatedParitySpecsForSupportCharges_sameSupport
+                  threeMixedSameSupportThirdVars threeMixedSameSupportCharges r hr
+              rw [hlvars, hrvars] at hkey
+              exact (by
+                unfold threeMixedSameSupportSecondVars
+                unfold threeMixedSameSupportThirdVars
+                decide : Not
+                  (GroupFrame.canonicalSupportKeyForVars
+                    threeMixedSameSupportSecondVars =
+                    GroupFrame.canonicalSupportKeyForVars
+                      threeMixedSameSupportThirdVars)) hkey))
+    · simpa [sameSupportComponentsCNF, sameSupportComponentCNF,
+        threeMixedSameSupportFirstCNF, threeMixedSameSupportSecondCNF,
+        threeMixedSameSupportThirdCNF, threeMixedSameSupportFirstVars,
+        threeMixedSameSupportSecondVars, threeMixedSameSupportThirdVars,
+        threeMixedSameSupportCharges, generatedParitySpecsCNF_eq_bind] using
+        (clauseKeysDisjoint_generatedParitySpecsCNF_of_pairwiseFreshCanonicalSupportKeys
+          (m := 12)
+          (left := generatedParitySpecsForSupportCharges
+            threeMixedSameSupportFirstVars threeMixedSameSupportCharges)
+          (right :=
+            generatedParitySpecsForSupportCharges
+              threeMixedSameSupportSecondVars threeMixedSameSupportCharges ++
+            generatedParitySpecsForSupportCharges
+              threeMixedSameSupportThirdVars threeMixedSameSupportCharges)
+          (by
+            intro l hl r hr hkey
+            have hlvars :=
+              generatedParitySpecsForSupportCharges_sameSupport
+                threeMixedSameSupportFirstVars threeMixedSameSupportCharges l hl
+            rcases List.mem_append.1 hr with hrSecond | hrThird
+            · have hrvars :=
+                generatedParitySpecsForSupportCharges_sameSupport
+                  threeMixedSameSupportSecondVars threeMixedSameSupportCharges r hrSecond
+              rw [hlvars, hrvars] at hkey
+              exact (by
+                unfold threeMixedSameSupportFirstVars
+                unfold threeMixedSameSupportSecondVars
+                decide : Not
+                  (GroupFrame.canonicalSupportKeyForVars
+                    threeMixedSameSupportFirstVars =
+                    GroupFrame.canonicalSupportKeyForVars
+                      threeMixedSameSupportSecondVars)) hkey
+            · have hrvars :=
+                generatedParitySpecsForSupportCharges_sameSupport
+                  threeMixedSameSupportThirdVars threeMixedSameSupportCharges r hrThird
+              rw [hlvars, hrvars] at hkey
+              exact (by
+                unfold threeMixedSameSupportFirstVars
+                unfold threeMixedSameSupportThirdVars
+                decide : Not
+                  (GroupFrame.canonicalSupportKeyForVars
+                    threeMixedSameSupportFirstVars =
+                    GroupFrame.canonicalSupportKeyForVars
+                      threeMixedSameSupportThirdVars)) hkey))
+  rcases
+    nonexhaustiveSemanticExtractorCompleteOn_of_sameSupportKeyDisjointComponentList
+      hcert with
+    ⟨ds, hlen, hsem⟩
+  exact ⟨ds, by simpa [threeMixedSameSupportComponents] using hlen, hsem⟩
+
+/-- Ordinary recognized/generated support for the mixed quotient witness. -/
+def threeMixedOrdinarySameSupportQuotientOrdinaryVars : List (Fin 16) :=
+  [⟨0, by decide⟩, ⟨1, by decide⟩, ⟨2, by decide⟩, ⟨3, by decide⟩]
+
+/-- First same-support fallback support for the mixed quotient witness. -/
+def threeMixedOrdinarySameSupportQuotientFallbackOneVars : List (Fin 16) :=
+  [⟨4, by decide⟩, ⟨5, by decide⟩, ⟨6, by decide⟩, ⟨7, by decide⟩]
+
+/-- Second same-support fallback support for the mixed quotient witness. -/
+def threeMixedOrdinarySameSupportQuotientFallbackTwoVars : List (Fin 16) :=
+  [⟨8, by decide⟩, ⟨9, by decide⟩, ⟨10, by decide⟩, ⟨11, by decide⟩]
+
+/-- Same-support fallback charges for the mixed quotient witness. -/
+def threeMixedOrdinarySameSupportQuotientFallbackCharges : List Bool :=
+  [true, false]
+
+def threeMixedOrdinarySameSupportQuotientOrdinaryCNF : CNFModel.CNF 16 :=
+  clausesForVertex threeMixedOrdinarySameSupportQuotientOrdinaryVars true
+
+def threeMixedOrdinarySameSupportQuotientOrdinaryGF2 :
+    ParityEncoded.GF2Formula 16 :=
+  [parityClauseForVertex threeMixedOrdinarySameSupportQuotientOrdinaryVars true]
+
+def threeMixedOrdinarySameSupportQuotientFallbackOneCNF : CNFModel.CNF 16 :=
+  generatedParitySpecsCNF
+    (generatedParitySpecsForSupportCharges
+      threeMixedOrdinarySameSupportQuotientFallbackOneVars
+      threeMixedOrdinarySameSupportQuotientFallbackCharges)
+
+def threeMixedOrdinarySameSupportQuotientFallbackTwoCNF : CNFModel.CNF 16 :=
+  generatedParitySpecsCNF
+    (generatedParitySpecsForSupportCharges
+      threeMixedOrdinarySameSupportQuotientFallbackTwoVars
+      threeMixedOrdinarySameSupportQuotientFallbackCharges)
+
+/--
+A concrete finite quotient list with one ordinary recognized/generated component
+and two generated same-support fallback components.  This is a bounded
+non-simple/duplicate-support incident quotient certificate, not a general graph
+decomposition theorem.
+-/
+def threeMixedOrdinarySameSupportQuotientComponents :
+    List (MixedQuotientComponentSpec 16) :=
+  [MixedQuotientComponentSpec.ordinary
+      threeMixedOrdinarySameSupportQuotientOrdinaryCNF
+      threeMixedOrdinarySameSupportQuotientOrdinaryGF2,
+    MixedQuotientComponentSpec.sameSupport
+      threeMixedOrdinarySameSupportQuotientFallbackOneVars
+      threeMixedOrdinarySameSupportQuotientFallbackCharges
+      threeMixedOrdinarySameSupportQuotientFallbackOneCNF,
+    MixedQuotientComponentSpec.sameSupport
+      threeMixedOrdinarySameSupportQuotientFallbackTwoVars
+      threeMixedOrdinarySameSupportQuotientFallbackCharges
+      threeMixedOrdinarySameSupportQuotientFallbackTwoCNF]
+
+/--
+Shape facts for the mixed quotient witness: it is nonempty, has three
+components, includes both an ordinary generated component and same-support
+fallback components, and the fallback components miss the ordinary recognizer.
+-/
+theorem threeMixedOrdinarySameSupportQuotientWitness_shape :
+    threeMixedOrdinarySameSupportQuotientComponents ≠ [] /\
+      threeMixedOrdinarySameSupportQuotientComponents.length = 3 /\
+      (∃ c ∈ threeMixedOrdinarySameSupportQuotientComponents,
+        c.IsOrdinary) /\
+      (∃ c ∈ threeMixedOrdinarySameSupportQuotientComponents,
+        c.IsSameSupportFallback) /\
+      threeMixedOrdinarySameSupportQuotientOrdinaryCNF ≠ [] /\
+      inferCanonicalParityBlock
+        threeMixedOrdinarySameSupportQuotientFallbackOneCNF = none /\
+      inferCanonicalParityBlock
+        threeMixedOrdinarySameSupportQuotientFallbackTwoCNF = none := by
+  constructor
+  · intro h; cases h
+  constructor
+  · rfl
+  constructor
+  · refine ⟨MixedQuotientComponentSpec.ordinary
+        threeMixedOrdinarySameSupportQuotientOrdinaryCNF
+        threeMixedOrdinarySameSupportQuotientOrdinaryGF2, ?_, trivial⟩
+    simp [threeMixedOrdinarySameSupportQuotientComponents]
+  constructor
+  · refine ⟨MixedQuotientComponentSpec.sameSupport
+        threeMixedOrdinarySameSupportQuotientFallbackOneVars
+        threeMixedOrdinarySameSupportQuotientFallbackCharges
+        threeMixedOrdinarySameSupportQuotientFallbackOneCNF, ?_, trivial⟩
+    simp [threeMixedOrdinarySameSupportQuotientComponents]
+  constructor
+  · unfold threeMixedOrdinarySameSupportQuotientOrdinaryCNF
+    unfold threeMixedOrdinarySameSupportQuotientOrdinaryVars
+    decide
+  constructor
+  · rfl
+  · rfl
+
+/--
+Concrete nonempty mixed quotient/decomposition witness: one ordinary generated
+component and two same-support fallback components compose through the no-search
+mixed quotient bridge under finite canonical-key-disjointness.  The conclusion is
+only `NonexhaustiveSemanticExtractorCompleteOn` for this certified affine/GF(2)
+target.
+-/
+theorem nonexhaustiveSemanticExtractorCompleteOn_threeMixedOrdinarySameSupportQuotientWitness :
+    exists s : ParityEncoded.GF2Formula 16,
+      NonexhaustiveSemanticExtractorCompleteOn
+        (mixedQuotientComponentsCNF
+          threeMixedOrdinarySameSupportQuotientComponents) s := by
+  have hord :
+      NonexhaustiveSemanticExtractorCompleteOn
+        threeMixedOrdinarySameSupportQuotientOrdinaryCNF
+        threeMixedOrdinarySameSupportQuotientOrdinaryGF2 := by
+    have hfamily :
+        GeneratedKeyDisjointFamily 16
+          (clausesForVertex threeMixedOrdinarySameSupportQuotientOrdinaryVars true)
+          [parityClauseForVertex
+            threeMixedOrdinarySameSupportQuotientOrdinaryVars true] := by
+      let base := clausesForVertex
+        threeMixedOrdinarySameSupportQuotientOrdinaryVars true
+      have hne : base ≠ [] := by
+        unfold base
+        unfold threeMixedOrdinarySameSupportQuotientOrdinaryVars
+        decide
+      cases hbase : base with
+      | nil =>
+          exact False.elim (hne hbase)
+      | cons c tail =>
+          simpa [base] using
+            (GeneratedKeyDisjointFamily.snoc
+              (m := 16)
+              (f := ([] : CNFModel.CNF 16))
+              (s := ([] : ParityEncoded.GF2Formula 16))
+              (vars := threeMixedOrdinarySameSupportQuotientOrdinaryVars)
+              (charge := true)
+              (c := c)
+              (tail := tail)
+              GeneratedKeyDisjointFamily.empty
+              (by intro c hc; cases hc)
+              (by simpa [base] using hbase)
+              (by
+                unfold GroupFrame.VarsInCanonicalSupportOrder
+                unfold threeMixedOrdinarySameSupportQuotientOrdinaryVars
+                decide))
+    simpa [threeMixedOrdinarySameSupportQuotientOrdinaryCNF,
+      threeMixedOrdinarySameSupportQuotientOrdinaryGF2] using
+      (nonexhaustiveSemanticExtractorCompleteOn_of_generatedKeyDisjointFamily
+        hfamily)
+  have hcert :
+      NonexhaustiveMixedQuotientKeyDisjointComponentList
+        threeMixedOrdinarySameSupportQuotientComponents := by
+    unfold threeMixedOrdinarySameSupportQuotientComponents
+    apply NonexhaustiveMixedQuotientKeyDisjointComponentList.ordinary
+    · exact hord
+    · apply NonexhaustiveMixedQuotientKeyDisjointComponentList.sameSupport
+      · unfold threeMixedOrdinarySameSupportQuotientFallbackOneVars; decide
+      · unfold GroupFrame.VarsInCanonicalSupportOrder
+        unfold threeMixedOrdinarySameSupportQuotientFallbackOneVars
+        decide
+      · simp [threeMixedOrdinarySameSupportQuotientFallbackOneCNF]
+      · unfold threeMixedOrdinarySameSupportQuotientFallbackOneCNF; decide
+      · rfl
+      · apply NonexhaustiveMixedQuotientKeyDisjointComponentList.sameSupport
+        · unfold threeMixedOrdinarySameSupportQuotientFallbackTwoVars; decide
+        · unfold GroupFrame.VarsInCanonicalSupportOrder
+          unfold threeMixedOrdinarySameSupportQuotientFallbackTwoVars
+          decide
+        · simp [threeMixedOrdinarySameSupportQuotientFallbackTwoCNF]
+        · unfold threeMixedOrdinarySameSupportQuotientFallbackTwoCNF; decide
+        · rfl
+        · exact NonexhaustiveMixedQuotientKeyDisjointComponentList.nil
+        · unfold mixedQuotientComponentsCNF
+          intro c _hc d hd
+          cases hd
+      · simpa [mixedQuotientComponentsCNF, mixedQuotientComponentCNF,
+          threeMixedOrdinarySameSupportQuotientFallbackOneCNF,
+          threeMixedOrdinarySameSupportQuotientFallbackTwoCNF,
+          threeMixedOrdinarySameSupportQuotientFallbackOneVars,
+          threeMixedOrdinarySameSupportQuotientFallbackTwoVars,
+          threeMixedOrdinarySameSupportQuotientFallbackCharges,
+          generatedParitySpecsCNF_eq_bind] using
+          (clauseKeysDisjoint_generatedParitySpecsCNF_of_pairwiseFreshCanonicalSupportKeys
+            (m := 16)
+            (left := generatedParitySpecsForSupportCharges
+              threeMixedOrdinarySameSupportQuotientFallbackOneVars
+              threeMixedOrdinarySameSupportQuotientFallbackCharges)
+            (right := generatedParitySpecsForSupportCharges
+              threeMixedOrdinarySameSupportQuotientFallbackTwoVars
+              threeMixedOrdinarySameSupportQuotientFallbackCharges)
+            (by
+              intro l hl r hr hkey
+              have hlvars :=
+                generatedParitySpecsForSupportCharges_sameSupport
+                  threeMixedOrdinarySameSupportQuotientFallbackOneVars
+                  threeMixedOrdinarySameSupportQuotientFallbackCharges l hl
+              have hrvars :=
+                generatedParitySpecsForSupportCharges_sameSupport
+                  threeMixedOrdinarySameSupportQuotientFallbackTwoVars
+                  threeMixedOrdinarySameSupportQuotientFallbackCharges r hr
+              rw [hlvars, hrvars] at hkey
+              exact (by
+                unfold threeMixedOrdinarySameSupportQuotientFallbackOneVars
+                unfold threeMixedOrdinarySameSupportQuotientFallbackTwoVars
+                decide : Not
+                  (GroupFrame.canonicalSupportKeyForVars
+                    threeMixedOrdinarySameSupportQuotientFallbackOneVars =
+                   GroupFrame.canonicalSupportKeyForVars
+                    threeMixedOrdinarySameSupportQuotientFallbackTwoVars)) hkey))
+    · simpa [mixedQuotientComponentsCNF, mixedQuotientComponentCNF,
+        threeMixedOrdinarySameSupportQuotientOrdinaryCNF,
+        threeMixedOrdinarySameSupportQuotientFallbackOneCNF,
+        threeMixedOrdinarySameSupportQuotientFallbackTwoCNF,
+        threeMixedOrdinarySameSupportQuotientFallbackOneVars,
+        threeMixedOrdinarySameSupportQuotientFallbackTwoVars,
+        threeMixedOrdinarySameSupportQuotientFallbackCharges,
+        generatedParitySpecsCNF_eq_bind] using
+        (clauseKeysDisjoint_generatedParitySpecsCNF_of_pairwiseFreshCanonicalSupportKeys
+          (m := 16)
+          (left := [(threeMixedOrdinarySameSupportQuotientOrdinaryVars, true)])
+          (right :=
+            generatedParitySpecsForSupportCharges
+              threeMixedOrdinarySameSupportQuotientFallbackOneVars
+              threeMixedOrdinarySameSupportQuotientFallbackCharges ++
+            generatedParitySpecsForSupportCharges
+              threeMixedOrdinarySameSupportQuotientFallbackTwoVars
+              threeMixedOrdinarySameSupportQuotientFallbackCharges)
+          (by
+            intro l hl r hr hkey
+            cases hl with
+            | head =>
+                rcases List.mem_append.1 hr with hrOne | hrTwo
+                · have hrvars :=
+                    generatedParitySpecsForSupportCharges_sameSupport
+                      threeMixedOrdinarySameSupportQuotientFallbackOneVars
+                      threeMixedOrdinarySameSupportQuotientFallbackCharges r hrOne
+                  rw [hrvars] at hkey
+                  exact (by
+                    unfold threeMixedOrdinarySameSupportQuotientOrdinaryVars
+                    unfold threeMixedOrdinarySameSupportQuotientFallbackOneVars
+                    decide : Not
+                      (GroupFrame.canonicalSupportKeyForVars
+                        threeMixedOrdinarySameSupportQuotientOrdinaryVars =
+                       GroupFrame.canonicalSupportKeyForVars
+                        threeMixedOrdinarySameSupportQuotientFallbackOneVars)) hkey
+                · have hrvars :=
+                    generatedParitySpecsForSupportCharges_sameSupport
+                      threeMixedOrdinarySameSupportQuotientFallbackTwoVars
+                      threeMixedOrdinarySameSupportQuotientFallbackCharges r hrTwo
+                  rw [hrvars] at hkey
+                  exact (by
+                    unfold threeMixedOrdinarySameSupportQuotientOrdinaryVars
+                    unfold threeMixedOrdinarySameSupportQuotientFallbackTwoVars
+                    decide : Not
+                      (GroupFrame.canonicalSupportKeyForVars
+                        threeMixedOrdinarySameSupportQuotientOrdinaryVars =
+                       GroupFrame.canonicalSupportKeyForVars
+                        threeMixedOrdinarySameSupportQuotientFallbackTwoVars)) hkey
+            | tail _ hnil => cases hnil))
+  exact
+    nonexhaustiveSemanticExtractorCompleteOn_of_mixedQuotientKeyDisjointComponentList
+      hcert
 
 /--
 The enhanced fallback splitter satisfies the combined semantic/enhanced-executable

@@ -2450,6 +2450,12 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithTwoChargeFallback_of_groupsRecognized
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_of_groupsRecognized' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.splitCanonicalSupportClauseGroupsWithNonexhaustiveFallback_of_groupsRecognized
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_of_groupRecognition' depends on axioms: [propext,
  Classical.choice,
  Quot.sound] -/
@@ -2473,6 +2479,18 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveExtractorCompleteOn_append_of_clauseKeysDisjoint
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveExtractorCompleteOn_of_groupRecognition' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveExtractorCompleteOn_of_groupRecognition
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_of_generatedKeyDisjointFamily' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_of_generatedKeyDisjointFamily
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedExtractorCompleteOn_append_of_disjointSupport' depends on axioms: [propext,
  Classical.choice,
@@ -2509,6 +2527,18 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_append_of_clauseKeysDisjoint
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.NonexhaustiveKeyDisjointComponentList' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.NonexhaustiveKeyDisjointComponentList
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_of_keyDisjointComponentList' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_of_keyDisjointComponentList
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_append_of_disjointSupport' depends on axioms: [propext,
  Classical.choice,
@@ -2588,6 +2618,28 @@ internal trust boundary and is not included in this clean audit surface yet.
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_append_sameSupportComponents_of_keyDisjoint
 
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.NonexhaustiveSameSupportKeyDisjointComponentList' does not depend on any axioms -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.NonexhaustiveSameSupportKeyDisjointComponentList
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_of_sameSupportKeyDisjointComponentList' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_of_sameSupportKeyDisjointComponentList
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.NonexhaustiveMixedQuotientKeyDisjointComponentList' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.NonexhaustiveMixedQuotientKeyDisjointComponentList
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_of_mixedQuotientKeyDisjointComponentList' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_of_mixedQuotientKeyDisjointComponentList
+
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoDisjointTwoCycleSameSupportWitness_shape' does not depend on any axioms -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.twoDisjointTwoCycleSameSupportWitness_shape
@@ -2597,6 +2649,26 @@ internal trust boundary and is not included in this clean audit surface yet.
  Quot.sound] -/
 #guard_msgs in
 #print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_twoDisjointTwoCycleSameSupportWitness
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.threeMixedSameSupportComponentWitness_shape' does not depend on any axioms -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.threeMixedSameSupportComponentWitness_shape
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_threeMixedSameSupportComponentWitness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_threeMixedSameSupportComponentWitness
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.threeMixedOrdinarySameSupportQuotientWitness_shape' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.threeMixedOrdinarySameSupportQuotientWitness_shape
+
+/-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_threeMixedOrdinarySameSupportQuotientWitness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound] -/
+#guard_msgs in
+#print axioms CertifiedAffine.TseitinCNFData.AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_threeMixedOrdinarySameSupportQuotientWitness
 
 /-- info: 'CertifiedAffine.TseitinCNFData.AtomicClassBridge.enhancedSemanticExtractorCompleteOn_TseitinCycleCNFFormula_twoCycle' depends on axioms: [propext,
  Classical.choice,

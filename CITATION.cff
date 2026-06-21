@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: "Fredriksen"
     given-names: "Daniel"
-abstract: "Lean 4 artifact for certified affine-structure extraction and GF(2) semantic preservation for scoped Tseitin-style CNF families. v0.3.0 adds a reusable private-incident sufficient condition for semantic extractor completeness over Tseitin CNF formulas, plus a non-cycle P3 witness routed through the public CertifiedAffine surface. The artifact does not claim P = NP, P != NP, a general SAT algorithm, or a general CNF-to-XOR recognizer."
+abstract: "Lean 4 artifact for certified affine-structure extraction and GF(2) semantic preservation for scoped Tseitin-style CNF families. v0.3.2 adds the mixed ordinary + same-support quotient key-disjoint component-list theorem and a concrete nonempty 3-component witness (ordinary generated component + two same-support fallback components). All claims bounded to NonexhaustiveSemanticExtractorCompleteOn under explicit canonical-key-disjointness. The artifact does not claim P = NP, P != NP, a general SAT algorithm, a general CNF-to-XOR recognizer, or any NP/circuit lower bound."
 keywords:
   - Lean 4
   - formal verification
@@ -16,5 +16,5 @@ keywords:
   - Tseitin formulas
 license: Apache-2.0
 repository-code: "https://github.com/Quantyra/certified-affine-extraction"
-version: "0.3.1"
-date-released: "2026-06-19"
+version: "0.3.2"
+date-released: "2026-06-21"

@@ -22,6 +22,27 @@ private planning history and speculative research notes.
 
 The audit surface is `lean/CertifiedAffine/Audit.lean`.
 
+## Main-Branch Surface After v0.3.2 — Mixed Ordinary + Same-Support Quotient Key-Disjoint Component List + Nonempty 3-Component Witness
+
+v0.3.2 adds the mixed ordinary + same-support quotient key-disjoint component-list theorem and a
+concrete nonempty 3-component witness (one ordinary generated component + two same-support fallback
+components).  The theorems are bounded to `NonexhaustiveSemanticExtractorCompleteOn` under explicit
+canonical-key-disjointness.
+
+- `AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_of_mixedQuotientKeyDisjointComponentList`:
+  finite mixed quotient-component composition: ordinary certified no-search components compose with
+  generated same-support fallback components when canonical support keys are disjoint.
+- `AtomicClassBridge.nonexhaustiveSemanticExtractorCompleteOn_threeMixedOrdinarySameSupportQuotientWitness`:
+  concrete nonempty 3-component witness over 16 variables (ordinary generated + two same-support fallbacks).
+- Supporting: `threeMixedOrdinarySameSupportQuotientWitness_shape` (executable shape facts, mostly axiom-free).
+- Axiom profiles: `[propext, Classical.choice, Quot.sound]` for the general theorem and witness;
+  shape uses subset `[propext]`.
+- Audit surface updated; no sorryAx, no new native_decide drift on general theorems.
+
+Scope note: this is a reusable sufficient condition for certified affine/GF(2) Tseitin extraction.
+It is not arbitrary graph extraction by itself, not a general SAT algorithm, not a general CNF-to-XOR
+recognizer, not an NP or circuit lower bound, and not a P-vs-NP claim.
+
 ## Main-Branch Surface After v0.3.1 — Nonexhaustive Collision-Free Append Bridge (same-support components)
 
 v0.3.1 adds a nonexhaustive append bridge for same-support collision components under key-disjointness.
